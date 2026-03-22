@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:140px;
+       padding-bottom:80px;
+     ">
+
+  <!-- Logo DHL -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container position-relative" style="z-index:5;">
+    <div class="row g-4 justify-content-center">
+
+      <!-- COLUNA PERFIL -->
+      <div class="col-lg-5 col-md-6">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:12px 16px;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:.9rem;">
+              Criar Post
+            </span>
+            <span style="font-size:.75rem; color:#fff; font-weight:600;">
+              ID {{ current_user.id }}
+            </span>
+          </div>
+
+          <div class="p-3 p-md-4 d-flex gap-3" style="color:#222;">
+            <!-- FOTO -->
+            <div style="min-width:140px;">
+              <div style="
+                    width:140px; height:140px;
+                    border-radius:10px;
+                    border:2px solid #78BE20;
+                    overflow:hidden;
+                    background:#f4f6f4;
+              ">
+                <img
+                  src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                          {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                        {% else %}
+                          {{ url_for('static', filename='foto_perfil/default.png') }}
+                        {% endif %}"
+                  alt="Foto de perfil"
+                  style="width:100%; height:100%; object-fit:cover;">
+              </div>
+            </div>
+
+            <!-- INFO -->
+            <div class="flex-grow-1">
+              <h4 class="mb-1" style="font-weight:800; color:#2f5f0f;">
+                {{ current_user.username }}
+              </h4>
+              <p class="mb-2" style="color:#444; font-size:.9rem;">
+                {{ current_user.email }}
+              </p>
+              <p class="mb-3" style="color:#666; font-size:.8rem;">
+                <strong>Último acesso:</strong>
+                {% if current_user.last_login %}
+                  {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+                {% else %}
+                  —
+                {% endif %}
+              </p>
+
+              <div class="d-flex gap-2">
+                <div class="text-center flex-fill p-2"
+                     style="background:#fff; color:#2f5f0f; border-radius:8px; border:1px solid #78BE20;">
+                  <div style="font-size:.7rem;">ANC</div>
+                  <div style="font-weight:800;">
+                    {{ total_anc if total_anc is defined else 0 }}
+                  </div>
+                </div>
+                <div class="text-center flex-fill p-2"
+                     style="background:#fff; color:#2f5f0f; border-radius:8px; border:1px solid #78BE20;">
+                  <div style="font-size:.7rem;">POSTS</div>
+                  <div style="font-weight:800;">
+                    {{ total_posts if total_posts is defined else 0 }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:.75rem;
+                text-align:center;
+                padding:6px 12px;
+                border-radius:0 0 14px 14px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · PERFIL
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA FORM -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:10px 16px;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <h5 class="mb-0"
+                style="color:#fff; font-weight:800; font-size:.95rem;">
+              Criar Post
+            </h5>
+          </div>
+
+          <div class="card-body" style="color:#222;">
+            <p class="small mb-3" style="color:#555;">
+              Preencha os campos abaixo para publicar um comunicado no mural interno.
+            </p>
+
+            <form method="POST" action="" enctype="multipart/form-data">
+              {{ form.csrf_token }}
+
+              <div class="mb-3">
+                {{ form.titulo.label(class_='form-label', style='font-weight:700; color:#2f5f0f;') }}
+                {{ form.titulo(class_='form-control') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form.corpo.label(class_='form-label', style='font-weight:700; color:#2f5f0f;') }}
+                {{ form.corpo(class_='form-control', rows="5") }}
+              </div>
+
+              {{ form.botao_submit(
+                   class_="btn w-100 mt-2",
+                   style="background:#78BE20; border:1px solid #5aa014; color:#fff; font-weight:800; border-radius:999px;"
+                 ) }}
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:.75rem;
+                text-align:center;
+                padding:6px 10px;
+                border-radius:0 0 14px 14px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · COMUNICADOS INTERNOS
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       background:#f4f6f4;
+       padding-top:90px;
+       padding-bottom:40px;
+     ">
+
+  <!-- Logo fixo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         opacity:.85;
+       ">
+
+  <div class="container d-flex flex-column align-items-center"
+       style="max-width:1400px;">
+
+    <!-- TÍTULO -->
+    <h1 style="
+          color:#2f5f0f;
+          font-weight:800;
+          margin-bottom:14px;
+          text-align:center;
+        ">
+      Postagens de ANC
+    </h1>
+
+    <div class="card shadow"
+         style="
+            width:100%;
+            background:#ffffff;
+            border-radius:16px;
+            border:2px solid #78BE20;
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:14px 14px 0 0;
+            padding:14px 20px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            border-bottom:2px solid #2f5f0f;
+        ">
+        <span style="font-weight:800; color:#fff; font-size:1rem;">
+          Não Conformidades (ANC) registradas
+        </span>
+
+        {% if current_user.is_authenticated %}
+          <span style="font-size:0.75rem; color:#fff; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Corpo -->
+      <div class="p-3 p-md-4"
+           style="max-height: calc(80vh - 70px); overflow-y:auto;">
+
+        {% if anc_posts %}
+          {% for anc in anc_posts %}
+            {% set status_lower = (anc.status or 'aberta')|lower %}
+            {% if status_lower in ['concluída','concluida','fechada'] %}
+              {% set border_color = '#28a745' %}
+            {% elif status_lower in ['em análise','em analise'] %}
+              {% set border_color = '#ffc107' %}
+            {% else %}
+              {% set border_color = '#dc3545' %}
+            {% endif %}
+
+            <article class="mb-3 p-3"
+                     style="
+                       background:#ffffff;
+                       border:1px solid #ddd;
+                       border-left:6px solid {{ border_color }};
+                       border-radius:10px;
+                     ">
+
+              <header class="d-flex justify-content-between flex-wrap mb-1">
+                <div>
+                  <h5 style="font-weight:800; color:#2f5f0f;">
+                    ANC #{{ anc.id }}
+                    {% if anc.natureza %} · {{ anc.natureza.value }}{% endif %}
+                  </h5>
+
+                  <small style="color:#555;">
+                    {% if anc.local %}Local: {{ anc.local.value }} ·{% endif %}
+                    {% if anc.turno %} Turno: {{ anc.turno }} ·{% endif %}
+                    {% if anc.data_ocorrencia %}
+                      Ocorrência: {{ anc.data_ocorrencia.strftime('%d/%m/%Y') }}
+                    {% endif %}
+                  </small>
+                </div>
+
+                <span class="badge"
+                      style="
+                        background:{{ border_color }};
+                        color:#fff;
+                        font-weight:700;
+                      ">
+                  {{ anc.status or 'Aberta' }}
+                </span>
+              </header>
+
+              <p style="color:#222; font-size:.9rem;">
+                {{ anc.descricao }}
+              </p>
+
+              <div style="font-size:.85rem; color:#444;">
+                {% if anc.responsavel %}
+                  <strong>Responsável:</strong> {{ anc.responsavel }}<br>
+                {% endif %}
+                {% if anc.envolvido_gc %}
+                  <strong>Envolvido:</strong> {{ anc.envolvido_gc }}<br>
+                {% endif %}
+                {% if anc.created_at %}
+                  <strong>Criado em:</strong>
+                  {{ anc.created_at.strftime('%d/%m/%Y %H:%M') }}
+                {% endif %}
+              </div>
+
+              <!-- AÇÕES -->
+              <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
+
+                <form method="POST"
+                      action="{{ url_for('anc_alterar_status', anc_id=anc.id) }}">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="btn btn-sm"
+                          style="
+                            background:#78BE20;
+                            color:#fff;
+                            font-weight:700;
+                            border-radius:999px;
+                            padding:4px 14px;
+                          "
+                          {% if status_lower in ['concluída','concluida','fechada'] %}disabled{% endif %}>
+                    Fechar ANC
+                  </button>
+                </form>
+
+                <form method="POST"
+                      action="{{ url_for('anc_anexar_arquivo', anc_id=anc.id) }}"
+                      enctype="multipart/form-data"
+                      class="d-flex flex-wrap gap-2 align-items-center">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                  {% set input_id = 'file_anc_' ~ anc.id %}
+                  {% set preview_id = 'preview_anc_' ~ anc.id %}
+                  {% set canvas_id = 'sign_canvas_' ~ anc.id %}
+                  {% set clear_id = 'sign_clear_' ~ anc.id %}
+                  {% set sign_input_id = 'sign_data_' ~ anc.id %}
+
+                  <!-- Somente imagens (sem PDF) -->
+                  <input type="file"
+                         id="{{ input_id }}"
+                         name="arquivo"
+                         accept="image/*"
+                         class="anc-file-input"
+                         data-preview-id="{{ preview_id }}"
+                         style="display:none;" required>
+
+                  <label for="{{ input_id }}"
+                         class="btn btn-sm"
+                         style="
+                           background:#ffffff;
+                           border:1px solid #ccc;
+                           border-radius:999px;
+                           font-weight:600;
+                         ">
+                    Selecionar imagem
+                  </label>
+
+                  <button type="submit" class="btn btn-sm"
+                          style="
+                            background:#2f5f0f;
+                            color:#fff;
+                            border-radius:999px;
+                            font-weight:700;
+                          ">
+                    Enviar
+                  </button>
+
+                  <!-- assinatura base64 -->
+                  <input type="hidden" name="assinatura_base64" id="{{ sign_input_id }}">
+                </form>
+              </div>
+
+              <!-- PREVIEW da imagem selecionada -->
+              <div id="{{ preview_id }}"
+                   class="mt-2 p-2 border rounded bg-light"
+                   style="max-width:220px;">
+                <span class="anc-preview-placeholder small text-muted">
+                  Nenhum arquivo selecionado
+                </span>
+                <img style="display:none; max-width:100%; margin-top:6px;">
+              </div>
+
+              <!-- ✅ CAMPO DE ASSINATURA -->
+              <div class="mt-3 p-3 border rounded"
+                   style="background:#ffffff; border-color:#ddd;">
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <div class="small" style="color:#2f5f0f; font-weight:800;">
+                    ASSINATURA (desenhe no quadro abaixo)
+                  </div>
+                  <button type="button" id="{{ clear_id }}" class="btn btn-sm"
+                          style="border-radius:999px; border:1px solid #ccc; background:#fff; font-weight:700;">
+                    Limpar
+                  </button>
+                </div>
+
+                <div class="mt-2"
+                     style="border:2px dashed #cfcfcf; border-radius:12px; overflow:hidden; max-width:520px;">
+                  <canvas id="{{ canvas_id }}"
+                          width="520" height="160"
+                          style="display:block; width:100%; height:auto; background:#fff;"></canvas>
+                </div>
+
+                <div class="small text-muted mt-2">
+                  Dica: use o mouse (PC) ou o dedo (celular). A assinatura será enviada junto com o anexo.
+                </div>
+              </div>
+
+              <!-- ✅ IMAGENS ANEXADAS (GALERIA) -->
+              {% if anc.fotos and anc.fotos|length > 0 %}
+                <div class="mt-3">
+                  <div class="small" style="color:#2f5f0f; font-weight:800; margin-bottom:6px;">
+                    ANEXOS / IMAGENS
+                  </div>
+
+                  <div style="display:flex; flex-wrap:wrap; gap:10px;">
+                    {% for f in anc.fotos %}
+                      {% set file_url = url_for('static', filename=f.filename) %}
+                      <a href="{{ file_url }}" target="_blank"
+                         style="
+                           display:block;
+                           border:1px solid #ddd;
+                           border-radius:10px;
+                           overflow:hidden;
+                           background:#fff;
+                           width:150px;
+                           text-decoration:none;
+                         ">
+                        <img src="{{ file_url }}"
+                             alt="Anexo ANC {{ anc.id }}"
+                             style="
+                               width:150px;
+                               height:110px;
+                               object-fit:cover;
+                               display:block;
+                             ">
+                      </a>
+                    {% endfor %}
+                  </div>
+                </div>
+              {% endif %}
+
+            </article>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            Nenhuma ANC registrada.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f4f6f4;
+            color:#2f5f0f;
+            font-size:0.75rem;
+            text-align:center;
+            padding:8px;
+            border-top:1px solid #78BE20;
+        ">
+        SECURITY · NÃO CONFORMIDADES (ANC)
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- JS: assinatura + preview (sem PDF) -->
+<script>
+(function () {
+  // Preview simples (imagem)
+  document.querySelectorAll(".anc-file-input").forEach(function(input){
+    input.addEventListener("change", function(){
+      const previewId = input.getAttribute("data-preview-id");
+      const box = document.getElementById(previewId);
+      if (!box) return;
+
+      const img = box.querySelector("img");
+      const placeholder = box.querySelector(".anc-preview-placeholder");
+      const file = input.files && input.files[0];
+
+      if (!file) {
+        if (img) img.style.display = "none";
+        if (placeholder) placeholder.style.display = "inline";
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        // como agora só aceita image/*, isso quase não acontece, mas deixei seguro
+        if (img) img.style.display = "none";
+        if (placeholder) placeholder.textContent = "Arquivo não é imagem.";
+        if (placeholder) placeholder.style.display = "inline";
+        return;
+      }
+
+      const url = URL.createObjectURL(file);
+      if (img) {
+        img.src = url;
+        img.style.display = "block";
+      }
+      if (placeholder) placeholder.style.display = "none";
+    });
+  });
+
+  // Assinatura: canvas por ANC (id dinâmico)
+  // Estratégia: encontrar todos canvases cujo id começa com "sign_canvas_"
+  document.querySelectorAll("canvas[id^='sign_canvas_']").forEach(function(canvas){
+    const ancId = canvas.id.replace("sign_canvas_", "");
+    const clearBtn = document.getElementById("sign_clear_" + ancId);
+    const hiddenInput = document.getElementById("sign_data_" + ancId);
+
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+
+    function getPos(evt){
+      const rect = canvas.getBoundingClientRect();
+      const isTouch = evt.touches && evt.touches[0];
+      const clientX = isTouch ? evt.touches[0].clientX : evt.clientX;
+      const clientY = isTouch ? evt.touches[0].clientY : evt.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function start(evt){
+      drawing = true;
+      const p = getPos(evt);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      evt.preventDefault();
+    }
+
+    function move(evt){
+      if (!drawing) return;
+      const p = getPos(evt);
+      ctx.lineTo(p.x, p.y);
+      ctx.lineWidth = 2.2;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#111";
+      ctx.stroke();
+      evt.preventDefault();
+    }
+
+    function end(){
+      drawing = false;
+      // salva a assinatura no input hidden como PNG base64
+      if (hiddenInput) hiddenInput.value = canvas.toDataURL("image/png");
+    }
+
+    canvas.addEventListener("mousedown", start);
+    canvas.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", end);
+
+    canvas.addEventListener("touchstart", start, {passive:false});
+    canvas.addEventListener("touchmove", move, {passive:false});
+    canvas.addEventListener("touchend", end);
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (hiddenInput) hiddenInput.value = "";
+      });
+    }
+  });
+})();
+</script>
+
+{% endblock %}

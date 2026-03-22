@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding:90px 0 40px 0;
+     ">
+
+  {# Logo fixa #}
+  <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:64px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5;">
+    <div class="row justify-content-center">
+
+      <div class="col-12 text-center mb-3">
+        <h1 style="
+              color:#111;
+              font-weight:800;
+              letter-spacing:.02em;
+            ">
+          Solicitação de Imagem
+        </h1>
+        <hr style="max-width:320px; margin:auto; border:2px solid #78BE20;">
+      </div>
+
+      <div class="col-lg-8">
+
+        <!-- CARD -->
+        <div class="card shadow-lg"
+             style="
+               background:#ffffff;
+               border-radius:12px;
+               border:2px solid #78BE20;
+               box-shadow:0 14px 30px rgba(0,0,0,0.12);
+             ">
+
+          <!-- Cabeçalho verde Leroy -->
+          <div style="
+                background:#78BE20;
+                border-radius:10px 10px 0 0;
+                padding:12px 16px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                border-bottom:2px solid #5fae17;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
+              SOLICITAÇÃO DE IMAGEM CFTV
+            </span>
+          </div>
+
+          <!-- Corpo -->
+          <div class="card-body p-4" style="color:#000;">
+            <form method="POST"
+                  action=""
+                  autocomplete="off">
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Nome</label>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Inserir Nome">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Descrição da Ocorrência</label>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Breve relato da ocorrência">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Data / Hora</label>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Data e horário aproximado">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Envolvidos</label>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Nome dos envolvidos">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Turno</label>
+                <select class="form-select">
+                  <option selected>Inserir o Turno</option>
+                  <option value="1">1° Turno</option>
+                  <option value="2">2° Turno</option>
+                  <option value="3">3° Turno</option>
+                  <option value="4">4° Turno</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Coordenador</label>
+                <input type="text"
+                       class="form-control"
+                       placeholder="Inserir Coordenador">
+              </div>
+
+              <button type="submit"
+                      class="btn w-100 mt-2"
+                      style="
+                        background:#78BE20;
+                        border:1px solid #5fae17;
+                        color:#fff;
+                        font-weight:800;
+                        border-radius:999px;
+                        text-transform:uppercase;
+                        letter-spacing:.06em;
+                      ">
+                Enviar
+              </button>
+            </form>
+          </div>
+
+          <!-- Rodapé -->
+          <div style="
+                background:#f4f4f4;
+                color:#111;
+                font-size:0.75rem;
+                text-align:center;
+                padding:8px 12px;
+                border-radius:0 0 10px 10px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · SOLICITAÇÃO DE IMAGEM
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

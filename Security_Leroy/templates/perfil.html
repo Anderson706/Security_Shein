@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:140px;
+       padding-bottom:80px;
+     ">
+
+  <!-- Logo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.85;
+       ">
+
+  <div class="container d-flex justify-content-center position-relative">
+
+    <div class="card shadow-lg"
+         style="
+            width:100%;
+            max-width:700px;
+            background:#ffffff;
+            border:2px solid #0A7D2C;
+            border-radius:14px;
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:12px 12px 0 0;
+            padding:12px 16px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            border-bottom:2px solid #064F1B;
+        ">
+        <span style="font-weight:700; color:#fff; font-size:.9rem;">
+          PERFIL DE USUÁRIO
+        </span>
+
+        <span style="font-size:.75rem; color:#E8F5EE; font-weight:600;">
+          ID {{ current_user.id }}
+        </span>
+      </div>
+
+      <!-- Corpo -->
+      <div class="p-3 p-md-4">
+
+        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+
+          <!-- FOTO -->
+          <div class="text-center pe-md-3 mb-3 mb-md-0" style="min-width:160px; margin-top:-110px;">
+            <div style="
+                  width:140px;
+                  height:140px;
+                  border-radius:10px;
+                  border:2px solid #0A7D2C;
+                  overflow:hidden;
+                  background:#f4f4f4;
+            ">
+              <img
+                src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                        {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                      {% else %}
+                        {{ url_for('static', filename='foto_perfil/default.png') }}
+                      {% endif %}"
+                alt="Foto de perfil"
+                style="width:100%; height:100%; object-fit:cover;">
+            </div>
+          </div>
+
+          <!-- INFO -->
+          <div class="flex-grow-1 w-100" style="color:#222;">
+
+            <h4 class="mb-0" style="font-weight:700;">
+              {{ current_user.username }}
+            </h4>
+
+            <div style="font-size:.9rem; color:#555;">
+              {{ current_user.email }}
+            </div>
+
+            <div style="font-size:.8rem; color:#777;">
+              Último acesso:
+              {% if current_user.last_login %}
+                {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+              {% else %}
+                —
+              {% endif %}
+            </div>
+
+            <!-- Métrica -->
+            <div class="d-flex gap-2 my-3">
+              <div class="flex-fill text-center p-2"
+                   style="
+                     background:#E8F5EE;
+                     color:#0A7D2C;
+                     border-radius:8px;
+                     border:1px solid #0A7D2C;
+                   ">
+                <div style="font-size:.7rem; font-weight:600;">
+                  POSTS
+                </div>
+                <div style="font-size:1.2rem; font-weight:700;">
+                  {{ total_posts if total_posts is defined else 0 }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Status -->
+            <div class="p-2"
+                 style="
+                   background:#f8f9fa;
+                   border:1px solid #ddd;
+                   border-radius:8px;
+                 ">
+              <strong>Status:</strong> Ativo
+            </div>
+
+            <!-- Ações -->
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <a href="{{ url_for('editar_perfil') }}"
+                 class="btn btn-sm flex-grow-1"
+                 style="
+                   background:#78BE20;
+                   color:#fff;
+                   font-weight:600;
+                   border:none;
+                 ">
+                Editar Perfil
+              </a>
+
+              <a href="{{ url_for('sair') }}"
+                 class="btn btn-sm btn-outline-secondary flex-grow-1"
+                 style="font-weight:600;">
+                Sair
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#E8F5EE;
+            color:#0A7D2C;
+            font-size:0.75rem;
+            text-align:center;
+            padding:8px 12px;
+            border-radius:0 0 12px 12px;
+            border-top:1px solid #0A7D2C;
+        ">
+        SISTEMA INTERNO · USO RESTRITO
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex justify-content-center align-items-start"
+     style="background:#ffffff; padding:40px 16px;">
+
+  <!-- Link topo esquerdo -->
+  <a href="{{ url_for('anc_posts') }}"
+     style="
+       position:fixed; top:90px; left:16px; z-index:10;
+       padding:8px 14px;
+       border-radius:10px;
+       background:#ffffff;
+       border:2px solid #78BE20;
+       color:#2f5f0f;
+       font-weight:700;
+       text-decoration:none;
+       box-shadow:0 4px 10px rgba(0,0,0,.15);
+     ">
+    Fechamento de ANC
+  </a>
+
+  <!-- Logo rodapé -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; opacity:.9;
+       ">
+
+  <div class="container" style="max-width:900px;">
+    <h1 class="text-center mb-2"
+        style="color:#2f5f0f; font-weight:800;">
+      Aviso de Não Conformidade
+    </h1>
+
+    <hr style="border:3px solid #78BE20; max-width:360px; margin:0 auto 24px;">
+
+    <!-- FORMULÁRIO CENTRAL -->
+    <div class="d-flex justify-content-center">
+      <div class="card shadow"
+           style="
+             width:100%;
+             max-width:780px;
+             border-radius:16px;
+             border:2px solid #78BE20;
+             background:#ffffff;
+           ">
+
+        <!-- Cabeçalho -->
+        <div style="
+              background:#78BE20;
+              border-radius:14px 14px 0 0;
+              padding:12px 18px;
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+        ">
+          <span style="color:#fff; font-weight:800;">
+            REGISTRO DE ANC
+          </span>
+          {% if current_user.is_authenticated %}
+            <span style="color:#fff; font-size:.8rem; font-weight:600;">
+              Operador: {{ current_user.username }}
+            </span>
+          {% endif %}
+        </div>
+
+        <!-- Corpo -->
+        <div class="card-body">
+          <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            {% set label = "color:#2f5f0f; font-weight:700;" %}
+
+            <div class="mb-2">
+              <label style="{{ label }}">Nome do Solicitante</label>
+              <input class="form-control" name="nome_solicitante" required>
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Data Atual</label>
+              <input type="date" class="form-control" name="data_atual" value="{{ hoje }}" required>
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Data da Ocorrência</label>
+              <input type="date" class="form-control" name="data_ocorrencia">
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Descrição</label>
+              <textarea class="form-control" rows="3" name="descricao" required></textarea>
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Envolvido</label>
+              <input class="form-control" name="envolvido_gc">
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Responsável</label>
+              <input class="form-control" name="responsavel">
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Turno</label>
+              <select class="form-select" name="turno">
+                <option value="">Selecione</option>
+                <option value="1">1° Turno</option>
+                <option value="2">2° Turno</option>
+                <option value="3">3° Turno</option>
+                <option value="4">4° Turno</option>
+              </select>
+            </div>
+
+            <div class="mb-2">
+              <label style="{{ label }}">Natureza</label>
+              <select name="natureza" class="form-select">
+                <option value="">Selecione</option>
+                <option value="furto">Furto</option>
+                <option value="roubo">Roubo</option>
+                <option value="desvio_conduta">Desvio de conduta</option>
+                <option value="embalagem_vazia">Embalagem vazia</option>
+                <option value="colisao">Colisão</option>
+                <option value="desinteligencia">Desinteligência</option>
+                <option value="assedio_moral">Assédio moral</option>
+                <option value="assedio_sexual">Assédio sexual</option>
+                <option value="danos_patrimonio">Danos ao patrimônio</option>
+                <option value="comercio_ilegal">Comércio ilegal</option>
+                <option value="porte_ilicitas">Porte de ilícitas</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label style="{{ label }}">Imagens</label>
+              <input type="file" class="form-control" name="fotos" multiple>
+            </div>
+
+            <button type="submit" class="btn w-100"
+                    style="
+                      background:#78BE20;
+                      color:#fff;
+                      font-weight:800;
+                      border-radius:999px;
+                      padding:.55rem;
+                      letter-spacing:.08em;
+                    ">
+              ENVIAR
+            </button>
+          </form>
+        </div>
+
+        <!-- Rodapé -->
+        <div style="
+              background:#f4f6f4;
+              color:#2f5f0f;
+              font-size:.75rem;
+              text-align:center;
+              padding:8px;
+              border-top:1px solid #78BE20;
+        ">
+          SECURITY · AVISO DE NÃO CONFORMIDADE
+        </div>
+      </div>
+    </div>
+
+    <!-- INSTRUÇÕES (CENTRALIZADAS ABAIXO) -->
+    <div class="d-flex justify-content-center mt-4">
+      <div class="border rounded p-3 bg-white shadow"
+           style="max-width:780px; width:100%; border-color:#78BE20;">
+        <h5 style="color:#2f5f0f; font-weight:800;">Como preencher</h5>
+        <ul class="ps-3 small">
+          <li>Preencha com clareza e objetividade.</li>
+          <li>Evite abreviações.</li>
+          <li>Revise antes de enviar.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

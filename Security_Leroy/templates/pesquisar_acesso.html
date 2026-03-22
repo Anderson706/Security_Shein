@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:120px;
+       padding-bottom:80px;
+     ">
+
+  <!-- Logo fixa no rodapé direito -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container text-dark py-4 position-relative">
+
+    <!-- TÍTULO -->
+    <div class="row">
+      <h1 class="text-center mb-2"
+          style="color:#78BE20; font-weight:800;">
+        Pesquisar / Postagens de Acesso
+      </h1>
+      <hr class="border-2 opacity-100"
+          style="border-color:#2E7D32; max-width:340px; margin:0.25rem auto 1.5rem auto;">
+    </div>
+
+    <div class="row g-4">
+
+      <!-- COLUNA ESQUERDA: FILTROS -->
+      <div class="col-lg-4">
+        <div class="rounded-3 p-3 p-md-4 shadow-sm"
+             style="
+               background:#ffffff;
+               border:1px solid #dcdcdc;
+             ">
+
+          <h5 class="mb-3"
+              style="color:#78BE20; font-weight:800;">
+            Filtros de Pesquisa
+          </h5>
+
+          <form method="GET" action="{{ url_for('pesquisar_acesso') }}">
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Nome</label>
+              <input type="text"
+                     class="form-control"
+                     name="nome"
+                     value="{{ filtro_nome or '' }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">CPF</label>
+              <input type="text"
+                     class="form-control"
+                     name="cpf"
+                     value="{{ filtro_cpf or '' }}">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Data do Registro</label>
+              <input type="date"
+                     class="form-control"
+                     name="data"
+                     value="{{ filtro_data or '' }}">
+            </div>
+
+            <div class="d-flex gap-2">
+              <button type="submit"
+                      class="btn flex-fill"
+                      style="
+                        background:#78BE20;
+                        border:none;
+                        color:#fff;
+                        font-weight:700;">
+                Buscar
+              </button>
+              <a href="{{ url_for('pesquisar_acesso') }}"
+                 class="btn btn-outline-secondary flex-fill">
+                Limpar
+              </a>
+            </div>
+          </form>
+
+          <hr class="my-4">
+
+          <a href="{{ url_for('controle_acessos') }}"
+             class="btn w-100"
+             style="
+               background:#78BE20;
+               border:none;
+               color:#fff;
+               font-weight:700;">
+            Novo Registro de Acesso
+          </a>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA: RESULTADOS -->
+      <div class="col-lg-8">
+
+        {% if registros %}
+          {% for r in registros %}
+            {% set foto_url = foto_static_url(r.foto_filename) %}
+
+            <div class="card mb-3 shadow-sm"
+                 style="border-radius:12px;">
+
+              <div class="card-body">
+                <div class="d-flex flex-column flex-md-row gap-3">
+
+                  {% if foto_url %}
+                    <img src="{{ foto_url }}"
+                         style="
+                           width:140px;
+                           height:140px;
+                           object-fit:cover;
+                           border-radius:10px;
+                           border:2px solid #2E7D32;">
+                  {% else %}
+                    <div style="
+                           width:140px;
+                           height:140px;
+                           background:#e9ecef;
+                           border-radius:10px;
+                           border:1px solid #ccc;">
+                    </div>
+                  {% endif %}
+
+                  <div class="flex-grow-1">
+                    <h5 style="font-weight:800;">{{ r.nome }}</h5>
+                    <div class="text-muted small mb-2">
+                      {{ r.data_registro.strftime('%d/%m/%Y') if r.data_registro }}
+                    </div>
+
+                    <div class="row g-2 small">
+                      <div class="col-6"><strong>Empresa:</strong> {{ r.empresa }}</div>
+                      <div class="col-6"><strong>CPF:</strong> {{ r.cpf }}</div>
+                      <div class="col-6"><strong>Responsável:</strong> {{ r.responsavel }}</div>
+                      <div class="col-6"><strong>Turno:</strong> {{ turno_label(r.turno) }}</div>
+                    </div>
+                  </div>
+
+                  <div class="text-md-end">
+                    <form method="POST"
+                          action="{{ url_for('excluir_acesso', acesso_id=r.id) }}"
+                          onsubmit="return confirm('Excluir este registro?');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit"
+                              class="btn btn-sm"
+                              style="
+                                background:#78BE20;
+                                color:#fff;
+                                border:none;
+                                font-weight:700;
+                                border-radius:999px;">
+                        Excluir
+                      </button>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="alert alert-light shadow-sm">
+            Nenhum registro encontrado.
+          </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

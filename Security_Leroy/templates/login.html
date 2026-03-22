@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+     ">
+
+  <style>
+    .form-control,
+    .form-select {
+      background-color:#fff !important;
+      color:#111 !important;
+      border:1px solid #ccc;
+    }
+    .form-control::placeholder {
+      color:#6c757d;
+    }
+  </style>
+
+  <!-- Logo fixo no rodapé direito -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:100px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5;">
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-12">
+        <h1 class="text-center mb-2"
+            style="
+              color:#111;
+              font-weight:800;
+              letter-spacing:.02em;
+            ">
+          Acesso ao Portal Security
+        </h1>
+        <hr style="max-width:360px; margin:0 auto 24px auto; border-color:#78BE20;">
+      </div>
+
+      <!-- LOGIN -->
+      <div class="col-md-6">
+        <div class="card shadow-sm"
+             style="
+               background:#ffffff;
+               border:2px solid #78BE20;
+               border-radius:12px;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:10px 10px 0 0;
+                padding:12px 16px;
+                border-bottom:2px solid #4E9A06;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
+              LOGIN
+            </span>
+          </div>
+
+          <div class="card-body p-4">
+            <form method="POST" autocomplete="off">
+              {{ form_login.csrf_token }}
+
+              <div class="mb-3">
+                {{ form_login.email.label(class_='form-label fw-semibold') }}
+                {{ form_login.email(class_='form-control') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form_login.senha.label(class_='form-label fw-semibold') }}
+                {{ form_login.senha(class_='form-control', autocomplete='new-password') }}
+              </div>
+
+              <div class="mb-3 form-check">
+                {{ form_login.lembrar_dados(class_='form-check-input') }}
+                {{ form_login.lembrar_dados.label(class_='form-check-label') }}
+              </div>
+
+              {{ form_login.botao_submit_login(
+                class_="btn w-100",
+                style="
+                  background:#78BE20;
+                  border:1px solid #4E9A06;
+                  color:#fff;
+                  font-weight:800;
+                  text-transform:uppercase;
+                  letter-spacing:.06em;
+                  border-radius:999px;
+                "
+              ) }}
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f4f4;
+                color:#111;
+                font-size:0.75rem;
+                text-align:center;
+                padding:6px 10px;
+                border-radius:0 0 10px 10px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · LOGIN
+          </div>
+        </div>
+      </div>
+
+      <!-- CRIAR CONTA -->
+      <div class="col-md-6">
+        <div class="card shadow-sm"
+             style="
+               background:#ffffff;
+               border:2px solid #78BE20;
+               border-radius:12px;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:10px 10px 0 0;
+                padding:12px 16px;
+                border-bottom:2px solid #4E9A06;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
+              CRIAR CONTA
+            </span>
+          </div>
+
+          <div class="card-body p-4">
+            <form method="POST" autocomplete="off">
+              {{ form_criarconta.csrf_token }}
+
+              <div class="mb-3">
+                {{ form_criarconta.username.label(class_='form-label fw-semibold') }}
+                {{ form_criarconta.username(class_='form-control') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form_criarconta.email.label(class_='form-label fw-semibold') }}
+                {{ form_criarconta.email(class_='form-control') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form_criarconta.senha.label(class_='form-label fw-semibold') }}
+                {{ form_criarconta.senha(class_='form-control', autocomplete='new-password') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form_criarconta.confirmacao.label(class_='form-label fw-semibold') }}
+                {{ form_criarconta.confirmacao(class_='form-control', autocomplete='new-password') }}
+              </div>
+
+              {{ form_criarconta.botao_submit_criarconta(
+                class_="btn w-100",
+                style="
+                  background:#78BE20;
+                  border:1px solid #4E9A06;
+                  color:#fff;
+                  font-weight:800;
+                  text-transform:uppercase;
+                  letter-spacing:.06em;
+                  border-radius:999px;
+                "
+              ) }}
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f4f4;
+                color:#111;
+                font-size:0.75rem;
+                text-align:center;
+                padding:6px 10px;
+                border-radius:0 0 10px 10px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · NOVO USUÁRIO
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

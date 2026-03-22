@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:120px;
+       padding-bottom:80px;
+     ">
+
+  <!-- Logo -->
+  <img src="{{ url_for('static', filename='logo_leroy.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:60px;
+         width:auto;
+         z-index:10;
+         opacity:.85;
+       ">
+
+  <div class="container position-relative" style="max-width:1400px; z-index:5;">
+
+    <!-- TÍTULO -->
+    <h1 class="text-center mb-3"
+        style="
+          color:#2E7D32;
+          font-weight:800;
+          letter-spacing:.03em;
+        ">
+      Investigações CFTV
+    </h1>
+
+    <div class="card shadow-sm border-0"
+         style="
+            width:100%;
+            background:#ffffff;
+            border-radius:14px;
+            border:1px solid #E0E0E0;
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:14px 14px 0 0;
+            padding:14px 20px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+          ">
+        <span style="font-weight:700; color:#fff; font-size:1rem;">
+          Investigações registradas
+        </span>
+
+        {% if current_user.is_authenticated %}
+          <span style="font-size:.75rem; color:#E8F5E9; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Corpo -->
+      <div class="p-3 p-md-4"
+           style="max-height:75vh; overflow-y:auto;">
+
+        {% if investigacoes and investigacoes|length > 0 %}
+          {% for inv in investigacoes %}
+
+            {% set status_lower = (inv.status or 'Pendente')|lower %}
+            {% if status_lower == 'fechado' %}
+              {% set border_color = '#2E7D32' %}
+            {% elif status_lower == 'em andamento' %}
+              {% set border_color = '#F9A825' %}
+            {% else %}
+              {% set border_color = '#D32F2F' %}
+            {% endif %}
+
+            <article class="mb-3 p-3"
+                     style="
+                       background:#ffffff;
+                       border-left:5px solid {{ border_color }};
+                       border-radius:10px;
+                       border:1px solid #E0E0E0;
+                     ">
+
+              <div class="d-flex gap-3 align-items-start flex-wrap">
+
+                <!-- Ícone -->
+                <div style="
+                      width:56px;
+                      height:56px;
+                      border-radius:10px;
+                      background:#E8F5E9;
+                      display:flex;
+                      align-items:center;
+                      justify-content:center;
+                      flex:0 0 56px;
+                      color:#2E7D32;
+                      font-weight:800;
+                      font-size:.75rem;
+                    ">
+                  CFTV
+                </div>
+
+                <!-- Conteúdo -->
+                <div class="flex-grow-1" style="min-width:260px;">
+
+                  <header class="d-flex justify-content-between align-items-start mb-1 flex-wrap gap-2">
+                    <div>
+                      <h5 class="mb-1" style="font-weight:700; color:#1f1f1f;">
+                        Solicitação #{{ inv.id }} · {{ inv.nome }}
+                      </h5>
+
+                      <small style="color:#555;">
+                        Coordenação: {{ inv.coordenador or '—' }} ·
+                        Turno: {{ inv.turno or '—' }} ·
+                        {{ inv.data_hora_info or '' }}
+                      </small>
+                    </div>
+
+                    <span class="badge"
+                          style="
+                            background:{{ border_color }};
+                            color:#fff;
+                            font-weight:700;
+                          ">
+                      {{ inv.status or 'Pendente' }}
+                    </span>
+                  </header>
+
+                  <p class="mb-2"
+                     style="color:#333; font-size:.9rem;">
+                    {{ inv.descricao_ocorrencia }}
+                  </p>
+
+                  {% if inv.envolvidos %}
+                    <div style="font-size:.85rem; color:#444;">
+                      <strong>Envolvidos:</strong> {{ inv.envolvidos }}
+                    </div>
+                  {% endif %}
+
+                  <!-- Ações -->
+                  <form method="POST"
+                        action="{{ url_for('atualizar_status_investigacao', inv_id=inv.id) }}"
+                        class="mt-2 d-flex flex-wrap align-items-center gap-2">
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <select name="status"
+                            class="form-select form-select-sm"
+                            style="max-width:220px;">
+                      <option value="pendente" {% if status_lower == 'pendente' %}selected{% endif %}>Pendente</option>
+                      <option value="em andamento" {% if status_lower == 'em andamento' %}selected{% endif %}>Em andamento</option>
+                      <option value="fechado" {% if status_lower == 'fechado' %}selected{% endif %}>Fechado</option>
+                      <option value="excluir">Excluir registro</option>
+                    </select>
+
+                    <button type="submit"
+                            class="btn btn-sm"
+                            style="
+                              background:#2E7D32;
+                              color:#fff;
+                              font-weight:700;
+                              border-radius:999px;
+                            "
+                            onclick="return confirm('Confirmar ação?');">
+                      Aplicar
+                    </button>
+                  </form>
+
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            Nenhuma investigação registrada.
+          </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f5f5f5;
+            color:#2E7D32;
+            font-size:.7rem;
+            text-align:center;
+            padding:8px;
+            border-radius:0 0 14px 14px;
+            border-top:1px solid #E0E0E0;
+          ">
+        SECURITY · INVESTIGAÇÕES CFTV
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:90px;
+       padding-bottom:40px;
+     ">
+
+  <!-- Logo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <!-- Conteúdo central -->
+  <div class="container d-flex flex-column align-items-center position-relative"
+       style="max-width:1400px; z-index:5;">
+
+    <!-- TÍTULO -->
+    <h1 style="
+          color:#78BE20;
+          margin-bottom:14px;
+          text-align:center;
+          font-weight:800;
+        ">
+      Achados e Perdidos
+    </h1>
+
+    <div class="card shadow-sm border-0"
+         style="
+            width:100%;
+            background:#ffffff;
+            border-radius:12px;
+            border:2px solid #1e7f3a;
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:10px 10px 0 0;
+            padding:14px 20px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            color:#ffffff;
+        ">
+        <span style="font-weight:700; font-size:1rem;">
+          Itens registrados
+        </span>
+
+        {% if current_user.is_authenticated %}
+          <span style="font-size:.8rem; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Corpo -->
+      <div class="p-3 p-md-4"
+           style="max-height: calc(80vh - 70px); overflow-y:auto;">
+
+        {% if achados and achados|length > 0 %}
+          {% for item in achados %}
+
+            {% set status_lower = (item.status_destino or 'pendente')|lower %}
+            {% if status_lower == 'entregue' %}
+              {% set border_color = '#1e7f3a' %}
+            {% elif status_lower == 'doado' %}
+              {% set border_color = '#0dcaf0' %}
+            {% else %}
+              {% set border_color = '#dc3545' %}
+            {% endif %}
+
+           <article class="mb-3 p-3"
+                     style="
+                       background:#ffffff;
+                       border:1px solid #e0e0e0;
+                       border-left:5px solid {{ border_color }};
+                       border-radius:8px;
+                     ">
+
+              <div class="d-flex gap-3 align-items-start flex-wrap">
+
+                <!-- Foto -->
+                <div style="
+                      width:120px;
+                      height:120px;
+                      border-radius:10px;
+                      overflow:hidden;
+                      background:#f2f2f2;
+                      border:1px solid #ccc;
+                      flex:0 0 120px;
+                    ">
+                  {% if item.foto_filename %}
+                    <img src="{{ url_for('static', filename=item.foto_filename) }}"
+                         style="width:100%; height:100%; object-fit:cover;">
+                  {% else %}
+                    <div style="
+                          width:100%; height:100%;
+                          display:flex;
+                          align-items:center;
+                          justify-content:center;
+                          color:#777;
+                          font-weight:700;
+                        ">
+                      SEM FOTO
+                    </div>
+                  {% endif %}
+                </div>
+
+                <!-- Conteúdo -->
+                <div class="flex-grow-1" style="min-width:260px;">
+                  <h5 style="font-weight:700; color:#000;">
+                    {{ item.descricao_objeto or 'Sem descrição' }}
+                  </h5>
+
+                  <div style="font-size:.85rem; color:#333;">
+                    <strong>Identificação:</strong> {{ item.identificacao or '-' }} ·
+                    <strong>Local:</strong> {{ item.local_encontrado or '-' }} ·
+                    <strong>Turno:</strong> {{ item.turno or '-' }}
+                  </div>
+
+                  <span class="badge mt-2"
+                        style="
+                          background:{{ border_color }};
+                          color:#fff;
+                          font-weight:700;
+                        ">
+                    {{ item.status_destino or 'Pendente' }}
+                  </span>
+
+                  <!-- 🔽 FORMULÁRIO DE VALIDAÇÃO -->
+                  <form method="POST"
+                        action="{{ url_for('atualizar_status_achado', item_id=item.id) }}"
+                        class="mt-3 p-3"
+                        style="
+                          background:#f8f9fa;
+                          border-radius:8px;
+                          border:1px solid #dcdcdc;
+                          max-width:520px;
+                        ">
+
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="row g-2 align-items-end">
+
+                      <!-- Status -->
+                      <div class="col-md-5">
+                        <label class="form-label fw-semibold mb-1">
+                          Status do item
+                        </label>
+                        <select name="status_destino"
+                                class="form-select form-select-sm">
+                          <option value="Pendente"
+                            {% if item.status_destino == 'Pendente' %}selected{% endif %}>
+                            Pendente
+                          </option>
+                          <option value="Devolvido"
+                            {% if item.status_destino == 'Devolvido' %}selected{% endif %}>
+                            Devolvido
+                          </option>
+                          <option value="Doado"
+                            {% if item.status_destino == 'Doado' %}selected{% endif %}>
+                            Doado
+                          </option>
+                          <option value="Descarte"
+                            {% if item.status_destino == 'Descarte' %}selected{% endif %}>
+                            Descarte
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- Nome de quem retirou -->
+                      <div class="col-md-5">
+                        <label class="form-label fw-semibold mb-1">
+                          Retirado por
+                        </label>
+                        <input type="text"
+                               name="nome_retirante"
+                               value="{{ item.nome_retirante or '' }}"
+                               class="form-control form-control-sm"
+                               placeholder="Nome completo">
+                      </div>
+
+                      <!-- Botão -->
+                      <div class="col-md-2 d-grid">
+                        <button type="submit"
+                                class="btn btn-sm"
+                                style="
+                                  background:#78BE20;
+                                  color:#fff;
+                                  font-weight:700;
+                                ">
+                          Salvar
+                        </button>
+                      </div>
+
+                    </div>
+                  </form>
+
+                  <!-- Ações -->
+                  <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('editar_achado', item_id=item.id) }}"
+                       class="btn btn-sm"
+                       style="
+                         background:#78BE20;
+                         color:#fff;
+                         font-weight:600;
+                       ">
+                      Editar
+                    </a>
+
+                    <form method="POST"
+                          action="{{ url_for('excluir_achado', item_id=item.id) }}"
+                          onsubmit="return confirm('Excluir este registro?');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit"
+                              class="btn btn-sm btn-outline-danger"
+                              style="font-weight:600;">
+                        Excluir
+                      </button>
+                    </form>
+                  </div>
+
+                </div>
+              </div>
+            </article>
+
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4 text-muted">
+            Nenhum achado cadastrado até o momento.
+          </div>
+        {% endif %}
+
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f5f5f5;
+            color:#1e7f3a;
+            font-size:.75rem;
+            text-align:center;
+            padding:8px 12px;
+            border-top:1px solid #1e7f3a;
+        ">
+        Security · Achados e Perdidos
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:100px;
+       padding-bottom:40px;
+     ">
+
+  <!-- Logo DHL fixo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <!-- Botão voltar -->
+  <a href="{{ url_for('post_investigacoes') }}"
+     style="
+       position:fixed; top:140px; left:16px; z-index:10;
+       padding:6px 12px;
+       border-radius:10px;
+       background:#78BE20;
+       color:#fff;
+       font-weight:700;
+       text-decoration:none;
+       box-shadow:0 4px 10px rgba(0,0,0,.15);
+     ">
+    Solicitações
+  </a>
+
+  <div class="container py-4 position-relative" style="max-width:900px;">
+
+    <h1 class="text-center mb-3"
+        style="color:#78BE20; font-weight:800;">
+      Solicitação de Imagem
+    </h1>
+
+    <div class="card shadow-lg border-0"
+          style="
+               background:#ffffff;
+               border:2px solid #78BE20;
+               border-radius:14px;
+               max-width:780px;
+               margin:0 auto;
+
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:12px 12px 0 0;
+            padding:12px 18px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+          ">
+        <span style="color:#fff; font-weight:800; letter-spacing:.04em;">
+          SOLICITAÇÃO DE IMAGENS CFTV
+        </span>
+
+        {% if current_user.is_authenticated %}
+          <span style="color:#e8f5e9; font-size:.8rem; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Corpo -->
+      <div class="card-body p-4 text-dark">
+
+        <form method="POST"
+              action="{{ url_for('investigacoes') }}"
+              autocomplete="off">
+
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.nome.label(class_='form-label fw-semibold') }}
+            {{ form.nome(class_='form-control',
+                         placeholder='Inserir Nome') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.descricao_ocorrencia.label(class_='form-label fw-semibold') }}
+            {{ form.descricao_ocorrencia(class_='form-control',
+                                         placeholder='Breve relato da ocorrência') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.data_hora_info.label(class_='form-label fw-semibold') }}
+            {{ form.data_hora_info(class_='form-control',
+                                   placeholder='Data e horário aproximado') }}
+            <div class="form-text text-muted">
+              Quanto mais preciso, mais fácil localizar as imagens.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            {{ form.envolvidos.label(class_='form-label fw-semibold') }}
+            {{ form.envolvidos(class_='form-control',
+                               placeholder='Nome dos envolvidos') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.turno.label(class_='form-label fw-semibold') }}
+            {{ form.turno(class_='form-select') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.coordenador.label(class_='form-label fw-semibold') }}
+            {{ form.coordenador(class_='form-control',
+                                placeholder='Inserir Coordenador') }}
+          </div>
+
+          <button type="submit"
+                  class="btn w-100 mt-3"
+                  style="
+                    background:#78BE20;
+                    border:1px solid #1b5e20;
+                    color:#fff;
+                    font-weight:800;
+                    letter-spacing:.08em;
+                    border-radius:999px;
+                    text-transform:uppercase;
+                  ">
+            Enviar Solicitação
+          </button>
+
+        </form>
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f4f4f4;
+            color:#1b5e20;
+            font-size:.75rem;
+            text-align:center;
+            padding:8px 12px;
+            border-radius:0 0 12px 12px;
+            border-top:1px solid #2e7d32;
+          ">
+        DHL SECURITY · SOLICITAÇÃO DE IMAGENS · USO INTERNO
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

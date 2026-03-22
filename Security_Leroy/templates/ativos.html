@@ -1,0 +1,459 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+     ">
+
+  <!-- Overlay branco/verde (Leroy) -->
+  <div style="
+        position:absolute; inset:0;
+        background: linear-gradient(
+          180deg,
+          rgba(255,255,255,.98) 0%,
+          rgba(255,255,255,.92) 60%,
+          rgba(120,190,32,.20) 100%
+        );
+        pointer-events:none;
+  "></div>
+
+  <!-- Botão topo esquerdo: Editar cadastro -->
+  <a href="{{ url_for('editar_ativos') }}"
+     style="
+       position:fixed; top:150px; left:16px; z-index:10;
+       display:flex; align-items:center; gap:8px; text-decoration:none;
+       padding:8px 12px; border-radius:10px;
+       background:#fff; border:2px solid #78BE20;
+       box-shadow:0 4px 10px rgba(0,0,0,.18);
+       color:#2f5f0f; font-weight:900; font-size:.9rem;
+     ">
+    Editar Cadastro
+  </a>
+
+  <!-- Logo fixo no rodapé direito -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; z-index:10;
+         opacity:.92;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5; color:#222;">
+    <div class="row">
+      <h1 class="text-center mb-2"
+          style="color:#2f5f0f; font-weight:900;">
+        Cadastro & Consulta de Ativos
+      </h1>
+      <hr class="border-3 opacity-100"
+          style="border-color:#78BE20; max-width:360px; margin:0.25rem auto 1.5rem auto;">
+    </div>
+
+    <div class="row g-4">
+      <!-- COLUNA ESQUERDA — CADASTRO -->
+      <div class="col-lg-7">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+
+          <!-- Cabeçalho verde -->
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:12px 16px;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <h5 class="mb-0"
+                style="color:#fff; font-weight:900; font-size:.95rem; letter-spacing:.04em;">
+              Cadastro de Ativos
+            </h5>
+          </div>
+
+          <div class="card-body p-3 p-md-4">
+            <form method="POST"
+                  action="{{ url_for('cadastrar_ativo') }}"
+                  enctype="multipart/form-data"
+                  autocomplete="off" novalidate>
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+              <div class="row g-3">
+                <div class="col-md-8">
+                  <label for="nome" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Nome
+                  </label>
+                  <input type="text" id="nome" name="nome"
+                         class="form-control bg-white text-dark"
+                         placeholder="Nome completo">
+                </div>
+
+                <div class="col-md-4">
+                  <label for="cpf" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    CPF
+                  </label>
+                  <input type="text" id="cpf" name="cpf"
+                         class="form-control bg-white text-dark"
+                         placeholder="Somente números">
+                </div>
+
+                <div class="col-md-4">
+                  <label for="data" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Data
+                  </label>
+                  <input type="date" id="data" name="data"
+                         class="form-control bg-white text-dark">
+                </div>
+
+                <div class="col-md-4">
+                  <label for="cargo" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Cargo
+                  </label>
+                  <input type="text" id="cargo" name="cargo"
+                         class="form-control bg-white text-dark"
+                         placeholder="Cargo/Função">
+                </div>
+
+                <div class="col-md-4">
+                  <label for="empresa" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Empresa
+                  </label>
+                  <select id="empresa" name="empresa"
+                          class="form-select bg-white text-dark">
+                    <option value="" selected disabled>Escolha...</option>
+                    <option>Addeco</option>
+                    <option>Sertec</option>
+                    <option>3P</option>
+                    <option>Polli</option>
+                    <option>TSI</option>
+                    <option>Outra</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="turno" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Turno
+                  </label>
+                  <select id="turno" name="turno"
+                          class="form-select bg-white text-dark">
+                    <option value="" selected disabled>Escolha...</option>
+                    <option>1° Turno</option>
+                    <option>2° Turno</option>
+                    <option>3° Turno</option>
+                    <option>4º Turno</option>
+                  </select>
+                </div>
+
+                <div class="col-md-4">
+                  <label for="tipo_ativo" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Tipo de ativo
+                  </label>
+                  <select id="tipo_ativo" name="tipo_ativo"
+                          class="form-select bg-white text-dark">
+                    <option value="" selected disabled>Escolha...</option>
+                    <option>Notebook</option>
+                    <option>Desktop</option>
+                    <option>Celular</option>
+                    <option>Tablet</option>
+                    <option>Impressora</option>
+                    <option>Acessório</option>
+                    <option>Outro</option>
+                  </select>
+                </div>
+
+                <div class="col-md-8">
+                  <label for="imei_numero" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    IMEI ou Nº do ativo
+                  </label>
+                  <input type="text" id="imei_numero" name="imei_numero"
+                         class="form-control bg-white text-dark"
+                         placeholder="Ex.: IMEI 359... ou PAT-1234">
+                </div>
+
+                <div class="col-md-6">
+                  <label for="foto_dono" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Foto do dono do ativo
+                  </label>
+                  <input type="file" id="foto_dono" name="foto_dono"
+                         class="form-control bg-white text-dark"
+                         accept="image/*">
+                  <div class="form-text"
+                       style="color:rgba(0,0,0,.55); font-size:.8rem;">
+                    Envie uma foto nítida do colaborador.
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <label for="fotos_ativos" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Fotos do(s) ativo(s)
+                  </label>
+                  <input type="file" id="fotos_ativos" name="fotos_ativos"
+                         class="form-control bg-white text-dark"
+                         accept="image/*" multiple>
+                  <div class="form-text"
+                       style="color:rgba(0,0,0,.55); font-size:.8rem;">
+                    Você pode selecionar várias imagens dos ativos.
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="observacoes" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                    Observações
+                  </label>
+                  <textarea id="observacoes" name="observacoes" rows="4"
+                            class="form-control bg-white text-dark"
+                            placeholder="Detalhes, acessórios, estado, etc."></textarea>
+                </div>
+              </div>
+
+              <button type="submit"
+                      class="btn mt-3 w-100"
+                      style="
+                        background:#78BE20;
+                        border:2px solid #2f5f0f;
+                        color:#fff;
+                        font-weight:900;
+                        text-transform:uppercase;
+                        letter-spacing:.08em;
+                        border-radius:999px;
+                      ">
+                Cadastrar
+              </button>
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:0.75rem;
+                text-align:center;
+                padding:8px 10px;
+                border-radius:0 0 12px 12px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · CONTROLE DE ATIVOS
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA — CONSULTA + RESULTADOS -->
+      <div class="col-lg-5">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+
+          <!-- Cabeçalho verde -->
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:12px 16px;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <h5 class="mb-0"
+                style="color:#fff; font-weight:900; font-size:.95rem; letter-spacing:.04em;">
+              Consulta de Ativos
+            </h5>
+          </div>
+
+          <div class="card-body p-3 p-md-4" style="color:#222;">
+
+            <form method="GET"
+                  action="{{ url_for('consulta_por_cpf') }}"
+                  class="border rounded-3 p-3 bg-transparent mb-3"
+                  style="border-color:rgba(0,0,0,.12);"
+                  autocomplete="off">
+              <label for="cpf_busca" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                Consultar por CPF
+              </label>
+              <div class="input-group">
+                <input type="text" id="cpf_busca" name="cpf"
+                       class="form-control bg-white text-dark"
+                       placeholder="Digite o CPF">
+                <button type="submit"
+                        class="btn"
+                        style="
+                          background:#78BE20;
+                          border:2px solid #2f5f0f;
+                          color:#fff;
+                          font-weight:800;
+                        ">
+                  Buscar
+                </button>
+              </div>
+            </form>
+
+            <form method="GET"
+                  action="{{ url_for('consulta_por_imei') }}"
+                  class="border rounded-3 p-3 bg-transparent mb-3"
+                  style="border-color:rgba(0,0,0,.12);"
+                  autocomplete="off">
+              <label for="imei_busca" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                Consultar por IMEI
+              </label>
+              <div class="input-group">
+                <input type="text" id="imei_busca" name="imei"
+                       class="form-control bg-white text-dark"
+                       placeholder="Digite o IMEI">
+                <button type="submit"
+                        class="btn"
+                        style="
+                          background:#78BE20;
+                          border:2px solid #2f5f0f;
+                          color:#fff;
+                          font-weight:800;
+                        ">
+                  Buscar
+                </button>
+              </div>
+            </form>
+
+            <form method="GET"
+                  action="{{ url_for('consulta_por_numero') }}"
+                  class="border rounded-3 p-3 bg-transparent mb-3"
+                  style="border-color:rgba(0,0,0,.12);"
+                  autocomplete="off">
+              <label for="numero_busca" class="form-label" style="color:#2f5f0f; font-weight:800;">
+                Consultar por Nº do ativo
+              </label>
+              <div class="input-group">
+                <input type="text" id="numero_busca" name="numero"
+                       class="form-control bg-white text-dark"
+                       placeholder="Ex.: PAT-12345">
+                <button type="submit"
+                        class="btn"
+                        style="
+                          background:#78BE20;
+                          border:2px solid #2f5f0f;
+                          color:#fff;
+                          font-weight:800;
+                        ">
+                  Buscar
+                </button>
+              </div>
+            </form>
+
+            <hr class="my-3" style="border-color:rgba(0,0,0,.15);">
+
+            {# --- DONO DO ATIVO + FOTO DO DONO --- #}
+            {% if pessoa %}
+              {% set foto_dono_url = None %}
+              {% if pessoa.foto_dono %}
+                {% set fname = (pessoa.foto_dono or '')|trim %}
+                {% if fname.startswith('static/') %}
+                  {% set foto_dono_url = url_for('static', filename=fname[7:]) %}
+                {% else %}
+                  {% set foto_dono_url = url_for('static', filename=fname) %}
+                {% endif %}
+              {% endif %}
+
+              <div class="card mb-3 border-0"
+                   style="background:#fff; border-radius:12px; border:1px solid rgba(0,0,0,.10);">
+                <div class="card-body" style="color:#222;">
+                  <div class="d-flex gap-3 align-items-start">
+                    {% if foto_dono_url %}
+                      <img src="{{ foto_dono_url }}" alt="Foto do dono"
+                           style="width:120px; height:120px; object-fit:cover; border-radius:12px; border:1px solid #ddd;">
+                    {% else %}
+                      <div style="width:120px; height:120px; background:#e9ecef; border-radius:12px; border:1px solid #ddd;"></div>
+                    {% endif %}
+
+                    <div class="flex-grow-1">
+                      <h6 class="mb-2" style="font-weight:900; color:#2f5f0f;">Dono do ativo</h6>
+                      <ul class="list-unstyled mb-2" style="font-size:.9rem;">
+                        <li><strong>Nome:</strong> {{ pessoa.nome or '—' }}</li>
+                        <li><strong>CPF:</strong> {{ pessoa.cpf or '—' }}</li>
+                        <li><strong>Cargo:</strong> {{ pessoa.cargo or '—' }}</li>
+                        <li><strong>Empresa:</strong> {{ pessoa.empresa or '—' }}</li>
+                        <li><strong>Turno:</strong> {{ pessoa.turno or '—' }}</li>
+                      </ul>
+
+                      {% if ativos and ativos|length > 0 %}
+                        <div class="small text-muted">
+                          <strong>Qtd. de ativos cadastrados:</strong> {{ ativos|length }}
+                        </div>
+                      {% else %}
+                        <div class="small text-muted">
+                          Nenhum ativo cadastrado para este colaborador.
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+            <h6 class="mt-2 mb-2" style="color:#2f5f0f; font-weight:900;">
+              Ativos
+            </h6>
+            <div class="d-grid gap-3 mb-1">
+              {% if ativos %}
+                {% for a in ativos %}
+                  {% set first = a.fotos[0] if a.fotos and a.fotos|length > 0 else None %}
+                  {% if first %}
+                    {% set fname = (first.filename or '')|trim %}
+                    {% if fname.startswith('static/') %}
+                      {% set foto_path = fname[7:] %}
+                    {% elif fname.startswith('uploads/') or fname.startswith('foto_perfil/') or fname.startswith('qrcodes/') %}
+                      {% set foto_path = fname %}
+                    {% else %}
+                      {% set foto_path = 'uploads/ativos/' ~ fname %}
+                    {% endif %}
+                    {% set foto_url = url_for('static', filename=foto_path) %}
+                  {% else %}
+                    {% set foto_url = None %}
+                  {% endif %}
+
+                  <div class="border rounded p-3"
+                       style="background:#fff; border-color:rgba(0,0,0,.10); color:#222;">
+                    <div class="d-flex gap-3 align-items-start">
+                      {% if foto_url %}
+                        <img src="{{ foto_url }}" alt="Foto do ativo"
+                             style="width:96px; height:96px; object-fit:cover; border-radius:10px; border:1px solid #ddd;">
+                      {% else %}
+                        <div style="width:96px; height:96px; background:#e9ecef; border-radius:10px; border:1px solid #ddd;"></div>
+                      {% endif %}
+
+                      <div class="flex-grow-1" style="font-size:.9rem;">
+                        <div><strong>Tipo:</strong> {{ a.tipo or '—' }}</div>
+                        <div><strong>IMEI/Nº:</strong> {{ a.imei_ou_numero or '—' }}</div>
+                        <div><strong>Data:</strong> {{ a.data or '—' }}</div>
+                        <div><strong>Status:</strong> {{ a.status or '—' }}</div>
+                        {% if a.observacoes %}
+                          <div class="mt-1"><strong>Obs.:</strong> {{ a.observacoes }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="text-muted" style="font-size:.85rem;">
+                  Nenhum ativo encontrado.
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:0.75rem;
+                text-align:center;
+                padding:8px 10px;
+                border-radius:0 0 12px 12px;
+                border-top:1px solid #78BE20;
+          ">
+            DHL SECURITY · INVENTÁRIO DE ATIVOS
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

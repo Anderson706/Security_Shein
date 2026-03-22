@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:120px;
+       padding-bottom:70px;
+     ">
+
+  <!-- Logo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; z-index:10;
+         opacity:.85;
+       ">
+
+  <div class="container position-relative" style="z-index:5; max-width:780px;">
+    <div class="row justify-content-center">
+      <div class="col-12">
+
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:1px solid #dcdcdc;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:16px 16px 0 0;
+                padding:12px 18px;
+          ">
+            <h2 class="mb-0"
+                style="
+                  color:#fff;
+                  font-size:1.05rem;
+                  font-weight:700;
+                  letter-spacing:.04em;
+                ">
+              Editar Achado / Perdido
+            </h2>
+          </div>
+
+          <div class="card-body p-4" style="color:#222;">
+            <form method="POST"
+                  enctype="multipart/form-data"
+                  autocomplete="off">
+
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+              <!-- Identificação -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Identificação
+                </label>
+                <input type="text"
+                       name="identificacao"
+                       class="form-control"
+                       value="{{ item.identificacao or '' }}"
+                       placeholder="Ex.: nome de quem encontrou, etiqueta, etc.">
+              </div>
+
+              <!-- Descrição -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Descrição do objeto *
+                </label>
+                <textarea name="descricao"
+                          class="form-control"
+                          rows="4"
+                          required>{{ item.descricao_objeto or '' }}</textarea>
+              </div>
+
+              <!-- Local -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Local encontrado
+                </label>
+                <input type="text"
+                       name="local_encontrado"
+                       class="form-control"
+                       value="{{ item.local_encontrado or '' }}">
+              </div>
+
+              <!-- Data/Hora -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Data/Hora (texto livre)
+                </label>
+                <input type="text"
+                       name="data_hora_info"
+                       class="form-control"
+                       value="{{ item.data_hora_info or '' }}">
+                <div class="form-text text-muted">
+                  Ex.: 12/10/2025 14:30
+                </div>
+              </div>
+
+              <!-- Turno -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Turno
+                </label>
+                <select name="turno" class="form-select">
+                  <option value="">—</option>
+                  <option value="1" {{ 'selected' if item.turno == 1 else '' }}>1</option>
+                  <option value="2" {{ 'selected' if item.turno == 2 else '' }}>2</option>
+                  <option value="3" {{ 'selected' if item.turno == 3 else '' }}>3</option>
+                  <option value="4" {{ 'selected' if item.turno == 4 else '' }}>4</option>
+                </select>
+              </div>
+
+              <!-- Foto -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold text-success">
+                  Foto (opcional)
+                </label>
+                <input type="file"
+                       name="foto"
+                       class="form-control"
+                       accept=".jpg,.jpeg,.png,.gif,.webp">
+
+                {% if item.foto_filename %}
+                  <div class="mt-2 d-flex align-items-center gap-3">
+                    <span class="small text-muted">
+                      Foto atual:
+                    </span>
+                    <img
+                      src="{{ url_for('static',
+                        filename=item.foto_filename if item.foto_filename.startswith('uploads/')
+                        else ('uploads/achados/' ~ item.foto_filename)) }}"
+                      style="
+                        width:96px; height:96px;
+                        object-fit:cover;
+                        border-radius:8px;
+                        border:1px solid #ccc;
+                      ">
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Botões -->
+              <div class="d-flex gap-2 mt-3">
+                <button type="submit"
+                        class="btn"
+                        style="
+                          background:#78BE20;
+                          color:#fff;
+                          font-weight:700;
+                          border-radius:999px;
+                          padding:.45rem 1.6rem;
+                        ">
+                  Salvar
+                </button>
+
+                <a href="{{ url_for('post_achados') }}"
+                   class="btn btn-outline-secondary"
+                   style="border-radius:999px;">
+                  Cancelar
+                </a>
+              </div>
+            </form>
+          </div>
+
+          <!-- Rodapé -->
+          <div style="
+                background:#f4f6f5;
+                color:#2e7d32;
+                font-size:.75rem;
+                text-align:center;
+                padding:8px;
+                border-radius:0 0 16px 16px;
+                border-top:1px solid #dcdcdc;
+          ">
+            SECURITY · EDIÇÃO DE ACHADOS E PERDIDOS
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

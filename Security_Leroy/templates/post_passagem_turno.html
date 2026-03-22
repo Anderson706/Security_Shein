@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:90px;
+       padding-bottom:40px;
+     ">
+
+  <!-- Logo fixa -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container d-flex flex-column align-items-center position-relative"
+       style="max-width:1400px; z-index:5;">
+
+    <!-- TÍTULO -->
+    <h1 style="
+          color:#78BE20;
+          margin-bottom:16px;
+          text-align:center;
+          font-weight:800;
+          letter-spacing:.02em;
+        ">
+      Passagem de Turno · Publicações
+    </h1>
+
+    <div class="card border-0 shadow-sm"
+         style="
+           width:100%;
+           background:#ffffff;
+           border-radius:14px;
+           border:1px solid #dcdcdc;
+         ">
+
+      <!-- CABEÇALHO -->
+      <div style="
+            background:#78BE20;
+            border-radius:14px 14px 0 0;
+            padding:14px 20px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+          ">
+        <span style="font-weight:800; color:#ffffff; font-size:1rem;">
+          Registros de Passagem de Turno
+        </span>
+      </div>
+
+      <!-- CONTEÚDO -->
+      <div class="p-3 p-md-4"
+           style="max-height: calc(80vh - 80px); overflow-y:auto;">
+
+        {% if registros and registros|length > 0 %}
+          {% for r in registros %}
+            {% set turno_label = '—' %}
+            {% if r.turno == 1 %}{% set turno_label = '1° Turno' %}
+            {% elif r.turno == 2 %}{% set turno_label = '2° Turno' %}
+            {% elif r.turno == 3 %}{% set turno_label = '3° Turno' %}
+            {% elif r.turno == 4 %}{% set turno_label = '4° Turno' %}
+            {% endif %}
+
+            <article class="mb-3 p-3"
+                     style="
+                       background:#ffffff;
+                       border:1px solid #e5e5e5;
+                       border-left:5px solid #1f8f4c;
+                       border-radius:10px;
+                       box-shadow:0 6px 14px rgba(0,0,0,.08);
+                     ">
+
+              <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                <div>
+                  <h5 class="mb-1" style="font-weight:800; color:#1f1f1f;">
+                    {{ r.nome or '—' }}
+                  </h5>
+                  <small style="color:#666;">
+                    Registrado em:
+                    {{ r.created_at.strftime('%d/%m/%Y %H:%M') if r.created_at else '—' }}
+                  </small>
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('excluir_passagem_turno', passagem_id=r.id) }}"
+                      onsubmit="return confirm('Tem certeza que deseja excluir este registro?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                  <button type="submit"
+                          class="btn btn-sm"
+                          style="
+                            background:#1f8f4c;
+                            border:1px solid #1a7a40;
+                            color:#ffffff;
+                            font-weight:700;
+                            border-radius:999px;
+                            text-transform:uppercase;
+                            letter-spacing:.06em;
+                          ">
+                    Excluir
+                  </button>
+                </form>
+              </div>
+
+              <hr class="my-2">
+
+              <div class="row small" style="color:#333;">
+                <div class="col-md-6">
+                  <p class="mb-1"><strong>Data / Hora:</strong> {{ r.data_hora or '—' }}</p>
+                  <p class="mb-1"><strong>Auditorias:</strong> {{ r.auditorias or '—' }}</p>
+                  <p class="mb-1"><strong>Lançamento Recuperado:</strong> {{ r.lancamento or '—' }}</p>
+                </div>
+                <div class="col-md-6">
+                  <p class="mb-1"><strong>Turno:</strong> {{ turno_label }}</p>
+                  <p class="mb-1"><strong>Operador:</strong> {{ r.operador or '—' }}</p>
+                  <p class="mb-1"><strong>Monitoramento:</strong> {{ r.monitoramento or '—' }}</p>
+                  <p class="mb-1"><strong>Liberação:</strong> {{ r.liberacao or '—' }}</p>
+                </div>
+              </div>
+
+            </article>
+          {% endfor %}
+        {% else %}
+          <div class="text-center py-4" style="color:#666;">
+            Nenhuma passagem de turno registrada ainda.
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- RODAPÉ -->
+      <div style="
+            background:#f5f5f5;
+            color:#333;
+            font-size:0.75rem;
+            text-align:center;
+            padding:10px;
+            border-radius:0 0 14px 14px;
+            border-top:2px solid #1f8f4c;
+          ">
+        DHL SECURITY · SISTEMA INTERNO · USO RESTRITO
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

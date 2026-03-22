@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center"
+     style="background:#ffffff; padding:60px 20px;">
+
+  <!-- Link lateral -->
+  <a href="{{ url_for('post_achados') }}"
+     style="
+       position:fixed; top:150px; left:16px; z-index:10;
+       padding:8px 12px;
+       border-radius:10px;
+       background:#ffffff;
+       border:2px solid #78BE20;
+       box-shadow:0 4px 10px rgba(0,0,0,.25);
+       color:#2f5f0f;
+       font-weight:700;
+       font-size:.9rem;
+       text-decoration:none;
+     ">
+    Postagens · Achados
+  </a>
+
+  <!-- Logo rodapé -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; opacity:.9;
+       ">
+
+  <!-- CONTEÚDO -->
+  <div class="container" style="max-width:900px;">
+    <h1 class="text-center mb-2" style="color:#2f5f0f; font-weight:800;">
+      Achados e Perdidos
+    </h1>
+    <hr class="border-3 opacity-100"
+        style="border-color:#78BE20; max-width:260px; margin:0.25rem auto 1.5rem auto;">
+
+    <!-- CARD -->
+    <div class="card shadow"
+         style="
+           background:#ffffff;
+           border-radius:16px;
+           border:2px solid #78BE20;
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#78BE20;
+            border-radius:14px 14px 0 0;
+            padding:12px 18px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            border-bottom:2px solid #2f5f0f;
+      ">
+        <span style="font-weight:800; color:#fff; font-size:.95rem;">
+          REGISTRO DE ACHADO
+        </span>
+        {% if current_user.is_authenticated %}
+          <span style="font-size:.75rem; color:#fff; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- Corpo -->
+      <div class="card-body" style="padding:20px; color:#222;">
+        <form method="POST" enctype="multipart/form-data" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          {% set label = "color:#2f5f0f; font-weight:700;" %}
+
+          <div class="mb-3">
+            <label class="form-label" style="{{ label }}">Identificação</label>
+            <input class="form-control" name="identificacao"
+                   placeholder="Nome de quem entregou ou código interno">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" style="{{ label }}">Descrição do Objeto</label>
+            <input class="form-control" name="cpf"
+                   placeholder="Breve relato do objeto encontrado">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" style="{{ label }}">Data / Hora</label>
+            <input type="datetime-local" class="form-control"
+                   name="data_hora_info" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" style="{{ label }}">Local Encontrado</label>
+            <input class="form-control" name="local_encontrado"
+                   placeholder="Ex.: portaria, sorter, vestiário">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" style="{{ label }}">Turno</label>
+            <select class="form-select" name="turno">
+              <option disabled selected>Selecione</option>
+              <option value="1">1° Turno</option>
+              <option value="2">2° Turno</option>
+              <option value="3">3° Turno</option>
+              <option value="4">4° Turno</option>
+            </select>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label" style="{{ label }}">Foto do Objeto</label>
+            <input type="file" class="form-control" name="foto" accept="image/*">
+          </div>
+
+          <button class="btn w-100"
+                  style="
+                    background:#78BE20;
+                    color:#fff;
+                    font-weight:800;
+                    border-radius:999px;
+                    letter-spacing:.08em;
+                    padding:.6rem;
+                  ">
+            ENVIAR
+          </button>
+        </form>
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f4f6f4;
+            color:#2f5f0f;
+            font-size:.75rem;
+            text-align:center;
+            padding:8px;
+            border-top:1px solid #78BE20;
+      ">
+        SECURITY · ACHADOS E PERDIDOS
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

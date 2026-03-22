@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:110px;
+       padding-bottom:70px;
+     ">
+
+  <!-- Logo DHL fixo no rodapé direito -->
+  <img src="{{ url_for('static', filename='logo_leroy.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:64px; width:auto; z-index:10;
+         opacity:.9;
+         filter:none;
+       ">
+
+  <div class="container position-relative" style="z-index:5;">
+
+    <!-- ESTILOS ESPECÍFICOS DO DASHBOARD (PADRÃO LEROY) -->
+    <style>
+      :root{
+        --leroy-green:#78BE20;
+        --leroy-green-dark:#1b5e20;
+        --leroy-gray:#f4f4f4;
+        --leroy-text:#111;
+      }
+
+      .dash-root {
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--leroy-text);
+        padding: 10px 0 20px 0;
+      }
+
+      .dash-header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        text-align:center;
+      }
+
+      .dash-header img { height: 42px; }
+
+      .dash-header h1 {
+        color: var(--leroy-green);
+        font-weight: 800;
+        font-size: 24px;
+        margin:0;
+        letter-spacing:.02em;
+      }
+
+      .dash-separator {
+        border:0;
+        border-top:2px solid var(--leroy-green);
+        opacity:1;
+        max-width:420px;
+        margin:0 auto 18px auto;
+      }
+
+      /* Card geral (container visual) */
+      .dash-shell{
+        background:#ffffff;
+        border:2px solid var(--leroy-green);
+        border-radius:14px;
+        box-shadow:0 14px 30px rgba(0,0,0,0.12);
+        padding:16px;
+      }
+
+      /* Métricas */
+      .top-metrics {
+        display:flex;
+        justify-content:center;
+        gap:14px;
+        margin: 6px 0 16px 0;
+        flex-wrap:wrap;
+      }
+
+      .metric-box {
+        background: #ffffff;
+        border:1px solid rgba(120,190,32,.35);
+        border-radius:12px;
+        padding:10px 16px;
+        text-align:center;
+        min-width:170px;
+        box-shadow:0 6px 14px rgba(0,0,0,.10);
+      }
+
+      .metric-box .label {
+        font-size:0.82rem;
+        color:#444;
+        font-weight:700;
+      }
+
+      .metric-box .value {
+        font-size:1.55rem;
+        font-weight:900;
+        color: var(--leroy-green);
+        letter-spacing:.01em;
+      }
+
+      /* Seletor */
+      .select-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 16px;
+        gap: 10px;
+        flex-wrap:wrap;
+      }
+
+      .select-container label {
+        font-weight: 800;
+        color: var(--leroy-green);
+      }
+
+      .select-container select {
+        padding: 8px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.2);
+        font-weight: 800;
+        background-color: #ffffff;
+        cursor: pointer;
+        min-width:180px;
+      }
+
+      /* Toolbar (botões de tipo) */
+      .toolbar {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+      }
+
+      .toolbar button {
+        background: #ffffff;
+        border:1px solid rgba(120,190,32,.55);
+        padding: 8px 18px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 900;
+        font-size:0.82rem;
+        color: var(--leroy-green);
+        text-transform:uppercase;
+        letter-spacing:.06em;
+        transition: 0.2s ease;
+        box-shadow:0 6px 14px rgba(0,0,0,.10);
+      }
+
+      .toolbar button:hover {
+        transform: translateY(-1px);
+        box-shadow:0 10px 18px rgba(0,0,0,.14);
+      }
+
+      .toolbar button.active {
+        background: var(--leroy-green);
+        color: #fff;
+        border-color: var(--leroy-green-dark);
+      }
+
+      /* Grid */
+      .dashboard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 16px;
+        justify-items: center;
+        margin-bottom:10px;
+      }
+
+      .dash-card {
+        background:#ffffff;
+        border-radius: 16px;
+        box-shadow: 0 10px 22px rgba(0,0,0,0.10);
+        padding: 14px 16px 16px 16px;
+        width: 100%;
+        max-width: 380px;
+        text-align: center;
+        border:1px solid rgba(120,190,32,.35);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .dash-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 14px 26px rgba(0,0,0,0.14);
+      }
+
+      .dash-card h3 {
+        color: var(--leroy-green);
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+        font-weight: 900;
+        letter-spacing:.02em;
+      }
+
+      .dash-card canvas {
+        width: 100% !important;
+        height: 220px !important;
+      }
+
+      /* Rodapé interno */
+      .dash-footer{
+        margin-top:12px;
+        background: var(--leroy-gray);
+        color: var(--leroy-green-dark);
+        font-size:.75rem;
+        text-align:center;
+        padding:8px 12px;
+        border-radius:12px;
+        border:1px solid rgba(120,190,32,.35);
+      }
+    </style>
+
+    <div class="dash-root">
+      <!-- HEADER -->
+      <header class="dash-header">
+        <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+     alt="Logo Leroy Security"
+     style="height:170px; width:auto;">
+        <h1>Dashboard de Indicadores · Security</h1>
+      </header>
+      <hr class="dash-separator">
+
+      <div class="dash-shell">
+
+        <!-- Totais vindos do banco -->
+        <div class="top-metrics">
+          <div class="metric-box">
+            <div class="label">Total de ANC</div>
+            <div class="value">{{ total_anc }}</div>
+          </div>
+          <div class="metric-box">
+            <div class="label">Total de Ocorrências</div>
+            <div class="value">{{ total_ocorr }}</div>
+          </div>
+        </div>
+
+        <!-- Caixa de seleção de Armazém -->
+        <div class="select-container">
+          <label for="armazem">Selecione o Armazém:</label>
+          <select id="armazem" onchange="mudarArmazem()">
+            <option value="Shein">Shein</option>
+            <option value="Sanofi">Sanofi</option>
+            <option value="Shopee">Shopee</option>
+          </select>
+        </div>
+
+        <!-- Botões de tipo -->
+        <div class="toolbar">
+          <button class="active" onclick="mudarTipo('processados', event)">Processados</button>
+          <button onclick="mudarTipo('anc', event)">ANC</button>
+          <button onclick="mudarTipo('ocorrencias', event)">Ocorrências</button>
+        </div>
+
+        <!-- GRID DE GRÁFICOS -->
+        <div class="dashboard" id="painel">
+          <div class="dash-card"><h3>ANC por dia</h3><canvas id="grafico1"></canvas></div>
+          <div class="dash-card"><h3>Ocorrências por dia</h3><canvas id="grafico2"></canvas></div>
+          <div class="dash-card"><h3>Radar Operacional</h3><canvas id="grafico3"></canvas></div>
+          <div class="dash-card"><h3>Distribuição (%)</h3><canvas id="grafico4"></canvas></div>
+          <div class="dash-card"><h3>Comparativo Mensal</h3><canvas id="grafico5"></canvas></div>
+          <div class="dash-card"><h3>Produtividade</h3><canvas id="grafico6"></canvas></div>
+          <div class="dash-card"><h3>Correlação de Turnos</h3><canvas id="grafico7"></canvas></div>
+          <div class="dash-card"><h3>Média de Processamento</h3><canvas id="grafico8"></canvas></div>
+          <div class="dash-card"><h3>Índice de Falhas</h3><canvas id="grafico9"></canvas></div>
+          <div class="dash-card"><h3>Top Transportadoras</h3><canvas id="grafico10"></canvas></div>
+          <div class="dash-card"><h3>Evolução Semanal</h3><canvas id="grafico11"></canvas></div>
+          <div class="dash-card"><h3>Desvios de Rota</h3><canvas id="grafico12"></canvas></div>
+          <div class="dash-card"><h3>Tempo Médio</h3><canvas id="grafico13"></canvas></div>
+          <div class="dash-card"><h3>Fluxo por Período</h3><canvas id="grafico14"></canvas></div>
+        </div>
+
+        <div class="dash-footer">
+          DHL SECURITY · DASHBOARD · USO INTERNO
+        </div>
+
+      </div><!-- /dash-shell -->
+    </div>
+
+    <!-- SCRIPTS DO DASHBOARD -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script>
+      // dados vindos do Flask
+      const ancLabels   = {{ anc_labels|tojson }};
+      const ancValues   = {{ anc_values|tojson }};
+      const ocorrLabels = {{ ocorr_labels|tojson }};
+      const ocorrValues = {{ ocorr_values|tojson }};
+
+      let graficos = [];
+      let armazemAtual = "Shein";
+
+      // esse continua só pra manter o visual de armazém
+      async function carregarDados(tipo) {
+        const dias = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+        const base = armazemAtual === "Shein" ? 80 : armazemAtual === "Sanofi" ? 50 : 100;
+        const valores = Array.from({ length: 7 }, () => Math.floor(Math.random() * 50) + base);
+        return { dias, valores };
+      }
+
+      async function atualizarGraficos(tipo) {
+        // destruindo anteriores
+        graficos.forEach(g => g.destroy());
+        graficos = [];
+
+        const ctxs = [];
+        for (let i = 1; i <= 14; i++) {
+          ctxs.push(document.getElementById(`grafico${i}`).getContext('2d'));
+        }
+
+        const tipos = [
+          'bar', 'bar', 'radar', 'doughnut', 'polarArea', 'bar',
+          'bubble', 'line', 'pie', 'bar', 'line', 'radar', 'polarArea', 'doughnut'
+        ];
+
+        const cores = [
+          '#ffcc00', '#ff9900', '#e60000', '#ffbb33', '#cc6600',
+          '#ff6600', '#e62e00', '#ffa31a', '#ffcc66', '#ff9933',
+          '#ffb84d', '#ff3300', '#ff6600', '#e60000'
+        ];
+
+        ctxs.forEach((ctx, i) => {
+          const tipoGrafico = tipos[i];
+          const cor = cores[i % cores.length];
+
+          // por padrão pega dados random pra manter o painel cheio
+          let labels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sáb", "Dom"];
+          let dataValores = [12, 10, 14, 9, 20, 16, 11];
+
+          // mas para os dois primeiros gráficos usamos os dados reais
+          if (i === 0) { // grafico1 = ANC
+            labels = ancLabels.length ? ancLabels : ["Sem dados"];
+            dataValores = ancValues.length ? ancValues : [0];
+          }
+          if (i === 1) { // grafico2 = Ocorrências
+            labels = ocorrLabels.length ? ocorrLabels : ["Sem dados"];
+            dataValores = ocorrValues.length ? ocorrValues : [0];
+          }
+
+          let dataset = {
+            label: `Indicador`,
+            data: dataValores,
+            backgroundColor: cor,
+            borderColor: '#222',
+            borderWidth: 1,
+            fill: true
+          };
+
+          if (tipoGrafico === 'bubble') {
+            dataset = {
+              label: 'Correlação',
+              data: dataValores.map((v, idx) => ({ x: idx, y: v, r: v / 3 })),
+              backgroundColor: cor
+            };
+          }
+
+          const chartConfig = {
+            type: tipoGrafico,
+            data: { labels: labels, datasets: [dataset] },
+            options: {
+              plugins: {
+                legend: { display: false },
+                datalabels: {
+                  color: '#000',
+                  anchor: 'end',
+                  align: 'top',
+                  font: { weight: 'bold', size: 11 },
+                  formatter: (value) => {
+                    if (typeof value === 'object' && value.y !== undefined) return value.y.toFixed(0);
+                    return Number(value).toFixed(0);
+                  }
+                }
+              },
+              scales: {
+                x: { grid: { display: false }, ticks: { display: false } },
+                y: { grid: { display: false }, ticks: { display: false }, beginAtZero: true }
+              },
+              backgroundColor: 'transparent'
+            },
+            plugins: [ChartDataLabels]
+          };
+
+          if (['radar', 'polarArea', 'doughnut', 'pie'].includes(tipoGrafico)) {
+            delete chartConfig.options.scales;
+          }
+
+          graficos.push(new Chart(ctx, chartConfig));
+        });
+      }
+
+      function mudarTipo(tipo, event) {
+        document.querySelectorAll(".toolbar button").forEach(btn => btn.classList.remove("active"));
+        event.target.classList.add("active");
+        atualizarGraficos(tipo);
+      }
+
+      function mudarArmazem() {
+        armazemAtual = document.getElementById("armazem").value;
+        atualizarGraficos('processados');
+      }
+
+      // inicial
+      atualizarGraficos('processados');
+    </script>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 position-relative d-flex align-items-center justify-content-center"
+     style="
+       background: url('{{ url_for('static', filename='logo_fundo2.jpg') }}')
+                   center/cover no-repeat;
+       padding:60px 20px;
+     ">
+
+    <!-- overlay claro para leitura -->
+  <div style="
+    position:absolute;
+    inset:0;
+    background: rgba(255,255,255,.85);
+    pointer-events:none;
+  "></div>
+
+
+  <!-- logo -->
+ <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+     alt="Logo Leroy Security"
+     style="
+       position:absolute;
+       top:15px;
+       left:18px;
+       height:140px;
+       width:auto;
+     ">
+
+
+  <!-- texto topo direito -->
+  <div style="position:absolute; top:65px; right:40px; text-align:right;">
+    <h1 style="color:#000; font-size:1.4rem; margin-bottom:.25rem;">
+      Bem-vindo à Security
+    </h1>
+    <p style="color:#555; font-size:.9rem; margin:0;">
+      A segurança só está completa com você.
+    </p>
+  </div>
+
+  <!-- conteúdo central -->
+  <div class="container" style="max-width:1050px;">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="card border-0 shadow"
+             style="border-radius:16px;">
+          <div class="card-body p-4 p-md-5">
+
+            <h2 class="mb-2" style="color:#000; font-size:1.5rem; font-weight:700;">
+              Portal de Segurança
+            </h2>
+            <p class="mb-4" style="color:#555;">
+              Acesse os módulos abaixo para registrar e acompanhar as operações de segurança.
+            </p>
+
+            <div class="row g-3">
+
+              {% set box_style = "background:#f8f9fa; border:1px solid #ddd; border-radius:12px; padding:14px; color:#000;" %}
+
+              <!-- Ocorrências -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('ocorrencias') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">📝</div>
+                  <div style="font-weight:600;">Ocorrências</div>
+                  <small style="color:#777;">Registrar fatos</small>
+                </a>
+              </div>
+
+              <!-- ANC -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('anc') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">📋</div>
+                  <div style="font-weight:600;">ANC</div>
+                  <small style="color:#777;">Anomalias / conduta</small>
+                </a>
+              </div>
+
+              <!-- Armários -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('armarios') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">🔐</div>
+                  <div style="font-weight:600;">Armários</div>
+                  <small style="color:#777;">Reserva / controle</small>
+                </a>
+              </div>
+
+              <!-- Achados -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('achados') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">📦</div>
+                  <div style="font-weight:600;">Achados</div>
+                  <small style="color:#777;">Registrar objeto</small>
+                </a>
+              </div>
+
+              <!-- Post Achados -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('post_achados') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">🗂️</div>
+                  <div style="font-weight:600;">Post. Achados</div>
+                  <small style="color:#777;">Lista de objetos</small>
+                </a>
+              </div>
+
+              <!-- Investigação -->
+              <div class="col-6 col-md-4">
+                <a href="{{ url_for('investigacoes') }}"
+                   class="text-decoration-none d-block h-100"
+                   style="{{ box_style }}">
+                  <div style="font-size:2rem;">🕵️</div>
+                  <div style="font-weight:600;">Solicitar investigação</div>
+                  <small style="color:#777;">Levantamento de imagem</small>
+                </a>
+              </div>
+
+            </div>
+
+            <p class="mt-4 mb-0" style="font-size:.75rem; color:#888;">
+              Sistema Interno · Uso Restrito
+            </p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

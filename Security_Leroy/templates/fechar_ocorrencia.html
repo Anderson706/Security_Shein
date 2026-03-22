@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       background:#ffffff;
+       padding:40px 0;
+     ">
+
+  <!-- Logo DHL discreto -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         opacity:.9;
+       ">
+
+  <div class="container position-relative" style="max-width:900px;">
+
+    <!-- TÍTULO -->
+    <h1 class="text-center mb-3"
+        style="
+          color:#78BE20;
+          font-weight:800;
+          letter-spacing:.02em;
+        ">
+      Fechar Ocorrências
+    </h1>
+
+    <hr style="max-width:280px; margin:0 auto 24px auto; border-color:#2e7d32;">
+
+    <!-- CARD -->
+    <div class="card shadow-sm border-0"
+         style="
+           background:#ffffff;
+           border-radius:14px;
+           border:1px solid #e0e0e0;
+         ">
+
+      <!-- CABEÇALHO VERDE -->
+      <div style="
+            background:#78BE20;
+            border-radius:14px 14px 0 0;
+            padding:14px 20px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+          ">
+        <span style="color:#fff; font-weight:800; font-size:1rem;">
+          FECHAMENTO DE OCORRÊNCIA
+        </span>
+
+        {% if current_user.is_authenticated %}
+          <span style="color:#e8f5e9; font-size:.8rem; font-weight:600;">
+            Operador: {{ current_user.username }}
+          </span>
+        {% endif %}
+      </div>
+
+      <!-- CORPO -->
+      <div class="card-body p-4">
+
+        <form method="POST" action="" enctype="multipart/form-data">
+
+          <!-- ID -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              ID da Ocorrência
+            </label>
+            <input type="text"
+                   class="form-control"
+                   name="id_ocorrencia"
+                   placeholder="Digite o ID da ocorrência"
+                   required>
+          </div>
+
+          <!-- Analista -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              Analista
+            </label>
+            <select name="analista" class="form-select">
+              <option selected disabled>Selecionar analista</option>
+              <option>Anderson Souza</option>
+              <option>Giovanna</option>
+              <option>Juliana</option>
+              <option>Vanessa</option>
+            </select>
+          </div>
+
+          <!-- Data -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              Data da Ocorrência
+            </label>
+            <input type="date" class="form-control" name="data_ocorrencia">
+          </div>
+
+          <!-- Status -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              Status
+            </label>
+            <select name="status" class="form-select">
+              <option selected disabled>Status</option>
+              <option>Pendente</option>
+              <option>Fechado</option>
+            </select>
+          </div>
+
+          <!-- Turno -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              Turno
+            </label>
+            <select name="turno" class="form-select">
+              <option selected disabled>Selecionar turno</option>
+              <option value="1">1º Turno</option>
+              <option value="2">2º Turno</option>
+              <option value="3">3º Turno</option>
+              <option value="4">4º Turno</option>
+            </select>
+          </div>
+
+          <!-- Formalização -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">
+              Formalização
+            </label>
+            <select name="formalizacao" class="form-select">
+              <option selected disabled>Selecionar</option>
+              <option>ANC</option>
+              <option>Análise Investigativa</option>
+              <option>Levantamento de imagem</option>
+              <option>Insolúvel</option>
+            </select>
+          </div>
+
+          <!-- Documento -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold text-dark">
+              Nº Documento
+            </label>
+            <input type="text"
+                   class="form-control"
+                   name="documento"
+                   placeholder="Número do documento">
+          </div>
+
+          <!-- BOTÃO -->
+          <button type="submit"
+                  class="btn w-100"
+                  style="
+                    background:#78BE20;
+                    color:#fff;
+                    font-weight:800;
+                    text-transform:uppercase;
+                    letter-spacing:.06em;
+                    border-radius:999px;
+                    padding:10px;
+                  ">
+            Enviar
+          </button>
+
+        </form>
+      </div>
+
+      <!-- RODAPÉ -->
+      <div style="
+            background:#f5f5f5;
+            color:#333;
+            font-size:.75rem;
+            text-align:center;
+            padding:10px;
+            border-radius:0 0 14px 14px;
+            border-top:1px solid #e0e0e0;
+          ">
+        DHL SECURITY · FECHAMENTO DE OCORRÊNCIAS
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

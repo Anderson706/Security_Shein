@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding-top:90px;
+       padding-bottom:40px;
+     ">
+
+  {# Logo fixa #}
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container py-4 position-relative" style="max-width:520px;">
+
+    <!-- TÍTULO -->
+    <h1 class="text-center mb-3"
+        style="
+          color:#78BE20;
+          font-weight:800;
+          letter-spacing:.02em;
+        ">
+      Retirada de Chave Reserva
+    </h1>
+
+    <!-- CARD -->
+    <div class="card border-0 shadow-lg"
+         style="
+           background:#ffffff;
+           border-radius:14px;
+           border:1px solid #e0e0e0;
+         ">
+
+      <!-- CABEÇALHO -->
+      <div style="
+            background:#78BE20;
+            color:#fff;
+            border-radius:14px 14px 0 0;
+            padding:12px 16px;
+            font-weight:800;
+            letter-spacing:.04em;
+          ">
+        Formulário de Retirada de Chaves
+      </div>
+
+      <!-- CORPO -->
+      <div class="card-body p-4">
+
+        <form method="POST"
+              action="{{ url_for('retirada_chave') }}"
+              autocomplete="off">
+
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="tipo_formulario" value="retirada">
+
+          <!-- CPF -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">CPF</label>
+            <input type="text"
+                   class="form-control"
+                   id="ret_cpf"
+                   name="ret_cpf"
+                   placeholder="Digite apenas números">
+            <div class="form-text text-muted">
+              Sem pontos ou traços.
+            </div>
+          </div>
+
+          <!-- Nome -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Nome</label>
+            <input type="text"
+                   class="form-control"
+                   id="ret_nome"
+                   name="ret_nome"
+                   placeholder="Nome completo">
+          </div>
+
+          <!-- Armário -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Armário</label>
+            <input type="text"
+                   class="form-control"
+                   id="ret_armario"
+                   name="ret_armario"
+                   placeholder="Número do armário">
+          </div>
+
+          <!-- Chave -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Chave</label>
+            <input type="text"
+                   class="form-control"
+                   id="ret_chave"
+                   name="ret_chave"
+                   placeholder="Número da chave">
+          </div>
+
+          <!-- Turno -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Turno</label>
+            <select id="ret_turno"
+                    name="ret_turno"
+                    class="form-select">
+              <option selected>Selecione</option>
+              <option value="1">1° Turno</option>
+              <option value="2">2° Turno</option>
+              <option value="3">3° Turno</option>
+              <option value="4">4° Turno</option>
+            </select>
+          </div>
+
+          <!-- Coordenador -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark">Coordenador</label>
+            <input type="text"
+                   class="form-control"
+                   id="ret_coordenador"
+                   name="ret_coordenador"
+                   placeholder="Nome do coordenador">
+          </div>
+
+          <!-- BOTÃO -->
+          <button type="submit"
+                  class="btn w-100"
+                  style="
+                    background:#78BE20;
+                    color:#fff;
+                    font-weight:800;
+                    text-transform:uppercase;
+                    letter-spacing:.08em;
+                    border-radius:999px;
+                  ">
+            Confirmar Retirada
+          </button>
+        </form>
+      </div>
+
+      <!-- RODAPÉ -->
+      <div style="
+            background:#f5f5f5;
+            color:#333;
+            font-size:0.75rem;
+            text-align:center;
+            padding:8px;
+            border-radius:0 0 14px 14px;
+            border-top:1px solid #e0e0e0;
+          ">
+        DHL SECURITY · CONTROLE DE CHAVES RESERVA
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT ORIGINAL MANTIDO -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const cpfInput     = document.getElementById("ret_cpf");
+    const nomeInput    = document.getElementById("ret_nome");
+    const armarioInput = document.getElementById("ret_armario");
+    const chaveInput   = document.getElementById("ret_chave");
+    const turnoSelect  = document.getElementById("ret_turno");
+    const coordInput   = document.getElementById("ret_coordenador");
+
+    function limparCampos() {
+      nomeInput.value    = "";
+      armarioInput.value = "";
+      chaveInput.value   = "";
+      coordInput.value   = "";
+      turnoSelect.value  = "Selecione";
+    }
+
+    cpfInput.addEventListener("blur", function () {
+      let cpf = (cpfInput.value || "").replace(/\D/g, "");
+
+      if (cpf.length < 11) {
+        limparCampos();
+        return;
+      }
+
+      fetch(`/api/armario_por_cpf?cpf=${encodeURIComponent(cpf)}`)
+        .then(resp => resp.json())
+        .then(data => {
+          if (!data.sucesso) {
+            limparCampos();
+            alert(data.mensagem || "CPF não encontrado.");
+            return;
+          }
+
+          nomeInput.value    = data.nome        || "";
+          armarioInput.value = data.armario     || "";
+          chaveInput.value   = data.chave       || "";
+          coordInput.value   = data.coordenador || "";
+          if (data.turno) turnoSelect.value = data.turno;
+        })
+        .catch(() => limparCampos());
+    });
+  });
+</script>
+
+{% endblock %}

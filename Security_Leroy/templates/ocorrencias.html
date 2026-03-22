@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+     ">
+
+  <!-- Link fixo topo esquerdo -->
+  <a href="{{ url_for('fechar_ocorrencia') }}"
+     style="
+       position:fixed; top:150px; left:16px; z-index:10;
+       display:flex; align-items:center; gap:8px; text-decoration:none;
+       padding:6px 12px; border-radius:10px;
+       background:#ffffff;
+       border:2px solid #78BE20;
+       box-shadow:0 4px 10px rgba(0,0,0,.15);
+     ">
+    <span style="color:#4E8F00; font-weight:700; font-size:.9rem;">
+      Fechar Ocorrência
+    </span>
+  </a>
+
+  <!-- Logo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:150px; width:auto; z-index:10;
+         opacity:.85;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5; color:#222;">
+    <div class="row">
+      <h1 class="text-center mb-2"
+          style="color:#4E8F00; font-weight:800;">
+        Ocorrências
+      </h1>
+      <hr class="border-2 opacity-100"
+          style="border-color:#78BE20; max-width:260px; margin:0.25rem auto 1.5rem auto;">
+    </div>
+
+    <div class="row g-4">
+      <!-- FORMULÁRIO -->
+      <div class="col-lg-8">
+        <div class="card shadow"
+             style="
+               background:#ffffff;
+               border:2px solid #78BE20;
+               border-radius:14px;
+               max-width:780px;
+               margin:0 auto;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:12px 12px 0 0;
+                padding:12px 18px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:.95rem;">
+              REGISTRO DE OCORRÊNCIA
+            </span>
+          </div>
+
+          <div class="card-body" style="padding:20px; color:#222;">
+            <form method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Nome</label>
+                <input type="text" class="form-control"
+                       name="nome_solicitante"
+                       placeholder="Inserir nome do solicitante">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Data da Ocorrência</label>
+                <input type="date" class="form-control"
+                       name="data_ocorrencia">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Descrição</label>
+                <input type="text" class="form-control"
+                       name="descricao"
+                       placeholder="Inserir breve relato">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Envolvido e/ou GC</label>
+                <input type="text" class="form-control"
+                       name="envolvido_gc"
+                       placeholder="Nome ou código do pacote">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Turno</label>
+                <select name="turno" class="form-select form-select-lg">
+                  <option selected disabled>Inserir o Turno</option>
+                  <option value="1">1° Turno</option>
+                  <option value="2">2° Turno</option>
+                  <option value="3">3° Turno</option>
+                  <option value="4">4º Turno</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Foto</label>
+                <input type="file" class="form-control" name="foto" accept="image/*">
+              </div>
+
+              <button type="submit"
+                      class="btn w-100 mt-2"
+                      style="
+                        background:#78BE20;
+                        border:1px solid #4E8F00;
+                        color:#fff;
+                        font-weight:800;
+                        padding:.55rem 1.6rem;
+                        border-radius:999px;
+                        text-transform:uppercase;
+                        letter-spacing:.08em;
+                      ">
+                Enviar
+              </button>
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f4f4;
+                color:#4E8F00;
+                font-size:.7rem;
+                text-align:center;
+                padding:6px 10px;
+                border-radius:0 0 12px 12px;
+                border-top:1px solid #78BE20;
+          ">
+            SECURITY · REGISTRO DE OCORRÊNCIAS
+          </div>
+        </div>
+      </div>
+
+      <!-- INSTRUÇÕES -->
+      <div class="col-lg-4">
+        <div class="rounded-3 p-3"
+             style="
+               background:#ffffff;
+               position:sticky; top:16px;
+               box-shadow:0 10px 24px rgba(0,0,0,.15);
+               border:2px solid #78BE20;
+             ">
+          <h5 class="mb-3" style="color:#4E8F00; font-weight:800;">
+            Como preencher
+          </h5>
+
+          <ul class="ps-3 mb-0" style="color:#222; font-size:.9rem;">
+            <li class="mb-2"><strong>Nome:</strong> Nome completo</li>
+            <li class="mb-2"><strong>Data:</strong> Data correta</li>
+            <li class="mb-2"><strong>Descrição:</strong> O que, onde, quando</li>
+            <li class="mb-2"><strong>Envolvido:</strong> Nome ou GC</li>
+            <li class="mb-2"><strong>Turno:</strong> 1º ao 4º</li>
+            <li><strong>Foto:</strong> Opcional</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

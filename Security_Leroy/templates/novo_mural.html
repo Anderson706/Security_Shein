@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding:80px 0 40px 0;
+     ">
+
+  <!-- Logo fixo -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:170px;
+         width:auto;
+         z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5; max-width:900px;">
+
+    <!-- Título -->
+    <h1 class="text-center mb-2"
+        style="
+          color:#78BE20;
+          font-weight:800;
+          letter-spacing:.02em;
+        ">
+      Nova Postagem no Mural
+    </h1>
+
+    <hr style="border-top:3px solid #1e7f43; width:280px; margin:0 auto 24px auto;">
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- CARD -->
+        <div class="card shadow-sm"
+             style="
+               background:#ffffff;
+               border-radius:14px;
+               border:1px solid #dcdcdc;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:14px 20px;
+                border-bottom:3px solid #155c30;
+          ">
+            <span style="
+                  font-weight:800;
+                  color:#ffffff;
+                  font-size:1rem;
+                  letter-spacing:.05em;
+            ">
+              REGISTRO DE POSTAGEM NO MURAL
+            </span>
+          </div>
+
+          <!-- Corpo -->
+          <div class="card-body p-4">
+
+            <form method="POST"
+                  action="{{ url_for('criar_mural') }}"
+                  enctype="multipart/form-data">
+              {{ form.hidden_tag() }}
+
+              <div class="mb-3">
+                {{ form.titulo.label(class_='form-label fw-semibold text-dark') }}
+                {{ form.titulo(class_='form-control',
+                               placeholder='Título da postagem (opcional)') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form.corpo.label(class_='form-label fw-semibold text-dark') }}
+                {{ form.corpo(class_='form-control',
+                              rows='4',
+                              placeholder='Digite a mensagem, orientações ou comunicado...') }}
+              </div>
+
+              <div class="mb-3">
+                {{ form.imagem.label(class_='form-label fw-semibold text-dark') }}
+                {{ form.imagem(class_='form-control') }}
+                <div class="form-text text-muted">
+                  Imagem opcional (JPG, PNG ou GIF).
+                </div>
+              </div>
+
+              <button type="submit"
+                      class="btn w-100 mt-3"
+                      style="
+                        background:#78BE20;
+                        border:1px solid #155c30;
+                        color:#ffffff;
+                        font-weight:800;
+                        padding:.55rem 1.6rem;
+                        border-radius:999px;
+                        text-transform:uppercase;
+                        letter-spacing:.08em;
+                      ">
+                {{ form.submit.label.text or 'Publicar' }}
+              </button>
+
+            </form>
+          </div>
+
+          <!-- Rodapé -->
+          <div style="
+                background:#f4f4f4;
+                color:#333;
+                font-size:0.75rem;
+                text-align:center;
+                padding:8px 12px;
+                border-radius:0 0 14px 14px;
+                border-top:1px solid #1e7f43;
+          ">
+            SECURITY · MURAL INTERNO · USO RESTRITO
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

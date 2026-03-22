@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#ffffff;
+     ">
+
+  <!-- botão de atalho -->
+  <a href="{{ url_for('retirada') }}"
+     style="
+       position:fixed; top:150px; left:16px; z-index:10;
+       display:flex; align-items:center; gap:8px; text-decoration:none;
+       padding:8px 12px; border-radius:10px;
+       background:#ffffff;
+       border:2px solid #78BE20;
+       box-shadow:0 4px 10px rgba(0,0,0,.15);
+       color:#2f5f0f;
+       font-weight:700;
+       font-size:.9rem;
+     ">
+    Reserva / Devolução
+  </a>
+
+  <!-- Logo rodapé -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; z-index:10;
+         opacity:.9;
+       ">
+
+  <div class="container py-4 position-relative" style="z-index:5;">
+    <div class="row">
+      <h1 class="text-center mb-2"
+          style="color:#2f5f0f; font-weight:800;">
+        Armário Rotativo
+      </h1>
+      <hr class="border-3 opacity-100"
+          style="border-color:#78BE20; max-width:260px; margin:0.25rem auto 1.5rem auto;">
+    </div>
+
+    <div class="row g-4">
+      <!-- COLUNA ESQUERDA -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:12px 18px;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <span style="font-weight:800; color:#fff; font-size:.95rem;">
+              CADASTRO · ARMÁRIO ROTATIVO
+            </span>
+          </div>
+
+          <div class="card-body p-3 p-md-4" style="color:#222;">
+            <form method="POST"
+                  action="{{ url_for('armarios_rotativos') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+              {% set label_style = "color:#2f5f0f; font-weight:700;" %}
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Nome</label>
+                <input name="nome" type="text" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Empresa</label>
+                <select name="empresa" class="form-select">
+                  <option value="">Selecione</option>
+                  <option value="dhl">DHL</option>
+                  <option value="adecco">Adecco</option>
+                  <option value="mentes">Mentes</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">CPF</label>
+                <input name="cpf" type="text" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Armário</label>
+                <input name="armario" type="text" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Chave</label>
+                <input name="chave" type="text" class="form-control">
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Status</label>
+                <select name="status" class="form-select">
+                  <option value="Ocupado">Ocupado</option>
+                  <option value="Livre">Livre</option>
+                  <option value="Manutenção">Manutenção</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label" style="{{ label_style }}">Turno</label>
+                <select name="turno" class="form-select">
+                  <option value="">Selecione</option>
+                  <option value="1">1° Turno</option>
+                  <option value="2">2° Turno</option>
+                  <option value="3">3° Turno</option>
+                  <option value="4">4° Turno</option>
+                </select>
+              </div>
+
+              <button type="submit"
+                      class="btn w-100"
+                      style="
+                        background:#78BE20;
+                        color:#fff;
+                        font-weight:800;
+                        border-radius:999px;
+                        letter-spacing:.08em;
+                      ">
+                Salvar e gerar QR
+              </button>
+            </form>
+          </div>
+
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:.75rem;
+                text-align:center;
+                padding:8px;
+                border-top:1px solid #78BE20;
+          ">
+            SECURITY · ARMÁRIOS ROTATIVOS
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA -->
+      <div class="col-lg-4">
+        <div class="card shadow border-0"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid #78BE20;
+             ">
+          <div style="
+                background:#78BE20;
+                border-radius:14px 14px 0 0;
+                padding:10px 14px;
+          ">
+            <h5 class="mb-0"
+                style="color:#fff; font-weight:800; font-size:.95rem;">
+              Últimos registros
+            </h5>
+          </div>
+
+          <div class="p-3">
+            {% if registros %}
+              {% for r in registros %}
+                <div class="mb-3 p-2"
+                     style="border:1px solid #ddd; border-radius:8px;">
+                  <strong>{{ r.nome }}</strong><br>
+                  Armário: {{ r.armario }}<br>
+                  Status: {{ r.status }}
+                </div>
+              {% endfor %}
+            {% else %}
+              <p class="text-muted small mb-0">
+                Nenhum registro ainda.
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

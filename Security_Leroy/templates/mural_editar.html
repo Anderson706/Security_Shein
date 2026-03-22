@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center"
+     style="
+       position:relative;
+       background:#ffffff;
+       padding:40px 16px;
+     ">
+
+  <!-- Logo DHL fixo -->
+  <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed;
+         right:16px;
+         bottom:16px;
+         height:60px;
+         width:auto;
+         opacity:.9;
+       ">
+
+  <!-- Voltar -->
+  <a href="{{ url_for('mural') }}"
+     style="
+       position:fixed;
+       top:24px;
+       left:24px;
+       z-index:10;
+       text-decoration:none;
+       padding:8px 14px;
+       border-radius:999px;
+       background:#1E7F3C;
+       color:#fff;
+       font-weight:700;
+       box-shadow:0 6px 16px rgba(0,0,0,.15);
+     ">
+    ← Voltar ao Mural
+  </a>
+
+  <div class="container" style="max-width:760px;">
+
+    <h1 class="text-center mb-3"
+        style="
+          color:#111;
+          font-weight:800;
+          letter-spacing:.02em;
+        ">
+      Editar Postagem do Mural
+    </h1>
+
+    <div class="card border-0 shadow-lg"
+         style="
+           background:#ffffff;
+           border-radius:14px;
+           box-shadow:0 14px 30px rgba(0,0,0,.12);
+         ">
+
+      <!-- Cabeçalho -->
+      <div style="
+            background:#1E7F3C;
+            border-radius:14px 14px 0 0;
+            padding:14px 20px;
+            border-bottom:3px solid #16632F;
+          ">
+        <span style="
+              color:#ffffff;
+              font-weight:800;
+              font-size:1rem;
+              letter-spacing:.04em;
+            ">
+          EDITAR POSTAGEM
+        </span>
+      </div>
+
+      <!-- Corpo -->
+      <div class="card-body p-4">
+
+        <form method="POST"
+              action="{{ url_for('editar_mural', mural_id=mural_post.id) }}"
+              enctype="multipart/form-data">
+          {{ form.hidden_tag() }}
+
+          <div class="mb-3">
+            {{ form.titulo.label(class_='form-label fw-semibold') }}
+            {{ form.titulo(class_='form-control',
+                           placeholder='Título da postagem') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.corpo.label(class_='form-label fw-semibold') }}
+            {{ form.corpo(class_='form-control',
+                          rows='4',
+                          placeholder='Mensagem, orientações ou comunicado...') }}
+          </div>
+
+          {% if mural_post.imagem_filename %}
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Imagem atual</label>
+              <div style="
+                    max-width:300px;
+                    border-radius:10px;
+                    overflow:hidden;
+                    border:1px solid #ddd;
+                    box-shadow:0 6px 14px rgba(0,0,0,.12);
+                  ">
+                <img src="{{ url_for('static', filename='mural/' ~ mural_post.imagem_filename) }}"
+                     alt="Imagem atual"
+                     style="width:100%; height:auto;">
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="mb-3">
+            {{ form.imagem.label(class_='form-label fw-semibold') }}
+            {{ form.imagem(class_='form-control') }}
+            <div class="form-text">
+              Se enviar uma nova imagem, a atual será substituída.
+            </div>
+          </div>
+
+          <button type="submit"
+                  class="btn w-100 mt-3"
+                  style="
+                    background:#1E7F3C;
+                    border:1px solid #16632F;
+                    color:#fff;
+                    font-weight:800;
+                    padding:.55rem;
+                    border-radius:999px;
+                    text-transform:uppercase;
+                    letter-spacing:.06em;
+                  ">
+            Salvar alterações
+          </button>
+        </form>
+
+      </div>
+
+      <!-- Rodapé -->
+      <div style="
+            background:#f4f4f4;
+            color:#111;
+            font-size:.75rem;
+            text-align:center;
+            padding:8px 12px;
+            border-radius:0 0 14px 14px;
+            border-top:1px solid #ddd;
+          ">
+        DHL SECURITY · MURAL DE SEGURANÇA
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+<nav class="navbar navbar-expand-lg navbar-dark"
+     style="
+       background:#78BE20;
+       box-shadow:0 3px 8px rgba(0,0,0,0.35);
+     ">
+  <div class="container-fluid">
+
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center"
+       href="{{ url_for('home') }}"
+       style="font-weight:700; letter-spacing:.03em; color:#fff;">
+      <img src="{{ url_for('static', filename='logo_leroy.png') }}"
+           alt="Security Leroy Merlin"
+           style="height:34px; margin-right:8px;">
+      <span>Home</span>
+    </a>
+
+
+
+    <!-- Toggler mobile -->
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-end"
+         id="navbarMenu">
+
+      <!-- MENU SUSPENSO (direita) -->
+      <ul class="navbar-nav align-items-lg-center">
+
+        <!-- Dropdown principal -->
+        <li class="nav-item dropdown me-3">
+          <a class="nav-link dropdown-toggle fw-semibold"
+             href="#"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false"
+             style="color:#fff;">
+            Menu
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end shadow">
+
+            <li><a class="dropdown-item" href="{{ url_for('mural') }}">Mural</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('usuarios') }}">Usuários</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('contatos') }}">Contatos</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('auditorias') }}">Passagem de Turno</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('investigacoes') }}">Investigações</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('armarios') }}">Armários</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('ocorrencias') }}">Ocorrências</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('anc') }}">ANC</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('achados') }}">Achados & Perdidos</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('ativos') }}">Ativos</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('acessos') }}">Controle de Acesso</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('post') }}">Postagens</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('dash') }}">Dashboard</a></li>
+
+            {% if current_user.is_authenticated %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('criar_post') }}">Criar Post</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Meu Perfil</a></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('sair') }}">Sair</a></li>
+            {% endif %}
+          </ul>
+        </li>
+
+        <!-- LOGIN / CRIAR CONTA (fora do menu) -->
+        {% if not current_user.is_authenticated %}
+          <li class="nav-item me-2">
+            <a class="btn btn-outline-light btn-sm"
+               href="{{ url_for('login_conta') }}">
+              Login
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="btn btn-light btn-sm fw-bold"
+               href="{{ url_for('login_conta') }}"
+               style="color:#2d6a00;">
+              Criar Conta
+            </a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</nav>

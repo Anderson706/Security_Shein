@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-start"
+     style="
+       position:relative;
+       background:#000 url('{{ url_for('static', filename='fundo_dhl2.png') }}') center/cover no-repeat;
+       padding-top:140px;
+       padding-bottom:80px;
+     ">
+
+  <!-- overlay claro para leitura -->
+  <div style="
+    position:absolute;
+    inset:0;
+    background: rgba(255,255,255,.85);
+    pointer-events:none;
+  "></div>
+
+  <!-- Botão Home fixo -->
+  <a href="{{ url_for('home') }}"
+     style="
+       position:fixed; top:120px; left:16px; z-index:10;
+       display:flex; align-items:center; gap:8px; text-decoration:none;
+       padding:6px 10px; border-radius:10px;
+       background:rgba(0,0,0,0);
+       border:1px solid rgba(120,190,32,.85);
+       box-shadow:0 4px 10px rgba(0,0,0,.8);
+     ">
+    <span style="color:#78BE20; font-weight:800; font-size:.9rem;">Home</span>
+  </a>
+
+  <!-- Logo Leroy -->
+  <img src="{{ url_for('static', filename='logo_leroy.png') }}"
+       alt="Logo Leroy Merlin"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:64px; width:auto; z-index:10;
+         filter:drop-shadow(0 4px 8px rgba(0,0,0,.8));
+       ">
+
+  <div class="container position-relative" style="z-index:5;">
+    <div class="row g-4 justify-content-center">
+
+      <!-- COLUNA PERFIL -->
+      <div class="col-lg-5 col-md-6">
+        <div class="card shadow-lg"
+             style="
+               background:#ffffff;
+               border:2px solid #78BE20;
+               border-radius:12px;
+               box-shadow:0 18px 40px rgba(0,0,0,0.35);
+             ">
+
+          <!-- Cabeçalho -->
+          <div style="
+                background:#78BE20;
+                border-radius:10px 10px 0 0;
+                padding:12px 16px;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                border-bottom:2px solid #0b2a16;
+          ">
+            <span style="font-weight:900; color:#fff; font-size:0.9rem; letter-spacing:.04em;">
+              PERFIL DE USUÁRIO
+            </span>
+            <span style="font-size:0.75rem; color:#eafff0; font-weight:800;">
+              ID {{ current_user.id }}
+            </span>
+          </div>
+
+          <div class="p-3 p-md-4 d-flex gap-3">
+            <!-- FOTO -->
+            <div style="min-width:140px;">
+              <div style="
+                    width:140px; height:140px;
+                    border-radius:10px;
+                    border:2px solid #78BE20;
+                    overflow:hidden;
+                    background:#1a1a1a;
+                    box-shadow:0 10px 25px rgba(0,0,0,0.25);
+              ">
+                <img
+                  src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                          {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                        {% else %}
+                          {{ url_for('static', filename='foto_perfil/default.png') }}
+                        {% endif %}"
+                  alt="Foto de perfil"
+                  style="width:100%; height:100%; object-fit:cover;">
+              </div>
+
+              <!-- Botão Girar Foto -->
+              <form method="POST"
+                    action="{{ url_for('girar_foto_perfil') }}"
+                    class="mt-2 text-center">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit"
+                        class="btn btn-sm"
+                        style="
+                          background:#78BE20;
+                          border:1px solid rgba(0,0,0,.15);
+                          color:#fff;
+                          font-weight:900;
+                          border-radius:999px;
+                          padding:4px 12px;
+                          font-size:0.75rem;
+                        ">
+                  ⟳ Girar foto 90°
+                </button>
+              </form>
+            </div>
+
+            <!-- INFO -->
+            <div class="flex-grow-1">
+              <h4 class="mb-1" style="font-weight:900; color:#0b2a16;">
+                {{ current_user.username }}
+              </h4>
+              <p class="mb-2" style="color:#1f3b26; font-size:0.92rem; font-weight:600;">
+                {{ current_user.email }}
+              </p>
+              <p class="mb-2" style="color:#4d4d4d; font-size:0.82rem;">
+                Último acesso:
+                {% if current_user.last_login %}
+                  {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+                {% else %}
+                  —
+                {% endif %}
+              </p>
+
+              <div class="d-flex gap-2">
+                <div class="text-center flex-fill p-2"
+                     style="background:#f4fbf6; color:#0b2a16; border-radius:8px; border:1px solid rgba(120,190,32,.35);">
+                  <div style="font-size:0.72rem; font-weight:900; color:#007A3D;">ANC</div>
+                  <div style="font-weight:900; color:#0b2a16;">
+                    {{ total_anc if total_anc is defined else 0 }}
+                  </div>
+                </div>
+
+                <div class="text-center flex-fill p-2"
+                     style="background:#f4fbf6; color:#0b2a16; border-radius:8px; border:1px solid rgba(120,190,32,.35);">
+                  <div style="font-size:0.72rem; font-weight:900; color:#007A3D;">POSTS</div>
+                  <div style="font-weight:900; color:#0b2a16;">
+                    {{ total_posts if total_posts is defined else 0 }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rodapé card perfil -->
+          <div style="
+                background:#78BE20;
+                color:#0b2a16;
+                font-size:0.72rem;
+                text-align:center;
+                padding:8px 12px;
+                border-radius:0 0 10px 10px;
+                border-top:1px solid rgba(120,190,32,.35);
+                font-weight:800;
+          ">
+            LEROY MERLIN SECURITY · PERFIL
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA FORM EDIÇÃO -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card"
+             style="
+               background:#ffffff;
+               border-radius:12px;
+               border:2px solid #78BE20;
+               box-shadow:0 12px 32px rgba(0,0,0,0.25);
+             ">
+
+          <!-- Cabeçalho do card edição -->
+          <div style="
+                background:#78BE20;
+                border-radius:10px 10px 0 0;
+                padding:12px 16px;
+                border-bottom:2px solid #0b2a16;
+          ">
+            <h5 class="mb-0" style="color:#fff; font-weight:900; letter-spacing:.03em;">
+              Editar perfil
+            </h5>
+            <small style="color:rgba(255,255,255,.9); font-weight:600;">
+              Atualize seus dados abaixo.
+            </small>
+          </div>
+
+          <div class="card-body" style="color:#0b2a16;">
+            <form method="POST" action="" enctype="multipart/form-data" autocomplete="off" novalidate>
+              {{ form.csrf_token }}
+
+              <!-- username -->
+              <div class="mb-3">
+                {{ form.username.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
+                {% if form.username.errors %}
+                  {{ form.username(class_='form-control is-invalid bg-white text-dark') }}
+                  <div class="invalid-feedback">
+                    {% for erro in form.username.errors %}
+                      {{ erro }}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.username(class_='form-control bg-white text-dark') }}
+                {% endif %}
+              </div>
+
+              <!-- email -->
+              <div class="mb-3">
+                {{ form.email.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
+                {% if form.email.errors %}
+                  {{ form.email(class_='form-control is-invalid bg-white text-dark') }}
+                  <div class="invalid-feedback">
+                    {% for erro in form.email.errors %}
+                      {{ erro }}
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  {{ form.email(class_='form-control bg-white text-dark') }}
+                {% endif %}
+              </div>
+
+              <!-- foto_perfil -->
+              <div class="mb-3">
+                {{ form.foto_perfil.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
+                {{ form.foto_perfil(class='form-control bg-white text-dark') }}
+                {% if form.foto_perfil.errors %}
+                  {% for erro in form.foto_perfil.errors %}
+                    <span class="text-danger d-block">{{ erro }}</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+
+              {{ form.botao_submit_editarperfil(
+                   class_="btn w-100 mt-2",
+                   style="
+                     background:#78BE20;
+                     border:1px solid rgba(0,0,0,.15);
+                     color:#fff;
+                     font-weight:900;
+                     text-transform:uppercase;
+                     letter-spacing:.06em;
+                     border-radius:999px;
+                   "
+                 ) }}
+            </form>
+          </div>
+
+          <div style="
+                background:#78BE20;
+                color:#0b2a16;
+                font-size:0.72rem;
+                text-align:center;
+                padding:8px 10px;
+                border-radius:0 0 12px 12px;
+                border-top:1px solid rgba(120,190,32,.35);
+                font-weight:800;
+          ">
+            LEROY MERLIN SECURITY · GESTÃO DE PERFIL
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /row -->
+  </div><!-- /container -->
+</div>
+{% endblock %}

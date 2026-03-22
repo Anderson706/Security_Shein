@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="min-vh-100 d-flex align-items-center"
+     style="
+       position:relative;
+       background:#ffffff;
+     ">
+
+  <!-- Overlay leve branco/verde (bem sutil) -->
+  <div style="
+        position:absolute; inset:0;
+        background: linear-gradient(
+          180deg,
+          rgba(255,255,255,.98) 0%,
+          rgba(255,255,255,.96) 55%,
+          rgba(120,190,32,.14) 100%
+        );
+        pointer-events:none;
+  "></div>
+
+  <!-- Logo (mantido) -->
+  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
+       alt="Logo DHL"
+       style="
+         position:fixed; right:16px; bottom:16px;
+         height:170px; width:auto; z-index:10;
+         opacity:.92;
+         filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
+       ">
+
+  <!-- Link topo esquerdo: Pesquisar acesso (mantido) -->
+  <a href="{{ url_for('pesquisar_acesso') }}"
+     style="
+       position:fixed; top:150px; left:16px; z-index:10;
+       display:flex; align-items:center; gap:8px; text-decoration:none;
+       padding:8px 12px; border-radius:12px;
+       background:#ffffff;
+       border:2px solid #78BE20;
+       box-shadow:0 6px 16px rgba(0,0,0,.12);
+       color:#2f5f0f;
+       font-weight:800;
+       font-size:.9rem;
+     ">
+    Pesquisar Acesso
+  </a>
+
+  <!-- CONTEÚDO CENTRAL -->
+  <div class="container py-4 position-relative" style="z-index:5;">
+    <div class="row justify-content-center">
+      <div class="col-12 text-center">
+        <h1 class="mb-2"
+            style="color:#2f5f0f; font-weight:900; letter-spacing:.02em;">
+          Controle de Acessos
+        </h1>
+        <hr class="border-3 opacity-100"
+            style="border-color:#78BE20; max-width:320px; margin:0.25rem auto 1.5rem auto;">
+      </div>
+    </div>
+
+    <div class="row g-4 align-items-stretch justify-content-center">
+
+      <!-- COLUNA ESQUERDA – FORMULÁRIO (CENTRALIZADO E LIMPO) -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow"
+             style="
+               background:#ffffff;
+               border-radius:16px;
+               border:2px solid rgba(120,190,32,.55);
+               box-shadow:0 18px 40px rgba(0,0,0,.12);
+               overflow:hidden;
+             ">
+
+          <!-- Cabeçalho verde -->
+          <div style="
+                background: linear-gradient(135deg, #78BE20 0%, #62A815 100%);
+                padding:12px 18px;
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                border-bottom:2px solid #2f5f0f;
+          ">
+            <span style="font-weight:900; color:#fff; font-size:.95rem; letter-spacing:.05em;">
+              CONTROLE DE ACESSO · CADASTRO
+            </span>
+            {% if current_user.is_authenticated %}
+              <span style="font-size:.75rem; color:rgba(255,255,255,.95); font-weight:700;">
+                Operador: {{ current_user.username }}
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- Corpo do card -->
+          <div class="card-body" style="padding:18px 18px 14px 18px; color:#222;">
+            <form method="POST"
+                  action="{{ url_for('controle_acessos') }}"
+                  enctype="multipart/form-data">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+              {% set label_style = "color:#2f5f0f; font-weight:800; margin-bottom:.25rem;" %}
+              {% set help_style  = "color:#6b7280; font-size:.82rem;" %}
+
+              <div class="mb-3">
+                <label for="nome_solicitante" class="form-label" style="{{ label_style }}">Nome</label>
+                <input type="text"
+                       class="form-control"
+                       id="nome_solicitante" name="nome_solicitante"
+                       placeholder="Inserir Nome" aria-describedby="nomeHelp"
+                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+                <div id="nomeHelp" class="form-text" style="{{ help_style }}">
+                  Inserir o nome completo do colaborador.
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="data_ocorrencia" class="form-label" style="{{ label_style }}">Data do Registro</label>
+                <input type="date"
+                       class="form-control"
+                       id="data_ocorrencia" name="data_ocorrencia"
+                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+              </div>
+
+              <div class="mb-3">
+                <label for="empresa" class="form-label" style="{{ label_style }}">Empresa</label>
+                <select id="empresa" name="empresa"
+                        class="form-select form-select-lg"
+                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+                  <option selected disabled>Inserir Parceiro</option>
+                  <option>Addeco</option>
+                  <option>Sertec</option>
+                  <option>3P</option>
+                  <option>Polli</option>
+                  <option>TSI</option>
+                  <option>DHL</option>
+                  <option>Leadec</option>
+                  <option>4t</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="envolvido_gc" class="form-label" style="{{ label_style }}">CPF</label>
+                <input type="text"
+                       class="form-control"
+                       id="envolvido_gc" name="envolvido_gc"
+                       placeholder="Inserir o número do CPF"
+                       aria-describedby="envolvidoHelp"
+                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+                <div id="envolvidoHelp" class="form-text" style="{{ help_style }}">
+                  Todas as informações são confidenciais.
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="responsavel" class="form-label" style="{{ label_style }}">Responsável</label>
+                <select id="responsavel" name="responsavel"
+                        class="form-select form-select-lg"
+                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+                  <option selected disabled>Inserir o Responsável</option>
+                  <option>Anderson Souza</option>
+                  <option>Giovanna</option>
+                  <option>Juliana</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="turno" class="form-label" style="{{ label_style }}">Turno</label>
+                <select id="turno" name="turno"
+                        class="form-select form-select-lg"
+                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+                  <option value="" selected disabled>Inserir o Turno</option>
+                  <option value="1">1° Turno</option>
+                  <option value="2">2° Turno</option>
+                  <option value="3">3° Turno</option>
+                  <option value="4">4º Turno</option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="foto" class="form-label" style="{{ label_style }}">Inserir a Foto do Colaborador</label>
+                <input type="file"
+                       class="form-control"
+                       id="foto" name="foto" accept="image/*"
+                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
+              </div>
+
+              <button type="submit"
+                      class="btn mt-2 w-100"
+                      style="
+                        font-weight:900;
+                        background:#78BE20;
+                        border:2px solid #2f5f0f;
+                        color:#ffffff;
+                        text-transform:uppercase;
+                        letter-spacing:.08em;
+                        border-radius:999px;
+                        padding:.6rem 1rem;
+                        box-shadow:0 10px 18px rgba(120,190,32,.25);
+                      ">
+                Enviar
+              </button>
+            </form>
+          </div>
+
+          <!-- Rodapé -->
+          <div style="
+                background:#f4f6f4;
+                color:#2f5f0f;
+                font-size:0.75rem;
+                text-align:center;
+                padding:8px 12px;
+                border-top:1px solid rgba(120,190,32,.55);
+          ">
+            SECURITY · CONTROLE DE ACESSOS · USO RESTRITO
+          </div>
+        </div>
+      </div>
+
+      <!-- COLUNA DIREITA – PRÉ-VISUALIZAÇÃO (mantida, estilo Leroy) -->
+      <div class="col-lg-4">
+        <div class="card shadow"
+             style="
+               background:#fff;
+               border-radius:16px;
+               border:2px solid rgba(120,190,32,.35);
+               box-shadow:0 18px 40px rgba(0,0,0,.10);
+               overflow:hidden;
+             ">
+          <div style="
+                background:#ffffff;
+                padding:10px 14px;
+                border-bottom:2px solid rgba(120,190,32,.55);
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+          ">
+            <h5 class="mb-0"
+                style="color:#2f5f0f; font-weight:900; font-size:0.95rem;">
+              Pré-visualização
+            </h5>
+            <span style="font-size:.75rem; color:#78BE20; font-weight:900;">LIVE</span>
+          </div>
+
+          <div class="p-3">
+            <!-- Foto -->
+            <div class="text-center mb-3">
+              <img id="fotoPreview" src="" alt="Prévia da foto"
+                   style="
+                     max-width:100%;
+                     max-height:220px;
+                     border-radius:12px;
+                     display:none;
+                     border:1px solid rgba(0,0,0,.12);
+                   ">
+            </div>
+
+            <!-- Infos -->
+            <ul class="list-unstyled m-0" style="font-size:0.92rem; color:#222;">
+              <li class="mb-1"><strong style="color:#2f5f0f;">Nome:</strong> <span id="pv_nome">—</span></li>
+              <li class="mb-1"><strong style="color:#2f5f0f;">Data do Registro:</strong> <span id="pv_data">—</span></li>
+              <li class="mb-1"><strong style="color:#2f5f0f;">Empresa:</strong> <span id="pv_empresa">—</span></li>
+              <li class="mb-1"><strong style="color:#2f5f0f;">CPF:</strong> <span id="pv_cpf">—</span></li>
+              <li class="mb-1"><strong style="color:#2f5f0f;">Responsável:</strong> <span id="pv_responsavel">—</span></li>
+              <li class="mb-1"><strong style="color:#2f5f0f;">Turno:</strong> <span id="pv_turno">—</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- /row -->
+  </div> <!-- /container -->
+
+  <!-- JS para pré-visualização (mantido) -->
+  <script>
+    function val(id){ return document.getElementById(id)?.value || ''; }
+    function txt(id, value){
+      const el = document.getElementById(id);
+      if (el) el.textContent = value || '—';
+    }
+
+    function updatePreview(){
+      txt('pv_nome',        val('nome_solicitante'));
+      txt('pv_data',        val('data_ocorrencia'));
+      txt('pv_empresa',     val('empresa'));
+      txt('pv_cpf',         val('envolvido_gc'));
+      txt('pv_responsavel', val('responsavel'));
+      txt('pv_turno',       val('turno'));
+    }
+
+    ['nome_solicitante','data_ocorrencia','empresa','envolvido_gc','responsavel','turno']
+      .forEach(id => {
+        const el = document.getElementById(id);
+        if(el){
+          el.addEventListener('input', updatePreview);
+          el.addEventListener('change', updatePreview);
+        }
+      });
+    updatePreview();
+
+    const inputFoto = document.getElementById('foto');
+    const imgPrev   = document.getElementById('fotoPreview');
+
+    if (inputFoto && imgPrev) {
+      inputFoto.addEventListener('change', function(){
+        const file = this.files && this.files[0];
+        if (!file) {
+          imgPrev.style.display = 'none';
+          imgPrev.src = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = e => {
+          imgPrev.src = e.target.result;
+          imgPrev.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</div>
+{% endblock %}
