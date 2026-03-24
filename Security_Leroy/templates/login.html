@@ -1,196 +1,430 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       position:relative;
-       background:#ffffff;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <style>
-    .form-control,
-    .form-select {
-      background-color:#fff !important;
-      color:#111 !important;
-      border:1px solid #ccc;
+  .auth-page{
+    width:min(1280px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
+
+  .auth-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
+
+  .auth-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
+
+  .auth-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .auth-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .auth-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .auth-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .auth-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .auth-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .auth-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:720px;
+    line-height:1.5;
+  }
+
+  .auth-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .auth-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .auth-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:18px;
+  }
+
+  .auth-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .auth-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .auth-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .auth-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:10px;
+  }
+
+  .auth-card-title{
+    margin:0 0 6px 0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .auth-card-subtitle{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .auth-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-control::placeholder{
+    color:#8b93a1;
+  }
+
+  .form-check-input:checked{
+    background-color:var(--dhl-red);
+    border-color:var(--dhl-red);
+  }
+
+  .form-check-label{
+    color:#4b5563;
+    font-weight:600;
+  }
+
+  .dhl-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .dhl-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .auth-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .auth-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .auth-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .field-hint{
+    margin-top:6px;
+    font-size:12px;
+    color:#7b8494;
+  }
+
+  @media (max-width: 992px){
+    .auth-grid{
+      grid-template-columns:1fr;
     }
-    .form-control::placeholder {
-      color:#6c757d;
+  }
+
+  @media (max-width: 768px){
+    .auth-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
     }
-  </style>
 
-  <!-- Logo fixo no rodapé direito -->
-  <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:100px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+    .auth-hero{
+      padding:18px;
+      border-radius:20px;
+    }
 
-  <div class="container py-4 position-relative" style="z-index:5;">
-    <div class="row g-4 justify-content-center">
+    .auth-hero h1{
+      font-size:22px;
+    }
 
-      <div class="col-12">
-        <h1 class="text-center mb-2"
-            style="
-              color:#111;
-              font-weight:800;
-              letter-spacing:.02em;
-            ">
-          Acesso ao Portal Security
-        </h1>
-        <hr style="max-width:360px; margin:0 auto 24px auto; border-color:#78BE20;">
-      </div>
+    .auth-card-header,
+    .auth-card-body{
+      padding:18px;
+    }
 
-      <!-- LOGIN -->
-      <div class="col-md-6">
-        <div class="card shadow-sm"
-             style="
-               background:#ffffff;
-               border:2px solid #ffcc00;
-               border-radius:12px;
-             ">
+    .auth-logo-box img{
+      height:36px;
+    }
+  }
+</style>
 
-          <!-- Cabeçalho -->
-          <div style="
-                background:#ffcc00;
-                border-radius:10px 10px 0 0;
-                padding:12px 16px;
-                border-bottom:2px solid #ffcc00;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
-              LOGIN
-            </span>
-          </div>
+<div class="auth-page">
 
-          <div class="card-body p-4">
-            <form method="POST" autocomplete="off">
-              {{ form_login.csrf_token }}
+  <div class="auth-hero">
+    <div class="auth-hero-content">
+      <div class="auth-brand">
+        <div class="auth-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
 
-              <div class="mb-3">
-                {{ form_login.email.label(class_='form-label fw-semibold') }}
-                {{ form_login.email(class_='form-control') }}
-              </div>
-
-              <div class="mb-3">
-                {{ form_login.senha.label(class_='form-label fw-semibold') }}
-                {{ form_login.senha(class_='form-control', autocomplete='new-password') }}
-              </div>
-
-              <div class="mb-3 form-check">
-                {{ form_login.lembrar_dados(class_='form-check-input') }}
-                {{ form_login.lembrar_dados.label(class_='form-check-label') }}
-              </div>
-
-              {{ form_login.botao_submit_login(
-                class_="btn w-100",
-                style="
-                  background:#ffcc00;
-                  border:1px solid #ffcc00;
-                  color:#fff;
-                  font-weight:800;
-                  text-transform:uppercase;
-                  letter-spacing:.06em;
-                  border-radius:999px;
-                "
-              ) }}
-            </form>
-          </div>
-
-          <div style="
-                background:#ffcc00;
-                color:#111;
-                font-size:0.75rem;
-                text-align:center;
-                padding:6px 10px;
-                border-radius:0 0 10px 10px;
-                border-top:1px solid #ffcc00;
-          ">
-            DHL SECURITY · LOGIN
-          </div>
+        <div>
+          <div class="auth-badge">DHL Security Dashboard</div>
+          <h1>Acesso ao Portal Security</h1>
+          <p>
+            Entre com suas credenciais para acessar os módulos internos da operação
+            ou crie uma nova conta para utilização do ambiente corporativo.
+          </p>
         </div>
       </div>
 
-      <!-- CRIAR CONTA -->
-      <div class="col-md-6">
-        <div class="card shadow-sm"
-             style="
-               background:#ffffff;
-               border:2px solid #ffcc00;
-               border-radius:12px;
-             ">
-
-          <!-- Cabeçalho -->
-          <div style="
-                background:#ffcc00;
-                border-radius:10px 10px 0 0;
-                padding:12px 16px;
-                border-bottom:2px solid #ffcc00;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
-              CRIAR CONTA
-            </span>
-          </div>
-
-          <div class="card-body p-4">
-            <form method="POST" autocomplete="off">
-              {{ form_criarconta.csrf_token }}
-
-              <div class="mb-3">
-                {{ form_criarconta.username.label(class_='form-label fw-semibold') }}
-                {{ form_criarconta.username(class_='form-control') }}
-              </div>
-
-              <div class="mb-3">
-                {{ form_criarconta.email.label(class_='form-label fw-semibold') }}
-                {{ form_criarconta.email(class_='form-control') }}
-              </div>
-
-              <div class="mb-3">
-                {{ form_criarconta.senha.label(class_='form-label fw-semibold') }}
-                {{ form_criarconta.senha(class_='form-control', autocomplete='new-password') }}
-              </div>
-
-              <div class="mb-3">
-                {{ form_criarconta.confirmacao.label(class_='form-label fw-semibold') }}
-                {{ form_criarconta.confirmacao(class_='form-control', autocomplete='new-password') }}
-              </div>
-
-              {{ form_criarconta.botao_submit_criarconta(
-                class_="btn w-100",
-                style="
-                  background:#ffcc00;
-                  border:1px solid #ffcc00;
-                  color:#fff;
-                  font-weight:800;
-                  text-transform:uppercase;
-                  letter-spacing:.06em;
-                  border-radius:999px;
-                "
-              ) }}
-            </form>
-          </div>
-
-          <div style="
-                background:#ffcc00;
-                color:#111;
-                font-size:0.75rem;
-                text-align:center;
-                padding:6px 10px;
-                border-radius:0 0 10px 10px;
-                border-top:1px solid #ffcc00;
-          ">
-            DHL SECURITY · NOVO USUÁRIO
-          </div>
-        </div>
+      <div class="auth-chip-group">
+        <div class="auth-chip">Uso Restrito</div>
+        <div class="auth-chip">Ambiente Interno</div>
       </div>
-
     </div>
   </div>
+
+  <div class="auth-grid">
+
+    <!-- LOGIN -->
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <div class="auth-card-badge">Login</div>
+        <h2 class="auth-card-title">Entrar no sistema</h2>
+        <p class="auth-card-subtitle">
+          Informe seus dados de acesso para continuar no portal corporativo.
+        </p>
+      </div>
+
+      <div class="auth-card-body">
+        <form method="POST" autocomplete="off">
+          {{ form_login.csrf_token }}
+
+          <div class="mb-3">
+            {{ form_login.email.label(class_='form-label') }}
+            {{ form_login.email(class_='form-control', placeholder='Digite seu e-mail corporativo') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_login.senha.label(class_='form-label') }}
+            {{ form_login.senha(class_='form-control', autocomplete='new-password', placeholder='Digite sua senha') }}
+          </div>
+
+          <div class="mb-3 form-check">
+            {{ form_login.lembrar_dados(class_='form-check-input') }}
+            {{ form_login.lembrar_dados.label(class_='form-check-label') }}
+          </div>
+
+          {{ form_login.botao_submit_login(class_='btn dhl-submit') }}
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        <small>DHL SECURITY · LOGIN CORPORATIVO</small>
+        <span class="auth-footer-badge">Acesso protegido</span>
+      </div>
+    </div>
+
+    <!-- CRIAR CONTA -->
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <div class="auth-card-badge">Novo usuário</div>
+        <h2 class="auth-card-title">Criar conta</h2>
+        <p class="auth-card-subtitle">
+          Cadastre um novo usuário para acesso aos módulos da plataforma.
+        </p>
+      </div>
+
+      <div class="auth-card-body">
+        <form method="POST" autocomplete="off">
+          {{ form_criarconta.csrf_token }}
+
+          <div class="mb-3">
+            {{ form_criarconta.username.label(class_='form-label') }}
+            {{ form_criarconta.username(class_='form-control', placeholder='Digite seu usuário') }}
+            <div class="field-hint">Use um identificador simples para login no sistema.</div>
+          </div>
+
+          <div class="mb-3">
+            {{ form_criarconta.email.label(class_='form-label') }}
+            {{ form_criarconta.email(class_='form-control', placeholder='Digite seu e-mail') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_criarconta.senha.label(class_='form-label') }}
+            {{ form_criarconta.senha(class_='form-control', autocomplete='new-password', placeholder='Crie uma senha segura') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form_criarconta.confirmacao.label(class_='form-label') }}
+            {{ form_criarconta.confirmacao(class_='form-control', autocomplete='new-password', placeholder='Repita a senha') }}
+          </div>
+
+          {{ form_criarconta.botao_submit_criarconta(class_='btn dhl-submit') }}
+        </form>
+      </div>
+
+      <div class="auth-footer">
+        <small>DHL SECURITY · CADASTRO DE USUÁRIO</small>
+        <span class="auth-footer-badge">Ambiente controlado</span>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}
