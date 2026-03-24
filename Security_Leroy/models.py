@@ -18,40 +18,35 @@ def load_usuario(id_usuario):
 
 
 # ---------- Usuários e Post ----------
-class Usuarios(UserMixin, db.Model):
+class Usuarios(db.Model, UserMixin):
     __tablename__ = "usuarios"
 
+    solicitacoes_imagem = relationship(
+        "SolicitacaoImagem",
+        backref="operador",
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
+
     id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True, index=True)
+    senha = db.Column(db.String(255), nullable=False)
+    # usado nos templates: 'foto_perfil'
+    foto_perfil = db.Column(db.String(255), nullable=False, default="default.png")
+    cursos = db.Column(db.String(255), nullable=False, default="Não Informado")
 
-    # ===== DADOS PRINCIPAIS =====
-    nome = db.Column(db.String(120), nullable=False)
-    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-
-    # ===== SEGURANÇA =====
-    password_hash = db.Column(db.String(255), nullable=False)
-
-    # ===== CONTROLE =====
-    role = db.Column(db.String(20), default="USER")  # ADMIN / USER / SUPERVISOR
-    is_active = db.Column(db.Boolean, default=True)
-
-    # ===== AUDITORIA =====
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime)
-
-    # ===== MÉTODOS =====
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    # Flask-Login já usa UserMixin, mas mantemos claro:
-    def get_id(self):
-        return str(self.id)
+    # 1:N com Post
+    posts = relationship(
+        "Post",
+        backref=db.backref("autor", lazy=True),
+        lazy=True,
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
-        return f"<Usuario {self.nome} ({self.email})>"
+        return f"<Usuarios {self.id} {self.email}>"
+
 
 class Post(db.Model):
     __tablename__ = "post"

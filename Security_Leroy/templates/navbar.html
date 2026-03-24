@@ -7,20 +7,22 @@
 
       <div class="dhl-brand-text">
         <strong>DHL Security</strong>
-        <small>Guarulhos - SP • Centro Logístico - Shein </small>
+        <small>Guarulhos - SP • Centro Logístico - Shein</small>
       </div>
     </a>
 
     <!-- MOBILE -->
     <button class="navbar-toggler dhl-toggler" type="button"
             data-bs-toggle="collapse"
-            data-bs-target="#navbarMenu">
+            data-bs-target="#navbarMenu"
+            aria-controls="navbarMenu"
+            aria-expanded="false"
+            aria-label="Alternar navegação">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <!-- ===== MENU ===== -->
     <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
-
       <ul class="navbar-nav align-items-lg-center gap-lg-2">
 
         <!-- STATUS + DATA -->
@@ -39,12 +41,13 @@
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle dhl-menu-btn"
              href="#"
-             data-bs-toggle="dropdown">
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
             Módulos
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end dhl-dropdown shadow-sm">
-
             <li><a class="dropdown-item" href="{{ url_for('mural') }}">Mural</a></li>
             <li><a class="dropdown-item" href="{{ url_for('usuarios') }}">Usuários</a></li>
             <li><a class="dropdown-item" href="{{ url_for('contatos') }}">Contatos</a></li>
@@ -58,26 +61,29 @@
             <li><a class="dropdown-item" href="{{ url_for('acessos') }}">Controle de Acesso</a></li>
             <li><a class="dropdown-item" href="{{ url_for('post') }}">Postagens</a></li>
             <li><a class="dropdown-item" href="{{ url_for('dash') }}">Dashboard</a></li>
-
           </ul>
         </li>
 
         <!-- ===== USUÁRIO ===== -->
         {% if current_user.is_authenticated %}
+        {% set display_name = current_user.username or current_user.email or "Usuário" %}
+        {% set user_role = current_user.role if current_user.role is defined and current_user.role else "Usuário" %}
+
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle dhl-user"
              href="#"
-             data-bs-toggle="dropdown">
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
 
             <div class="user-avatar">
-              {{ current_user.nome[:1] }}
+              {{ display_name[0]|upper }}
             </div>
 
             <div class="user-info">
-              <strong>{{ current_user.nome }}</strong>
-              <small>{{ current_user.role or "Usuário" }}</small>
+              <strong>{{ display_name }}</strong>
+              <small>{{ user_role }}</small>
             </div>
-
           </a>
 
           <ul class="dropdown-menu dropdown-menu-end dhl-dropdown shadow-sm">
@@ -110,7 +116,6 @@
 </nav>
 
 <style>
-/* ===== BASE ===== */
 .dhl-navbar{
   background:#ffcc00;
   border-bottom:1px solid rgba(0,0,0,.08);
@@ -123,7 +128,6 @@
   padding:0 10px;
 }
 
-/* ===== BRAND ===== */
 .dhl-brand{
   gap:10px;
 }
@@ -133,17 +137,24 @@
   margin-left:-4px;
 }
 
+.dhl-brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+}
+
 .dhl-brand-text strong{
   font-size:1rem;
   font-weight:900;
+  color:#111;
 }
 
 .dhl-brand-text small{
   font-size:.72rem;
   color:#444;
+  font-weight:600;
 }
 
-/* ===== STATUS ===== */
 .dhl-status{
   display:flex;
   align-items:center;
@@ -160,28 +171,34 @@
   background:#22c55e;
 }
 
-/* ===== CLOCK ===== */
 .dhl-clock{
   font-size:.8rem;
   font-weight:600;
   color:#333;
 }
 
-/* ===== MENU BTN ===== */
 .dhl-menu-btn{
   background:#d40511;
   color:#fff !important;
   border-radius:999px;
   padding:.5rem 1rem !important;
   font-weight:700;
+  border:1px solid #b3030e;
+  transition:.2s ease;
 }
 
-/* ===== USER ===== */
+.dhl-menu-btn:hover,
+.dhl-menu-btn:focus{
+  background:#b3030e;
+  color:#fff !important;
+}
+
 .dhl-user{
   display:flex;
   align-items:center;
   gap:8px;
   padding:.3rem .6rem !important;
+  color:#111 !important;
 }
 
 .user-avatar{
@@ -194,6 +211,8 @@
   align-items:center;
   justify-content:center;
   font-weight:800;
+  font-size:.9rem;
+  text-transform:uppercase;
 }
 
 .user-info{
@@ -204,6 +223,7 @@
 
 .user-info strong{
   font-size:.85rem;
+  color:#111;
 }
 
 .user-info small{
@@ -211,40 +231,84 @@
   color:#555;
 }
 
-/* ===== DROPDOWN ===== */
 .dhl-dropdown{
   border:none;
   border-radius:14px;
+  overflow:hidden;
 }
 
-/* ===== BOTÕES ===== */
+.dhl-dropdown .dropdown-item{
+  padding:.68rem 1rem;
+  font-size:.92rem;
+  color:#222;
+  font-weight:500;
+}
+
+.dhl-dropdown .dropdown-item:hover{
+  background:#fff7d6;
+  color:#000;
+}
+
 .dhl-btn-solid{
   background:#d40511;
   color:#fff;
   border-radius:999px;
   font-weight:700;
+  border:1px solid #b3030e;
+  padding:.5rem 1rem;
+}
+
+.dhl-btn-solid:hover{
+  background:#b3030e;
+  color:#fff;
 }
 
 .dhl-btn-outline{
   border:1px solid #b3030e;
   color:#b3030e;
   border-radius:999px;
+  font-weight:700;
+  background:#fff7f7;
+  padding:.5rem .95rem;
 }
 
-/* ===== RESPONSIVO ===== */
+.dhl-btn-outline:hover{
+  background:#ffe7e7;
+  color:#8f0009;
+}
+
+.dhl-toggler{
+  border:1px solid rgba(0,0,0,.15);
+  border-radius:10px;
+  padding:.35rem .55rem;
+}
+
+.dhl-toggler:focus{
+  box-shadow:none;
+}
+
+.navbar-toggler-icon{
+  filter:invert(1);
+}
+
 @media (max-width:768px){
   .dhl-brand-text small{
     display:none;
+  }
+
+  .dhl-brand img{
+    height:38px;
   }
 }
 </style>
 
 <script>
 function updateClock(){
+  const el = document.getElementById("clock");
+  if (!el) return;
   const now = new Date();
-  const formatted = now.toLocaleString("pt-BR");
-  document.getElementById("clock").innerText = formatted;
+  el.innerText = now.toLocaleString("pt-BR");
 }
-setInterval(updateClock,1000);
+setInterval(updateClock, 1000);
 updateClock();
 </script>
