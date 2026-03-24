@@ -1,47 +1,49 @@
-<nav class="navbar navbar-expand-lg navbar-dark"
-     style="
-       background:#78BE20;
-       box-shadow:0 3px 8px rgba(0,0,0,0.35);
-     ">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-lg dhl-navbar">
+  <div class="container-fluid dhl-navbar-inner">
 
-    <!-- Brand -->
-    <a class="navbar-brand d-flex align-items-center"
-       href="{{ url_for('home') }}"
-       style="font-weight:700; letter-spacing:.03em; color:#fff;">
-      <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
-           alt="Security Leroy Merlin"
-           style="height:34px; margin-right:8px;">
-      <span>Home</span>
+    <!-- ===== BRAND ===== -->
+    <a class="navbar-brand d-flex align-items-center dhl-brand" href="{{ url_for('home') }}">
+      <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+
+      <div class="dhl-brand-text">
+        <strong>DHL Security</strong>
+        <small>Guarulhos - SP • Centro Logístico - Shein </small>
+      </div>
     </a>
 
-
-
-    <!-- Toggler mobile -->
-    <button class="navbar-toggler" type="button"
+    <!-- MOBILE -->
+    <button class="navbar-toggler dhl-toggler" type="button"
             data-bs-toggle="collapse"
             data-bs-target="#navbarMenu">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse justify-content-end"
-         id="navbarMenu">
+    <!-- ===== MENU ===== -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarMenu">
 
-      <!-- MENU SUSPENSO (direita) -->
-      <ul class="navbar-nav align-items-lg-center">
+      <ul class="navbar-nav align-items-lg-center gap-lg-2">
 
-        <!-- Dropdown principal -->
-        <li class="nav-item dropdown me-3">
-          <a class="nav-link dropdown-toggle fw-semibold"
+        <!-- STATUS + DATA -->
+        <li class="nav-item d-none d-lg-flex align-items-center me-2">
+          <div class="dhl-status">
+            <span class="dot"></span>
+            Online
+          </div>
+        </li>
+
+        <li class="nav-item d-none d-lg-flex align-items-center me-3">
+          <div id="clock" class="dhl-clock"></div>
+        </li>
+
+        <!-- MENU PRINCIPAL -->
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle dhl-menu-btn"
              href="#"
-             role="button"
-             data-bs-toggle="dropdown"
-             aria-expanded="false"
-             style="color:#fff;">
-            Menu
+             data-bs-toggle="dropdown">
+            Módulos
           </a>
 
-          <ul class="dropdown-menu dropdown-menu-end shadow">
+          <ul class="dropdown-menu dropdown-menu-end dhl-dropdown shadow-sm">
 
             <li><a class="dropdown-item" href="{{ url_for('mural') }}">Mural</a></li>
             <li><a class="dropdown-item" href="{{ url_for('usuarios') }}">Usuários</a></li>
@@ -57,34 +59,192 @@
             <li><a class="dropdown-item" href="{{ url_for('post') }}">Postagens</a></li>
             <li><a class="dropdown-item" href="{{ url_for('dash') }}">Dashboard</a></li>
 
-            {% if current_user.is_authenticated %}
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="{{ url_for('criar_post') }}">Criar Post</a></li>
-              <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Meu Perfil</a></li>
-              <li><a class="dropdown-item text-danger" href="{{ url_for('sair') }}">Sair</a></li>
-            {% endif %}
           </ul>
         </li>
 
-        <!-- LOGIN / CRIAR CONTA (fora do menu) -->
-        {% if not current_user.is_authenticated %}
-          <li class="nav-item me-2">
-            <a class="btn btn-outline-light btn-sm"
-               href="{{ url_for('login_conta') }}">
-              Login
-            </a>
-          </li>
+        <!-- ===== USUÁRIO ===== -->
+        {% if current_user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle dhl-user"
+             href="#"
+             data-bs-toggle="dropdown">
 
-          <li class="nav-item">
-            <a class="btn btn-light btn-sm fw-bold"
-               href="{{ url_for('login_conta') }}"
-               style="color:#2d6a00;">
-              Criar Conta
-            </a>
-          </li>
+            <div class="user-avatar">
+              {{ current_user.nome[:1] }}
+            </div>
+
+            <div class="user-info">
+              <strong>{{ current_user.nome }}</strong>
+              <small>{{ current_user.role or "Usuário" }}</small>
+            </div>
+
+          </a>
+
+          <ul class="dropdown-menu dropdown-menu-end dhl-dropdown shadow-sm">
+            <li><a class="dropdown-item" href="{{ url_for('perfil') }}">Meu Perfil</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('criar_post') }}">Criar Post</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('sair') }}">Sair</a></li>
+          </ul>
+        </li>
+        {% else %}
+
+        <!-- LOGIN -->
+        <li class="nav-item">
+          <a class="btn dhl-btn-outline" href="{{ url_for('login_conta') }}">
+            Login
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="btn dhl-btn-solid" href="{{ url_for('login_conta') }}">
+            Criar Conta
+          </a>
+        </li>
+
         {% endif %}
 
       </ul>
     </div>
   </div>
 </nav>
+
+<style>
+/* ===== BASE ===== */
+.dhl-navbar{
+  background:#ffcc00;
+  border-bottom:1px solid rgba(0,0,0,.08);
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+.dhl-navbar-inner{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 10px;
+}
+
+/* ===== BRAND ===== */
+.dhl-brand{
+  gap:10px;
+}
+
+.dhl-brand img{
+  height:46px;
+  margin-left:-4px;
+}
+
+.dhl-brand-text strong{
+  font-size:1rem;
+  font-weight:900;
+}
+
+.dhl-brand-text small{
+  font-size:.72rem;
+  color:#444;
+}
+
+/* ===== STATUS ===== */
+.dhl-status{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:.8rem;
+  font-weight:700;
+  color:#0a7a2f;
+}
+
+.dhl-status .dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#22c55e;
+}
+
+/* ===== CLOCK ===== */
+.dhl-clock{
+  font-size:.8rem;
+  font-weight:600;
+  color:#333;
+}
+
+/* ===== MENU BTN ===== */
+.dhl-menu-btn{
+  background:#d40511;
+  color:#fff !important;
+  border-radius:999px;
+  padding:.5rem 1rem !important;
+  font-weight:700;
+}
+
+/* ===== USER ===== */
+.dhl-user{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:.3rem .6rem !important;
+}
+
+.user-avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:#d40511;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+}
+
+.user-info{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+
+.user-info strong{
+  font-size:.85rem;
+}
+
+.user-info small{
+  font-size:.7rem;
+  color:#555;
+}
+
+/* ===== DROPDOWN ===== */
+.dhl-dropdown{
+  border:none;
+  border-radius:14px;
+}
+
+/* ===== BOTÕES ===== */
+.dhl-btn-solid{
+  background:#d40511;
+  color:#fff;
+  border-radius:999px;
+  font-weight:700;
+}
+
+.dhl-btn-outline{
+  border:1px solid #b3030e;
+  color:#b3030e;
+  border-radius:999px;
+}
+
+/* ===== RESPONSIVO ===== */
+@media (max-width:768px){
+  .dhl-brand-text small{
+    display:none;
+  }
+}
+</style>
+
+<script>
+function updateClock(){
+  const now = new Date();
+  const formatted = now.toLocaleString("pt-BR");
+  document.getElementById("clock").innerText = formatted;
+}
+setInterval(updateClock,1000);
+updateClock();
+</script>

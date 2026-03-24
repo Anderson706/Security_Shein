@@ -1,137 +1,318 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 position-relative d-flex align-items-center justify-content-center"
-     style="
-       background: url('{{ url_for('static', filename='logo_fundo2.jpg') }}')
-                   center/cover no-repeat;
-       padding:60px 20px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --border:#e2e2e2;
+    --text:#222;
+    --muted:#666;
+    --bg:#fafafa;
+  }
 
-    <!-- overlay claro para leitura -->
-  <div style="
-    position:absolute;
-    inset:0;
-    background: rgba(255,255,255,.85);
-    pointer-events:none;
-  "></div>
+  *{ box-sizing:border-box; }
 
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial, sans-serif;
+  }
 
-  <!-- logo -->
- <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
-     alt="Logo Leroy Security"
-     style="
-       position:absolute;
-       top:15px;
-       left:18px;
-       height:140px;
-       width:auto;
-     ">
+  .wrap{
+    max-width:1100px;
+    margin:22px auto;
+    padding:0 16px;
+  }
 
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    background:var(--dhl-yellow);
+    padding:14px 16px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+    flex-wrap:wrap;
+  }
 
-  <!-- texto topo direito -->
-  <div style="position:absolute; top:65px; right:40px; text-align:right;">
-    <h1 style="color:#000; font-size:1.4rem; margin-bottom:.25rem;">
-      Bem-vindo à Security
-    </h1>
-    <p style="color:#555; font-size:.9rem; margin:0;">
-      A segurança só está completa com você.
-    </p>
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand img{
+    height:44px;
+    width:auto;
+  }
+
+  .brand h1{
+    margin:0;
+    font-size:18px;
+    text-transform:uppercase;
+    color:#000;
+  }
+
+  .brand span{
+    display:block;
+    font-size:12px;
+    color:#333;
+    margin-top:2px;
+  }
+
+  .actions a{
+    display:inline-block;
+    text-decoration:none;
+    font-weight:700;
+    background:var(--dhl-red);
+    color:#fff;
+    padding:10px 14px;
+    border-radius:18px;
+    transition:.2s ease;
+  }
+
+  .actions a:hover{
+    filter:brightness(.95);
+    color:#fff;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-top:16px;
+  }
+
+  .portal-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+
+  .portal-title{
+    margin:0 0 6px 0;
+    font-size:20px;
+    color:#000;
+    font-weight:700;
+  }
+
+  .portal-subtitle{
+    margin:0;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .modules{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:14px;
+    margin-top:16px;
+  }
+
+  @media (max-width: 900px){
+    .modules{
+      grid-template-columns:repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px){
+    .modules{
+      grid-template-columns:1fr;
+    }
+  }
+
+  .module-link{
+    text-decoration:none;
+    color:inherit;
+    display:block;
+    height:100%;
+  }
+
+  .module-card{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:16px;
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    transition:.2s ease;
+    height:100%;
+  }
+
+  .module-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 4px 12px rgba(0,0,0,.09);
+  }
+
+  .module-icon{
+    width:52px;
+    height:52px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    background:#fff4cc;
+    border:1px solid #f2d36a;
+    margin-bottom:12px;
+  }
+
+  .module-card h2{
+    margin:0 0 6px 0;
+    font-size:16px;
+    color:#000;
+  }
+
+  .module-card .line{
+    margin:3px 0;
+    font-size:13px;
+    color:#333;
+  }
+
+  .module-card .desc{
+    margin-top:8px;
+    font-size:13px;
+    color:#222;
+    border-left:4px solid var(--dhl-red);
+    padding-left:10px;
+    line-height:1.45;
+    min-height:52px;
+  }
+
+  .statusbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px dashed var(--border);
+    flex-wrap:wrap;
+  }
+
+  .badge{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:12px;
+    border:1px solid var(--border);
+    background:#fff4cc;
+    border-color:#f2d36a;
+  }
+
+  .empty{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:18px;
+    text-align:center;
+    color:var(--muted);
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand">
+      <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="Logo DHL">
+      <div>
+        <h1>Portal de Segurança</h1>
+        <span>Módulos de acesso rápido da operação</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <a href="{{ url_for('ocorrencias') }}">Acessar Portal</a>
+    </div>
   </div>
 
-  <!-- conteúdo central -->
-  <div class="container" style="max-width:1050px;">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card border-0 shadow"
-             style="border-radius:16px;">
-          <div class="card-body p-4 p-md-5">
+  <div class="grid">
+    <div class="portal-card">
+      <h2 class="portal-title">Bem-vindo à Security</h2>
+      <p class="portal-subtitle">
+        Acesse os módulos abaixo para registrar, consultar e acompanhar as operações internas de segurança.
+      </p>
 
-            <h2 class="mb-2" style="color:#000; font-size:1.5rem; font-weight:700;">
-              Portal de Segurança
-            </h2>
-            <p class="mb-4" style="color:#555;">
-              Acesse os módulos abaixo para registrar e acompanhar as operações de segurança.
-            </p>
+      <div class="modules">
 
-            <div class="row g-3">
-
-              {% set box_style = "background:#f8f9fa; border:1px solid #ddd; border-radius:12px; padding:14px; color:#000;" %}
-
-              <!-- Ocorrências -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('ocorrencias') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">📝</div>
-                  <div style="font-weight:600;">Ocorrências</div>
-                  <small style="color:#777;">Registrar fatos</small>
-                </a>
-              </div>
-
-              <!-- ANC -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('anc') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">📋</div>
-                  <div style="font-weight:600;">ANC</div>
-                  <small style="color:#777;">Anomalias / conduta</small>
-                </a>
-              </div>
-
-              <!-- Armários -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('armarios') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">🔐</div>
-                  <div style="font-weight:600;">Armários</div>
-                  <small style="color:#777;">Reserva / controle</small>
-                </a>
-              </div>
-
-              <!-- Achados -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('achados') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">📦</div>
-                  <div style="font-weight:600;">Achados</div>
-                  <small style="color:#777;">Registrar objeto</small>
-                </a>
-              </div>
-
-              <!-- Post Achados -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('post_achados') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">🗂️</div>
-                  <div style="font-weight:600;">Post. Achados</div>
-                  <small style="color:#777;">Lista de objetos</small>
-                </a>
-              </div>
-
-              <!-- Investigação -->
-              <div class="col-6 col-md-4">
-                <a href="{{ url_for('investigacoes') }}"
-                   class="text-decoration-none d-block h-100"
-                   style="{{ box_style }}">
-                  <div style="font-size:2rem;">🕵️</div>
-                  <div style="font-weight:600;">Solicitar investigação</div>
-                  <small style="color:#777;">Levantamento de imagem</small>
-                </a>
-              </div>
-
+        <a href="{{ url_for('ocorrencias') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">📝</div>
+            <h2>Ocorrências</h2>
+            <div class="line"><b>Módulo:</b> Registro operacional</div>
+            <div class="desc">Registrar fatos, desvios e eventos relacionados à rotina de segurança.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
             </div>
-
-            <p class="mt-4 mb-0" style="font-size:.75rem; color:#888;">
-              Sistema Interno · Uso Restrito
-            </p>
-
           </div>
-        </div>
+        </a>
+
+        <a href="{{ url_for('anc') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">📋</div>
+            <h2>ANC</h2>
+            <div class="line"><b>Módulo:</b> Não conformidades</div>
+            <div class="desc">Lançamento e acompanhamento de anomalias, condutas e tratativas.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('armarios') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">🔐</div>
+            <h2>Armários</h2>
+            <div class="line"><b>Módulo:</b> Controle interno</div>
+            <div class="desc">Reserva, gerenciamento e consulta dos armários operacionais.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('achados') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">📦</div>
+            <h2>Achados</h2>
+            <div class="line"><b>Módulo:</b> Objetos localizados</div>
+            <div class="desc">Registrar objetos encontrados e manter a rastreabilidade do item.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('post_achados') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">🗂️</div>
+            <h2>Post. Achados</h2>
+            <div class="line"><b>Módulo:</b> Consulta de registros</div>
+            <div class="desc">Visualizar a lista de objetos cadastrados e acompanhar as tratativas.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
+            </div>
+          </div>
+        </a>
+
+        <a href="{{ url_for('investigacoes') }}" class="module-link">
+          <div class="module-card">
+            <div class="module-icon">🕵️</div>
+            <h2>Solicitar investigação</h2>
+            <div class="line"><b>Módulo:</b> Apoio investigativo</div>
+            <div class="desc">Abrir solicitações para levantamento de imagens e análise de ocorrências.</div>
+            <div class="statusbar">
+              <span class="badge">Acesso disponível</span>
+            </div>
+          </div>
+        </a>
+
       </div>
     </div>
   </div>
