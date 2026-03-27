@@ -1,188 +1,514 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:120px;
-       padding-bottom:70px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  <!-- Logo -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; width:auto; z-index:10;
-         opacity:.85;
-       ">
+  .edit-found-page{
+    width:min(1180px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container position-relative" style="z-index:5; max-width:780px;">
-    <div class="row justify-content-center">
-      <div class="col-12">
+  .edit-found-top{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
 
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:1px solid #dcdcdc;
-             ">
+  .edit-found-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+  }
 
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:16px 16px 0 0;
-                padding:12px 18px;
-          ">
-            <h2 class="mb-0"
-                style="
-                  color:#fff;
-                  font-size:1.05rem;
-                  font-weight:700;
-                  letter-spacing:.04em;
-                ">
-              Editar Achado / Perdido
-            </h2>
-          </div>
+  .edit-found-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
 
-          <div class="card-body p-4" style="color:#222;">
-            <form method="POST"
-                  enctype="multipart/form-data"
-                  autocomplete="off">
+  .edit-found-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  .edit-found-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-              <!-- Identificação -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Identificação
-                </label>
-                <input type="text"
-                       name="identificacao"
-                       class="form-control"
-                       value="{{ item.identificacao or '' }}"
-                       placeholder="Ex.: nome de quem encontrou, etiqueta, etc.">
-              </div>
+  .edit-found-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-              <!-- Descrição -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Descrição do objeto *
-                </label>
-                <textarea name="descricao"
-                          class="form-control"
-                          rows="4"
-                          required>{{ item.descricao_objeto or '' }}</textarea>
-              </div>
+  .edit-found-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-              <!-- Local -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Local encontrado
-                </label>
-                <input type="text"
-                       name="local_encontrado"
-                       class="form-control"
-                       value="{{ item.local_encontrado or '' }}">
-              </div>
+  .edit-found-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-              <!-- Data/Hora -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Data/Hora (texto livre)
-                </label>
-                <input type="text"
-                       name="data_hora_info"
-                       class="form-control"
-                       value="{{ item.data_hora_info or '' }}">
-                <div class="form-text text-muted">
-                  Ex.: 12/10/2025 14:30
-                </div>
-              </div>
+  .edit-found-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-              <!-- Turno -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Turno
-                </label>
-                <select name="turno" class="form-select">
-                  <option value="">—</option>
-                  <option value="1" {{ 'selected' if item.turno == 1 else '' }}>1</option>
-                  <option value="2" {{ 'selected' if item.turno == 2 else '' }}>2</option>
-                  <option value="3" {{ 'selected' if item.turno == 3 else '' }}>3</option>
-                  <option value="4" {{ 'selected' if item.turno == 4 else '' }}>4</option>
-                </select>
-              </div>
+  .edit-found-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
 
-              <!-- Foto -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold text-success">
-                  Foto (opcional)
-                </label>
-                <input type="file"
-                       name="foto"
-                       class="form-control"
-                       accept=".jpg,.jpeg,.png,.gif,.webp">
+  .edit-found-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
 
-                {% if item.foto_filename %}
-                  <div class="mt-2 d-flex align-items-center gap-3">
-                    <span class="small text-muted">
-                      Foto atual:
-                    </span>
-                    <img
-                      src="{{ url_for('static',
-                        filename=item.foto_filename if item.foto_filename.startswith('uploads/')
-                        else ('uploads/achados/' ~ item.foto_filename)) }}"
-                      style="
-                        width:96px; height:96px;
-                        object-fit:cover;
-                        border-radius:8px;
-                        border:1px solid #ccc;
-                      ">
-                  </div>
-                {% endif %}
-              </div>
+  .edit-found-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
 
-              <!-- Botões -->
-              <div class="d-flex gap-2 mt-3">
-                <button type="submit"
-                        class="btn"
-                        style="
-                          background:#78BE20;
-                          color:#fff;
-                          font-weight:700;
-                          border-radius:999px;
-                          padding:.45rem 1.6rem;
-                        ">
-                  Salvar
-                </button>
+  .edit-found-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
-                <a href="{{ url_for('post_achados') }}"
-                   class="btn btn-outline-secondary"
-                   style="border-radius:999px;">
-                  Cancelar
-                </a>
-              </div>
-            </form>
-          </div>
+  .edit-found-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
 
-          <!-- Rodapé -->
-          <div style="
-                background:#f4f6f5;
-                color:#2e7d32;
-                font-size:.75rem;
-                text-align:center;
-                padding:8px;
-                border-radius:0 0 16px 16px;
-                border-top:1px solid #dcdcdc;
-          ">
-            SECURITY · EDIÇÃO DE ACHADOS E PERDIDOS
-          </div>
+  .edit-found-card{
+    max-width:820px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
 
+  .edit-found-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .edit-found-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .edit-found-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .edit-found-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .edit-found-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .edit-found-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select,
+  textarea.form-control{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus,
+  textarea.form-control:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-text{
+    color:#7b8494 !important;
+    font-size:12px;
+  }
+
+  .current-photo-box{
+    margin-top:10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    padding:12px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .current-photo-box span{
+    font-size:12px;
+    font-weight:800;
+    color:#6b7280;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+
+  .current-photo-box img{
+    width:110px;
+    height:110px;
+    object-fit:cover;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    box-shadow:0 4px 10px rgba(0,0,0,.06);
+    display:block;
+  }
+
+  .edit-found-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+
+  .btn-save-found{
+    min-height:46px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .btn-save-found:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .btn-cancel-found{
+    min-height:46px;
+    border-radius:999px;
+    background:#fff;
+    color:#4b5563;
+    font-weight:800;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #d1d5db;
+    transition:.2s ease;
+  }
+
+  .btn-cancel-found:hover{
+    background:#f9fafb;
+    color:#111827;
+  }
+
+  .edit-found-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .edit-found-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .edit-found-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .edit-found-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .edit-found-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .edit-found-hero h1{
+      font-size:22px;
+    }
+
+    .edit-found-card-header,
+    .edit-found-card-body{
+      padding:16px;
+    }
+
+    .edit-found-logo-box img{
+      height:36px;
+    }
+
+    .edit-found-actions{
+      flex-direction:column;
+    }
+
+    .btn-save-found,
+    .btn-cancel-found{
+      width:100%;
+    }
+  }
+</style>
+
+<div class="edit-found-page">
+
+  <div class="edit-found-top">
+    <a href="{{ url_for('post_achados') }}" class="edit-found-link">← Voltar para Achados</a>
+  </div>
+
+  <div class="edit-found-hero">
+    <div class="edit-found-hero-content">
+      <div class="edit-found-brand">
+        <div class="edit-found-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
         </div>
+
+        <div>
+          <div class="edit-found-badge">DHL Security Dashboard</div>
+          <h1>Editar Achado / Perdido</h1>
+          <p>
+            Atualize os dados do objeto registrado, revise as informações do local e turno
+            e mantenha a rastreabilidade correta do item no sistema.
+          </p>
+        </div>
+      </div>
+
+      <div class="edit-found-chip-group">
+        <div class="edit-found-chip">Uso Restrito</div>
+        <div class="edit-found-chip">Ambiente Interno</div>
       </div>
     </div>
   </div>
+
+  <div class="edit-found-card">
+    <div class="edit-found-card-header">
+      <div class="edit-found-card-badge">Edição de registro</div>
+      <h2 class="edit-found-card-title">Atualização do objeto</h2>
+      <p class="edit-found-card-subtitle">
+        Edite os campos abaixo para corrigir ou complementar as informações do item encontrado.
+      </p>
+    </div>
+
+    <div class="edit-found-card-body">
+      <form method="POST" enctype="multipart/form-data" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label">Identificação</label>
+          <input type="text"
+                 name="identificacao"
+                 class="form-control"
+                 value="{{ item.identificacao or '' }}"
+                 placeholder="Ex.: nome de quem encontrou, etiqueta, etc.">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Descrição do objeto *</label>
+          <textarea name="descricao"
+                    class="form-control"
+                    rows="4"
+                    required>{{ item.descricao_objeto or '' }}</textarea>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Local encontrado</label>
+          <input type="text"
+                 name="local_encontrado"
+                 class="form-control"
+                 value="{{ item.local_encontrado or '' }}">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Data/Hora (texto livre)</label>
+          <input type="text"
+                 name="data_hora_info"
+                 class="form-control"
+                 value="{{ item.data_hora_info or '' }}">
+          <div class="form-text">Ex.: 12/10/2025 14:30</div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Turno</label>
+          <select name="turno" class="form-select">
+            <option value="">—</option>
+            <option value="1" {{ 'selected' if item.turno == 1 else '' }}>1</option>
+            <option value="2" {{ 'selected' if item.turno == 2 else '' }}>2</option>
+            <option value="3" {{ 'selected' if item.turno == 3 else '' }}>3</option>
+            <option value="4" {{ 'selected' if item.turno == 4 else '' }}>4</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Foto (opcional)</label>
+          <input type="file"
+                 name="foto"
+                 class="form-control"
+                 accept=".jpg,.jpeg,.png,.gif,.webp">
+
+          {% if item.foto_filename %}
+            <div class="current-photo-box">
+              <span>Foto atual</span>
+              <img
+                src="{{ url_for('static',
+                  filename=item.foto_filename if item.foto_filename.startswith('uploads/')
+                  else ('uploads/achados/' ~ item.foto_filename)) }}"
+                alt="Foto atual do objeto">
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="edit-found-actions">
+          <button type="submit" class="btn-save-found">
+            Salvar
+          </button>
+
+          <a href="{{ url_for('post_achados') }}" class="btn-cancel-found">
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <div class="edit-found-footer">
+      <small>SECURITY · EDIÇÃO DE ACHADOS E PERDIDOS</small>
+      <span class="edit-found-footer-badge">Atualização corporativa</span>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

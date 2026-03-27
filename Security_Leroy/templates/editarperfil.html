@@ -1,271 +1,616 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#000 url('{{ url_for('static', filename='fundo_dhl2.png') }}') center/cover no-repeat;
-       padding-top:140px;
-       padding-bottom:80px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- overlay claro para leitura -->
-  <div style="
+  .edit-profile-page{
+    width:min(1280px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
+
+  .edit-profile-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
+
+  .edit-profile-hero::before{
+    content:"";
     position:absolute;
     inset:0;
-    background: rgba(255,255,255,.85);
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
     pointer-events:none;
-  "></div>
+  }
 
-  <!-- Botão Home fixo -->
-  <a href="{{ url_for('home') }}"
-     style="
-       position:fixed; top:120px; left:16px; z-index:10;
-       display:flex; align-items:center; gap:8px; text-decoration:none;
-       padding:6px 10px; border-radius:10px;
-       background:rgba(0,0,0,0);
-       border:1px solid rgba(120,190,32,.85);
-       box-shadow:0 4px 10px rgba(0,0,0,.8);
-     ">
-    <span style="color:#78BE20; font-weight:800; font-size:.9rem;">Home</span>
-  </a>
+  .edit-profile-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-  <!-- Logo Leroy -->
-  <img src="{{ url_for('static', filename='logo_leroy.png') }}"
-       alt="Logo Leroy Merlin"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:64px; width:auto; z-index:10;
-         filter:drop-shadow(0 4px 8px rgba(0,0,0,.8));
-       ">
+  .edit-profile-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-  <div class="container position-relative" style="z-index:5;">
-    <div class="row g-4 justify-content-center">
+  .edit-profile-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-      <!-- COLUNA PERFIL -->
-      <div class="col-lg-5 col-md-6">
-        <div class="card shadow-lg"
-             style="
-               background:#ffffff;
-               border:2px solid #78BE20;
-               border-radius:12px;
-               box-shadow:0 18px 40px rgba(0,0,0,0.35);
-             ">
+  .edit-profile-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:10px 10px 0 0;
-                padding:12px 16px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                border-bottom:2px solid #0b2a16;
-          ">
-            <span style="font-weight:900; color:#fff; font-size:0.9rem; letter-spacing:.04em;">
-              PERFIL DE USUÁRIO
-            </span>
-            <span style="font-size:0.75rem; color:#eafff0; font-weight:800;">
-              ID {{ current_user.id }}
-            </span>
-          </div>
+  .edit-profile-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
 
-          <div class="p-3 p-md-4 d-flex gap-3">
-            <!-- FOTO -->
-            <div style="min-width:140px;">
-              <div style="
-                    width:140px; height:140px;
-                    border-radius:10px;
-                    border:2px solid #78BE20;
-                    overflow:hidden;
-                    background:#1a1a1a;
-                    box-shadow:0 10px 25px rgba(0,0,0,0.25);
-              ">
-                <img
-                  src="{% if current_user.is_authenticated and current_user.foto_perfil %}
-                          {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
-                        {% else %}
-                          {{ url_for('static', filename='foto_perfil/default.png') }}
-                        {% endif %}"
-                  alt="Foto de perfil"
-                  style="width:100%; height:100%; object-fit:cover;">
-              </div>
+  .edit-profile-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
 
-              <!-- Botão Girar Foto -->
-              <form method="POST"
-                    action="{{ url_for('girar_foto_perfil') }}"
-                    class="mt-2 text-center">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit"
-                        class="btn btn-sm"
-                        style="
-                          background:#78BE20;
-                          border:1px solid rgba(0,0,0,.15);
-                          color:#fff;
-                          font-weight:900;
-                          border-radius:999px;
-                          padding:4px 12px;
-                          font-size:0.75rem;
-                        ">
-                  ⟳ Girar foto 90°
-                </button>
-              </form>
-            </div>
+  .edit-profile-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:720px;
+    line-height:1.5;
+  }
 
-            <!-- INFO -->
-            <div class="flex-grow-1">
-              <h4 class="mb-1" style="font-weight:900; color:#0b2a16;">
-                {{ current_user.username }}
-              </h4>
-              <p class="mb-2" style="color:#1f3b26; font-size:0.92rem; font-weight:600;">
-                {{ current_user.email }}
-              </p>
-              <p class="mb-2" style="color:#4d4d4d; font-size:0.82rem;">
-                Último acesso:
-                {% if current_user.last_login %}
-                  {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
-                {% else %}
-                  —
-                {% endif %}
-              </p>
+  .edit-profile-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
-              <div class="d-flex gap-2">
-                <div class="text-center flex-fill p-2"
-                     style="background:#f4fbf6; color:#0b2a16; border-radius:8px; border:1px solid rgba(120,190,32,.35);">
-                  <div style="font-size:0.72rem; font-weight:900; color:#007A3D;">ANC</div>
-                  <div style="font-weight:900; color:#0b2a16;">
-                    {{ total_anc if total_anc is defined else 0 }}
-                  </div>
-                </div>
+  .edit-profile-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
 
-                <div class="text-center flex-fill p-2"
-                     style="background:#f4fbf6; color:#0b2a16; border-radius:8px; border:1px solid rgba(120,190,32,.35);">
-                  <div style="font-size:0.72rem; font-weight:900; color:#007A3D;">POSTS</div>
-                  <div style="font-weight:900; color:#0b2a16;">
-                    {{ total_posts if total_posts is defined else 0 }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  .edit-profile-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:18px;
+  }
 
-          <!-- Rodapé card perfil -->
-          <div style="
-                background:#78BE20;
-                color:#0b2a16;
-                font-size:0.72rem;
-                text-align:center;
-                padding:8px 12px;
-                border-radius:0 0 10px 10px;
-                border-top:1px solid rgba(120,190,32,.35);
-                font-weight:800;
-          ">
-            LEROY MERLIN SECURITY · PERFIL
-          </div>
+  .edit-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .edit-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .edit-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .edit-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .edit-card-id{
+    font-size:12px;
+    font-weight:800;
+    color:#6b7280;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:6px 10px;
+    border-radius:999px;
+  }
+
+  .edit-card-body{
+    padding:24px;
+  }
+
+  .profile-content{
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:22px;
+    align-items:start;
+  }
+
+  .profile-photo-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  .profile-photo{
+    width:150px;
+    height:150px;
+    border-radius:22px;
+    overflow:hidden;
+    background:#f4f4f4;
+    border:4px solid #fff;
+    box-shadow:0 10px 24px rgba(0,0,0,.12);
+    position:relative;
+  }
+
+  .profile-photo::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+    z-index:1;
+  }
+
+  .profile-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .rotate-btn{
+    min-height:38px;
+    border:none;
+    border-radius:999px;
+    background:#fff8db;
+    color:#7a5a00;
+    font-weight:900;
+    padding:8px 14px;
+    border:1px solid #f5d66f;
+    transition:.2s ease;
+    font-size:12px;
+  }
+
+  .rotate-btn:hover{
+    background:#ffeeb0;
+  }
+
+  .profile-info h2{
+    margin:0 0 6px 0;
+    font-size:28px;
+    color:var(--dhl-black);
+    font-weight:900;
+    line-height:1.1;
+  }
+
+  .profile-email{
+    font-size:15px;
+    color:#4b5563;
+    margin-bottom:6px;
+  }
+
+  .profile-last-access{
+    font-size:13px;
+    color:#7b8494;
+    margin-bottom:18px;
+  }
+
+  .mini-stats{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .mini-stat{
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    position:relative;
+    overflow:hidden;
+    text-align:center;
+  }
+
+  .mini-stat::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:5px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .mini-stat-label{
+    font-size:11px;
+    color:#6b7280;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+
+  .mini-stat-value{
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+    line-height:1;
+  }
+
+  .card-footer-note{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .card-footer-note small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .card-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-control::placeholder{
+    color:#8b93a1;
+  }
+
+  .form-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .form-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .field-error{
+    margin-top:6px;
+    font-size:12px;
+    color:#b42318;
+    font-weight:700;
+  }
+
+  .home-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:14px;
+  }
+
+  .home-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
+
+  @media (max-width: 992px){
+    .edit-profile-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 768px){
+    .edit-profile-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .edit-profile-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .edit-profile-hero h1{
+      font-size:22px;
+    }
+
+    .edit-card-header,
+    .edit-card-body{
+      padding:18px;
+    }
+
+    .profile-content{
+      grid-template-columns:1fr;
+    }
+
+    .profile-photo{
+      width:140px;
+      height:140px;
+    }
+
+    .profile-info h2{
+      font-size:24px;
+    }
+
+    .edit-profile-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="edit-profile-page">
+
+  <a href="{{ url_for('home') }}" class="home-link">← Voltar para Home</a>
+
+  <div class="edit-profile-hero">
+    <div class="edit-profile-hero-content">
+      <div class="edit-profile-brand">
+        <div class="edit-profile-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="edit-profile-badge">DHL Security Dashboard</div>
+          <h1>Gestão de Perfil</h1>
+          <p>
+            Atualize seus dados de acesso, gerencie sua foto de perfil e acompanhe
+            seus indicadores dentro do ambiente corporativo.
+          </p>
         </div>
       </div>
 
-      <!-- COLUNA FORM EDIÇÃO -->
-      <div class="col-lg-4 col-md-6">
-        <div class="card"
-             style="
-               background:#ffffff;
-               border-radius:12px;
-               border:2px solid #78BE20;
-               box-shadow:0 12px 32px rgba(0,0,0,0.25);
-             ">
+      <div class="edit-profile-chip-group">
+        <div class="edit-profile-chip">Uso Restrito</div>
+        <div class="edit-profile-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
-          <!-- Cabeçalho do card edição -->
-          <div style="
-                background:#78BE20;
-                border-radius:10px 10px 0 0;
-                padding:12px 16px;
-                border-bottom:2px solid #0b2a16;
-          ">
-            <h5 class="mb-0" style="color:#fff; font-weight:900; letter-spacing:.03em;">
-              Editar perfil
-            </h5>
-            <small style="color:rgba(255,255,255,.9); font-weight:600;">
-              Atualize seus dados abaixo.
-            </small>
-          </div>
+  <div class="edit-profile-grid">
 
-          <div class="card-body" style="color:#0b2a16;">
-            <form method="POST" action="" enctype="multipart/form-data" autocomplete="off" novalidate>
-              {{ form.csrf_token }}
+    <!-- CARD PERFIL -->
+    <div class="edit-card">
+      <div class="edit-card-header">
+        <div class="edit-card-badge">Perfil do usuário</div>
+        <div class="edit-card-id">ID {{ current_user.id }}</div>
+      </div>
 
-              <!-- username -->
-              <div class="mb-3">
-                {{ form.username.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
-                {% if form.username.errors %}
-                  {{ form.username(class_='form-control is-invalid bg-white text-dark') }}
-                  <div class="invalid-feedback">
-                    {% for erro in form.username.errors %}
-                      {{ erro }}
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ form.username(class_='form-control bg-white text-dark') }}
-                {% endif %}
-              </div>
+      <div class="edit-card-body">
+        <div class="profile-content">
 
-              <!-- email -->
-              <div class="mb-3">
-                {{ form.email.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
-                {% if form.email.errors %}
-                  {{ form.email(class_='form-control is-invalid bg-white text-dark') }}
-                  <div class="invalid-feedback">
-                    {% for erro in form.email.errors %}
-                      {{ erro }}
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  {{ form.email(class_='form-control bg-white text-dark') }}
-                {% endif %}
-              </div>
+          <div class="profile-photo-wrap">
+            <div class="profile-photo">
+              <img
+                src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                        {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                      {% else %}
+                        {{ url_for('static', filename='foto_perfil/default.png') }}
+                      {% endif %}"
+                alt="Foto de perfil">
+            </div>
 
-              <!-- foto_perfil -->
-              <div class="mb-3">
-                {{ form.foto_perfil.label(class_='form-label', style="color:#0b2a16; font-weight:800;") }}
-                {{ form.foto_perfil(class='form-control bg-white text-dark') }}
-                {% if form.foto_perfil.errors %}
-                  {% for erro in form.foto_perfil.errors %}
-                    <span class="text-danger d-block">{{ erro }}</span>
-                  {% endfor %}
-                {% endif %}
-              </div>
-
-              {{ form.botao_submit_editarperfil(
-                   class_="btn w-100 mt-2",
-                   style="
-                     background:#78BE20;
-                     border:1px solid rgba(0,0,0,.15);
-                     color:#fff;
-                     font-weight:900;
-                     text-transform:uppercase;
-                     letter-spacing:.06em;
-                     border-radius:999px;
-                   "
-                 ) }}
+            <form method="POST" action="{{ url_for('girar_foto_perfil') }}" class="w-100 text-center">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="rotate-btn">
+                ⟳ Girar foto 90°
+              </button>
             </form>
           </div>
 
-          <div style="
-                background:#78BE20;
-                color:#0b2a16;
-                font-size:0.72rem;
-                text-align:center;
-                padding:8px 10px;
-                border-radius:0 0 12px 12px;
-                border-top:1px solid rgba(120,190,32,.35);
-                font-weight:800;
-          ">
-            LEROY MERLIN SECURITY · GESTÃO DE PERFIL
+          <div class="profile-info">
+            <h2>{{ current_user.username }}</h2>
+
+            <div class="profile-email">
+              {{ current_user.email }}
+            </div>
+
+            <div class="profile-last-access">
+              Último acesso:
+              {% if current_user.last_login %}
+                {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+              {% else %}
+                —
+              {% endif %}
+            </div>
+
+            <div class="mini-stats">
+              <div class="mini-stat">
+                <div class="mini-stat-label">ANC</div>
+                <div class="mini-stat-value">{{ total_anc if total_anc is defined else 0 }}</div>
+              </div>
+
+              <div class="mini-stat">
+                <div class="mini-stat-label">Posts</div>
+                <div class="mini-stat-value">{{ total_posts if total_posts is defined else 0 }}</div>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
-    </div><!-- /row -->
-  </div><!-- /container -->
+      <div class="card-footer-note">
+        <small>SISTEMA INTERNO · USO RESTRITO · DHL SECURITY</small>
+        <span class="card-footer-badge">Perfil corporativo</span>
+      </div>
+    </div>
+
+    <!-- CARD EDIÇÃO -->
+    <div class="edit-card">
+      <div class="edit-card-header">
+        <div class="edit-card-badge">Editar perfil</div>
+        <div class="edit-card-id">Atualização segura</div>
+      </div>
+
+      <div class="edit-card-body">
+        <form method="POST" action="" enctype="multipart/form-data" autocomplete="off" novalidate>
+          {{ form.csrf_token }}
+
+          <div class="mb-3">
+            {{ form.username.label(class_='form-label') }}
+            {% if form.username.errors %}
+              {{ form.username(class_='form-control is-invalid') }}
+              {% for erro in form.username.errors %}
+                <div class="field-error">{{ erro }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.username(class_='form-control', placeholder='Digite seu nome de usuário') }}
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.email.label(class_='form-label') }}
+            {% if form.email.errors %}
+              {{ form.email(class_='form-control is-invalid') }}
+              {% for erro in form.email.errors %}
+                <div class="field-error">{{ erro }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.email(class_='form-control', placeholder='Digite seu e-mail') }}
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            {{ form.foto_perfil.label(class_='form-label') }}
+            {{ form.foto_perfil(class='form-control') }}
+            {% if form.foto_perfil.errors %}
+              {% for erro in form.foto_perfil.errors %}
+                <div class="field-error">{{ erro }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+
+          {{ form.botao_submit_editarperfil(class_='btn form-submit mt-2') }}
+        </form>
+      </div>
+
+      <div class="card-footer-note">
+        <small>DHL SECURITY · GESTÃO DE PERFIL</small>
+        <span class="card-footer-badge">Dados atualizáveis</span>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 {% endblock %}

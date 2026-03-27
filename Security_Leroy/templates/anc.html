@@ -1,183 +1,228 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex justify-content-center align-items-start"
-     style="background:#ffffff; padding:40px 16px;">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --line:#e5e7eb;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  <!-- Link topo esquerdo -->
-  <a href="{{ url_for('anc_posts') }}"
-     style="
-       position:fixed; top:90px; left:16px; z-index:10;
-       padding:8px 14px;
-       border-radius:10px;
-       background:#ffffff;
-       border:2px solid #78BE20;
-       color:#2f5f0f;
-       font-weight:700;
-       text-decoration:none;
-       box-shadow:0 4px 10px rgba(0,0,0,.15);
-     ">
-    Fechamento de ANC
-  </a>
+  .anc-page{
+    width:min(1200px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <!-- Logo rodapé -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; opacity:.9;
-       ">
+  .anc-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:14px;
+  }
 
-  <div class="container" style="max-width:900px;">
-    <h1 class="text-center mb-2"
-        style="color:#2f5f0f; font-weight:800;">
-      Aviso de Não Conformidade
-    </h1>
+  .anc-link:hover{
+    background:#ffeeb0;
+  }
 
-    <hr style="border:3px solid #78BE20; max-width:360px; margin:0 auto 24px;">
+  .anc-hero{
+    background:linear-gradient(135deg,#d40511,#8f000a);
+    color:#fff;
+    border-radius:22px;
+    padding:22px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
 
-    <!-- FORMULÁRIO CENTRAL -->
-    <div class="d-flex justify-content-center">
-      <div class="card shadow"
-           style="
-             width:100%;
-             max-width:780px;
-             border-radius:16px;
-             border:2px solid #78BE20;
-             background:#ffffff;
-           ">
+  .anc-hero h1{
+    margin:0;
+    font-size:26px;
+    font-weight:900;
+  }
 
-        <!-- Cabeçalho -->
-        <div style="
-              background:#78BE20;
-              border-radius:14px 14px 0 0;
-              padding:12px 18px;
-              display:flex;
-              justify-content:space-between;
-              align-items:center;
-        ">
-          <span style="color:#fff; font-weight:800;">
-            REGISTRO DE ANC
-          </span>
-          {% if current_user.is_authenticated %}
-            <span style="color:#fff; font-size:.8rem; font-weight:600;">
-              Operador: {{ current_user.username }}
-            </span>
-          {% endif %}
-        </div>
+  .anc-card{
+    background:#fff;
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    border:1px solid var(--line);
+    overflow:hidden;
+  }
 
-        <!-- Corpo -->
-        <div class="card-body">
-          <form method="POST" enctype="multipart/form-data">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  .anc-card-header{
+    padding:16px;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:#fffef8;
+  }
 
-            {% set label = "color:#2f5f0f; font-weight:700;" %}
+  .anc-card-badge{
+    background:#fff8db;
+    border:1px solid #f5d66f;
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:800;
+    font-size:12px;
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Nome do Solicitante</label>
-              <input class="form-control" name="nome_solicitante" required>
-            </div>
+  .anc-card-body{
+    padding:22px;
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Data Atual</label>
-              <input type="date" class="form-control" name="data_atual" value="{{ hoje }}" required>
-            </div>
+  .form-label{
+    font-weight:800;
+    margin-bottom:6px;
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Data da Ocorrência</label>
-              <input type="date" class="form-control" name="data_ocorrencia">
-            </div>
+  .form-control,
+  .form-select{
+    border-radius:12px;
+    min-height:44px;
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Descrição</label>
-              <textarea class="form-control" rows="3" name="descricao" required></textarea>
-            </div>
+  .anc-submit{
+    width:100%;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    padding:10px;
+    letter-spacing:.05em;
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Envolvido</label>
-              <input class="form-control" name="envolvido_gc">
-            </div>
+  .anc-submit:hover{
+    background:var(--dhl-red-dark);
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Responsável</label>
-              <input class="form-control" name="responsavel">
-            </div>
+  .anc-footer{
+    text-align:center;
+    padding:10px;
+    font-size:12px;
+    background:#fffef8;
+    border-top:1px solid var(--line);
+  }
 
-            <div class="mb-2">
-              <label style="{{ label }}">Turno</label>
-              <select class="form-select" name="turno">
-                <option value="">Selecione</option>
-                <option value="1">1° Turno</option>
-                <option value="2">2° Turno</option>
-                <option value="3">3° Turno</option>
-                <option value="4">4° Turno</option>
-              </select>
-            </div>
+  .anc-help{
+    margin-top:18px;
+    background:#fff;
+    border-radius:16px;
+    padding:16px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+  }
+</style>
 
-            <div class="mb-2">
-              <label style="{{ label }}">Natureza</label>
-              <select name="natureza" class="form-select">
-                <option value="">Selecione</option>
-                <option value="furto">Furto</option>
-                <option value="roubo">Roubo</option>
-                <option value="desvio_conduta">Desvio de conduta</option>
-                <option value="embalagem_vazia">Embalagem vazia</option>
-                <option value="colisao">Colisão</option>
-                <option value="desinteligencia">Desinteligência</option>
-                <option value="assedio_moral">Assédio moral</option>
-                <option value="assedio_sexual">Assédio sexual</option>
-                <option value="danos_patrimonio">Danos ao patrimônio</option>
-                <option value="comercio_ilegal">Comércio ilegal</option>
-                <option value="porte_ilicitas">Porte de ilícitas</option>
-              </select>
-            </div>
+<div class="anc-page">
 
-            <div class="mb-3">
-              <label style="{{ label }}">Imagens</label>
-              <input type="file" class="form-control" name="fotos" multiple>
-            </div>
+  <a href="{{ url_for('anc_posts') }}" class="anc-link">← Fechamento de ANC</a>
 
-            <button type="submit" class="btn w-100"
-                    style="
-                      background:#78BE20;
-                      color:#fff;
-                      font-weight:800;
-                      border-radius:999px;
-                      padding:.55rem;
-                      letter-spacing:.08em;
-                    ">
-              ENVIAR
-            </button>
-          </form>
-        </div>
-
-        <!-- Rodapé -->
-        <div style="
-              background:#f4f6f4;
-              color:#2f5f0f;
-              font-size:.75rem;
-              text-align:center;
-              padding:8px;
-              border-top:1px solid #78BE20;
-        ">
-          SECURITY · AVISO DE NÃO CONFORMIDADE
-        </div>
-      </div>
-    </div>
-
-    <!-- INSTRUÇÕES (CENTRALIZADAS ABAIXO) -->
-    <div class="d-flex justify-content-center mt-4">
-      <div class="border rounded p-3 bg-white shadow"
-           style="max-width:780px; width:100%; border-color:#78BE20;">
-        <h5 style="color:#2f5f0f; font-weight:800;">Como preencher</h5>
-        <ul class="ps-3 small">
-          <li>Preencha com clareza e objetividade.</li>
-          <li>Evite abreviações.</li>
-          <li>Revise antes de enviar.</li>
-        </ul>
-      </div>
-    </div>
-
+  <!-- HERO -->
+  <div class="anc-hero">
+    <h1>Aviso de Não Conformidade</h1>
+    <small>Registro e controle de ocorrências operacionais</small>
   </div>
+
+  <!-- CARD -->
+  <div class="anc-card">
+    <div class="anc-card-header">
+      <div class="anc-card-badge">Registro de ANC</div>
+
+      {% if current_user.is_authenticated %}
+        <small>Operador: {{ current_user.username }}</small>
+      {% endif %}
+    </div>
+
+    <div class="anc-card-body">
+      <form method="POST" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-2">
+          <label class="form-label">Nome do Solicitante</label>
+          <input class="form-control" name="nome_solicitante" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Data Atual</label>
+          <input type="date" class="form-control" name="data_atual" value="{{ hoje }}" required>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Data da Ocorrência</label>
+          <input type="date" class="form-control" name="data_ocorrencia">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Descrição</label>
+          <textarea class="form-control" rows="3" name="descricao" required></textarea>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Envolvido</label>
+          <input class="form-control" name="envolvido_gc">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Responsável</label>
+          <input class="form-control" name="responsavel">
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Turno</label>
+          <select class="form-select" name="turno">
+            <option value="">Selecione</option>
+            <option value="1">1° Turno</option>
+            <option value="2">2° Turno</option>
+            <option value="3">3° Turno</option>
+            <option value="4">4° Turno</option>
+          </select>
+        </div>
+
+        <div class="mb-2">
+          <label class="form-label">Natureza</label>
+          <select name="natureza" class="form-select">
+            <option value="">Selecione</option>
+            <option value="furto">Furto</option>
+            <option value="roubo">Roubo</option>
+            <option value="desvio_conduta">Desvio de conduta</option>
+            <option value="colisao">Colisão</option>
+            <option value="assedio_moral">Assédio moral</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Imagens</label>
+          <input type="file" class="form-control" name="fotos" multiple>
+        </div>
+
+        <button class="anc-submit">ENVIAR</button>
+      </form>
+    </div>
+
+    <div class="anc-footer">
+      SECURITY · AVISO DE NÃO CONFORMIDADE
+    </div>
+  </div>
+
+  <!-- INSTRUÇÕES -->
+  <div class="anc-help">
+    <strong>Como preencher:</strong>
+    <ul class="small mb-0">
+      <li>Seja claro e objetivo</li>
+      <li>Evite abreviações</li>
+      <li>Revise antes de enviar</li>
+    </ul>
+  </div>
+
 </div>
 {% endblock %}

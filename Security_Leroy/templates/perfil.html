@@ -1,170 +1,566 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:140px;
-       padding-bottom:80px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- Logo -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         width:auto;
-         z-index:10;
-         opacity:.85;
-       ">
+  .profile-page{
+    width:min(1280px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container d-flex justify-content-center position-relative">
+  .profile-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <div class="card shadow-lg"
-         style="
-            width:100%;
-            max-width:700px;
-            background:#ffffff;
-            border:2px solid #0A7D2C;
-            border-radius:14px;
-         ">
+  .profile-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-      <!-- Cabeçalho -->
-      <div style="
-            background:#78BE20;
-            border-radius:12px 12px 0 0;
-            padding:12px 16px;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            border-bottom:2px solid #064F1B;
-        ">
-        <span style="font-weight:700; color:#fff; font-size:.9rem;">
-          PERFIL DE USUÁRIO
-        </span>
+  .profile-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-        <span style="font-size:.75rem; color:#E8F5EE; font-weight:600;">
-          ID {{ current_user.id }}
-        </span>
+  .profile-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .profile-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .profile-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .profile-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .profile-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .profile-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:720px;
+    line-height:1.5;
+  }
+
+  .profile-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .profile-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .profile-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .profile-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .profile-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .profile-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .profile-card-id{
+    font-size:12px;
+    font-weight:800;
+    color:#6b7280;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:6px 10px;
+    border-radius:999px;
+  }
+
+  .profile-card-body{
+    padding:24px;
+  }
+
+  .profile-grid{
+    display:grid;
+    grid-template-columns:180px 1fr;
+    gap:24px;
+    align-items:start;
+  }
+
+  .profile-photo-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  .profile-photo{
+    width:160px;
+    height:160px;
+    border-radius:22px;
+    overflow:hidden;
+    background:#f4f4f4;
+    border:4px solid #fff;
+    box-shadow:0 10px 24px rgba(0,0,0,.12);
+    position:relative;
+  }
+
+  .profile-photo::before{
+    content:"";
+    position:absolute;
+    inset:0 0 auto 0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+    z-index:1;
+  }
+
+  .profile-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .profile-photo-label{
+    text-align:center;
+    font-size:12px;
+    font-weight:800;
+    color:#7a5a00;
+    background:#fff8db;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+  }
+
+  .profile-info h2{
+    margin:0 0 6px 0;
+    font-size:28px;
+    color:var(--dhl-black);
+    font-weight:900;
+    line-height:1.1;
+  }
+
+  .profile-email{
+    font-size:15px;
+    color:#4b5563;
+    margin-bottom:6px;
+  }
+
+  .profile-last-access{
+    font-size:13px;
+    color:#7b8494;
+    margin-bottom:18px;
+  }
+
+  .profile-stats{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+    margin-bottom:18px;
+  }
+
+  .profile-stat{
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .profile-stat::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:5px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .profile-stat-label{
+    font-size:11px;
+    color:#6b7280;
+    font-weight:800;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+
+  .profile-stat-value{
+    font-size:24px;
+    color:var(--dhl-black);
+    font-weight:900;
+    line-height:1;
+  }
+
+  .profile-status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:14px 16px;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    margin-bottom:18px;
+  }
+
+  .profile-status-dot{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 0 4px rgba(34,197,94,.14);
+    flex:0 0 auto;
+  }
+
+  .profile-status strong{
+    color:var(--dhl-black);
+  }
+
+  .profile-status span{
+    color:#4b5563;
+    font-size:14px;
+  }
+
+  .profile-actions{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .profile-btn-primary{
+    min-height:46px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .profile-btn-primary:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .profile-btn-secondary{
+    min-height:46px;
+    border-radius:999px;
+    background:#fff;
+    color:#4b5563;
+    font-weight:800;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #d1d5db;
+    transition:.2s ease;
+  }
+
+  .profile-btn-secondary:hover{
+    background:#f9fafb;
+    color:#111827;
+  }
+
+  .profile-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .profile-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .profile-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 992px){
+    .profile-stats{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 768px){
+    .profile-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .profile-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .profile-hero h1{
+      font-size:22px;
+    }
+
+    .profile-card-header,
+    .profile-card-body{
+      padding:18px;
+    }
+
+    .profile-grid{
+      grid-template-columns:1fr;
+    }
+
+    .profile-photo{
+      width:140px;
+      height:140px;
+    }
+
+    .profile-info h2{
+      font-size:24px;
+    }
+
+    .profile-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="profile-page">
+
+  <div class="profile-hero">
+    <div class="profile-hero-content">
+      <div class="profile-brand">
+        <div class="profile-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="profile-badge">DHL Security Dashboard</div>
+          <h1>Perfil de Usuário</h1>
+          <p>
+            Consulte suas informações de acesso, acompanhe seu histórico de utilização
+            e gerencie seu perfil dentro do ambiente corporativo.
+          </p>
+        </div>
       </div>
 
-      <!-- Corpo -->
-      <div class="p-3 p-md-4">
+      <div class="profile-chip-group">
+        <div class="profile-chip">Uso Restrito</div>
+        <div class="profile-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
-        <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center">
+  <div class="profile-card">
+    <div class="profile-card-header">
+      <div class="profile-card-badge">Dados do colaborador</div>
+      <div class="profile-card-id">ID {{ current_user.id }}</div>
+    </div>
 
-          <!-- FOTO -->
-          <div class="text-center pe-md-3 mb-3 mb-md-0" style="min-width:160px; margin-top:-110px;">
-            <div style="
-                  width:140px;
-                  height:140px;
-                  border-radius:10px;
-                  border:2px solid #0A7D2C;
-                  overflow:hidden;
-                  background:#f4f4f4;
-            ">
-              <img
-                src="{% if current_user.is_authenticated and current_user.foto_perfil %}
-                        {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
-                      {% else %}
-                        {{ url_for('static', filename='foto_perfil/default.png') }}
-                      {% endif %}"
-                alt="Foto de perfil"
-                style="width:100%; height:100%; object-fit:cover;">
-            </div>
+    <div class="profile-card-body">
+      <div class="profile-grid">
+
+        <!-- FOTO -->
+        <div class="profile-photo-wrap">
+          <div class="profile-photo">
+            <img
+              src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                      {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                    {% else %}
+                      {{ url_for('static', filename='foto_perfil/default.png') }}
+                    {% endif %}"
+              alt="Foto de perfil">
+          </div>
+          <div class="profile-photo-label">Foto do usuário</div>
+        </div>
+
+        <!-- INFORMAÇÕES -->
+        <div class="profile-info">
+
+          <h2>{{ current_user.username }}</h2>
+
+          <div class="profile-email">
+            {{ current_user.email }}
           </div>
 
-          <!-- INFO -->
-          <div class="flex-grow-1 w-100" style="color:#222;">
+          <div class="profile-last-access">
+            Último acesso:
+            {% if current_user.last_login %}
+              {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+            {% else %}
+              —
+            {% endif %}
+          </div>
 
-            <h4 class="mb-0" style="font-weight:700;">
-              {{ current_user.username }}
-            </h4>
-
-            <div style="font-size:.9rem; color:#555;">
-              {{ current_user.email }}
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-label">Posts</div>
+              <div class="profile-stat-value">{{ total_posts if total_posts is defined else 0 }}</div>
             </div>
 
-            <div style="font-size:.8rem; color:#777;">
-              Último acesso:
-              {% if current_user.last_login %}
-                {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
-              {% else %}
-                —
-              {% endif %}
-            </div>
-
-            <!-- Métrica -->
-            <div class="d-flex gap-2 my-3">
-              <div class="flex-fill text-center p-2"
-                   style="
-                     background:#E8F5EE;
-                     color:#0A7D2C;
-                     border-radius:8px;
-                     border:1px solid #0A7D2C;
-                   ">
-                <div style="font-size:.7rem; font-weight:600;">
-                  POSTS
-                </div>
-                <div style="font-size:1.2rem; font-weight:700;">
-                  {{ total_posts if total_posts is defined else 0 }}
-                </div>
+            <div class="profile-stat">
+              <div class="profile-stat-label">Perfil</div>
+              <div class="profile-stat-value" style="font-size:16px; padding-top:6px;">
+                {{ current_user.role if current_user.role is defined and current_user.role else "Usuário" }}
               </div>
             </div>
 
-            <!-- Status -->
-            <div class="p-2"
-                 style="
-                   background:#f8f9fa;
-                   border:1px solid #ddd;
-                   border-radius:8px;
-                 ">
-              <strong>Status:</strong> Ativo
+            <div class="profile-stat">
+              <div class="profile-stat-label">Status</div>
+              <div class="profile-stat-value" style="font-size:16px; padding-top:6px;">
+                Ativo
+              </div>
             </div>
-
-            <!-- Ações -->
-            <div class="d-flex flex-wrap gap-2 mt-3">
-              <a href="{{ url_for('editar_perfil') }}"
-                 class="btn btn-sm flex-grow-1"
-                 style="
-                   background:#78BE20;
-                   color:#fff;
-                   font-weight:600;
-                   border:none;
-                 ">
-                Editar Perfil
-              </a>
-
-              <a href="{{ url_for('sair') }}"
-                 class="btn btn-sm btn-outline-secondary flex-grow-1"
-                 style="font-weight:600;">
-                Sair
-              </a>
-            </div>
-
           </div>
+
+          <div class="profile-status">
+            <span class="profile-status-dot"></span>
+            <span><strong>Status da conta:</strong> acesso liberado no ambiente corporativo.</span>
+          </div>
+
+          <div class="profile-actions">
+            <a href="{{ url_for('editar_perfil') }}" class="profile-btn-primary">
+              Editar Perfil
+            </a>
+
+            <a href="{{ url_for('sair') }}" class="profile-btn-secondary">
+              Sair
+            </a>
+          </div>
+
         </div>
-
       </div>
+    </div>
 
-      <!-- Rodapé -->
-      <div style="
-            background:#E8F5EE;
-            color:#0A7D2C;
-            font-size:0.75rem;
-            text-align:center;
-            padding:8px 12px;
-            border-radius:0 0 12px 12px;
-            border-top:1px solid #0A7D2C;
-        ">
-        SISTEMA INTERNO · USO RESTRITO
-      </div>
-
+    <div class="profile-footer">
+      <small>SISTEMA INTERNO · USO RESTRITO · DHL SECURITY</small>
+      <span class="profile-footer-badge">Perfil corporativo</span>
     </div>
   </div>
+
 </div>
 {% endblock %}

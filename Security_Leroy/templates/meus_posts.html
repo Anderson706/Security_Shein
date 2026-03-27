@@ -1,150 +1,378 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding:90px 0 40px 0;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --line:#e5e7eb;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  {# Logo fixa #}
-  <img src="{{ url_for('static', filename='logotipo_dhl.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:64px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+  .invest-page{
+    width:min(1180px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container py-4 position-relative" style="z-index:5;">
-    <div class="row justify-content-center">
+  .invest-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-      <div class="col-12 text-center mb-3">
-        <h1 style="
-              color:#111;
-              font-weight:800;
-              letter-spacing:.02em;
-            ">
-          Solicitação de Imagem
-        </h1>
-        <hr style="max-width:320px; margin:auto; border:2px solid #78BE20;">
+  .invest-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
+
+  .invest-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .invest-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .invest-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .invest-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .invest-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+
+  .invest-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .invest-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .invest-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .invest-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .invest-card{
+    max-width:820px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .invest-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .invest-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .invest-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .invest-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .invest-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .invest-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800 !important;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .invest-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .invest-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .invest-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .invest-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .invest-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .invest-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .invest-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .invest-hero h1{
+      font-size:22px;
+    }
+
+    .invest-card-header,
+    .invest-card-body{
+      padding:16px;
+    }
+
+    .invest-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="invest-page">
+
+  <div class="invest-hero">
+    <div class="invest-hero-content">
+      <div class="invest-brand">
+        <div class="invest-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="invest-badge">DHL Security Dashboard</div>
+          <h1>Solicitação de Imagem</h1>
+          <p>
+            Registre solicitações de imagem CFTV com detalhes da ocorrência,
+            envolvidos, período aproximado e coordenador responsável.
+          </p>
+        </div>
       </div>
 
-      <div class="col-lg-8">
-
-        <!-- CARD -->
-        <div class="card shadow-lg"
-             style="
-               background:#ffffff;
-               border-radius:12px;
-               border:2px solid #78BE20;
-               box-shadow:0 14px 30px rgba(0,0,0,0.12);
-             ">
-
-          <!-- Cabeçalho verde Leroy -->
-          <div style="
-                background:#78BE20;
-                border-radius:10px 10px 0 0;
-                padding:12px 16px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                border-bottom:2px solid #5fae17;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:0.95rem;">
-              SOLICITAÇÃO DE IMAGEM CFTV
-            </span>
-          </div>
-
-          <!-- Corpo -->
-          <div class="card-body p-4" style="color:#000;">
-            <form method="POST"
-                  action=""
-                  autocomplete="off">
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Nome</label>
-                <input type="text"
-                       class="form-control"
-                       placeholder="Inserir Nome">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Descrição da Ocorrência</label>
-                <input type="text"
-                       class="form-control"
-                       placeholder="Breve relato da ocorrência">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Data / Hora</label>
-                <input type="text"
-                       class="form-control"
-                       placeholder="Data e horário aproximado">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Envolvidos</label>
-                <input type="text"
-                       class="form-control"
-                       placeholder="Nome dos envolvidos">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Turno</label>
-                <select class="form-select">
-                  <option selected>Inserir o Turno</option>
-                  <option value="1">1° Turno</option>
-                  <option value="2">2° Turno</option>
-                  <option value="3">3° Turno</option>
-                  <option value="4">4° Turno</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Coordenador</label>
-                <input type="text"
-                       class="form-control"
-                       placeholder="Inserir Coordenador">
-              </div>
-
-              <button type="submit"
-                      class="btn w-100 mt-2"
-                      style="
-                        background:#78BE20;
-                        border:1px solid #5fae17;
-                        color:#fff;
-                        font-weight:800;
-                        border-radius:999px;
-                        text-transform:uppercase;
-                        letter-spacing:.06em;
-                      ">
-                Enviar
-              </button>
-            </form>
-          </div>
-
-          <!-- Rodapé -->
-          <div style="
-                background:#f4f4f4;
-                color:#111;
-                font-size:0.75rem;
-                text-align:center;
-                padding:8px 12px;
-                border-radius:0 0 10px 10px;
-                border-top:1px solid #78BE20;
-          ">
-            DHL SECURITY · SOLICITAÇÃO DE IMAGEM
-          </div>
-
-        </div>
+      <div class="invest-chip-group">
+        <div class="invest-chip">Uso Restrito</div>
+        <div class="invest-chip">Ambiente Interno</div>
       </div>
     </div>
   </div>
+
+  <div class="invest-card">
+    <div class="invest-card-header">
+      <div class="invest-card-badge">Solicitação de imagem CFTV</div>
+      <h2 class="invest-card-title">Dados da solicitação</h2>
+      <p class="invest-card-subtitle">
+        Preencha as informações abaixo para registrar a solicitação no sistema.
+      </p>
+    </div>
+
+    <div class="invest-card-body">
+      <form method="POST" action="" autocomplete="off">
+
+        <div class="mb-3">
+          <label class="form-label">Nome</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Inserir Nome">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Descrição da Ocorrência</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Breve relato da ocorrência">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Data / Hora</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Data e horário aproximado">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Envolvidos</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Nome dos envolvidos">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Turno</label>
+          <select class="form-select">
+            <option selected disabled>Inserir o Turno</option>
+            <option value="1">1° Turno</option>
+            <option value="2">2° Turno</option>
+            <option value="3">3° Turno</option>
+            <option value="4">4° Turno</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Coordenador</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="Inserir Coordenador">
+        </div>
+
+        <button type="submit" class="btn invest-submit">
+          Enviar
+        </button>
+      </form>
+    </div>
+
+    <div class="invest-footer">
+      <small>DHL SECURITY · SOLICITAÇÃO DE IMAGEM</small>
+      <span class="invest-footer-badge">Fluxo corporativo</span>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

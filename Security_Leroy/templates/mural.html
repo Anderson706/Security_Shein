@@ -1,181 +1,475 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 position-relative d-flex align-items-center justify-content-center"
-     style="background:#ffffff;">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --line:#e5e7eb;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  {# Logo DHL fixa #}
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed;
-         bottom:16px;
-         right:16px;
-         height:170px;
-         opacity:.9;
-         z-index:10;
-       ">
+  .wall-page{
+    width:min(1320px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <!-- Conteúdo -->
-  <div class="container position-relative" style="max-width:1200px; z-index:5;">
+  .wall-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <!-- Título -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div>
-        <h1 style="color:#78BE20; font-weight:800; margin-bottom:2px;">
-          Mural de Segurança
-        </h1>
-        <p style="color:#555; margin:0;">
-          Informações, avisos e lembretes da equipe de Security.
-        </p>
+  .wall-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
+
+  .wall-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .wall-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .wall-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .wall-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .wall-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+
+  .wall-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .wall-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .wall-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .wall-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .wall-action{
+    background:#fff;
+    color:var(--dhl-red);
+    border:1px solid rgba(255,255,255,.4);
+    font-weight:900;
+    border-radius:999px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    padding:10px 16px;
+    text-decoration:none;
+    box-shadow:0 8px 18px rgba(0,0,0,.12);
+    transition:.2s ease;
+  }
+
+  .wall-action:hover{
+    background:#fff8f8;
+    color:var(--dhl-red-dark);
+    transform:translateY(-1px);
+  }
+
+  .wall-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .wall-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .wall-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .wall-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .wall-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .wall-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .wall-card-body{
+    padding:20px;
+    background:linear-gradient(180deg,#ffffff 0%, #fcfcfd 100%);
+  }
+
+  .wall-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:16px;
+  }
+
+  .wall-post{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    box-shadow:0 8px 18px rgba(0,0,0,.06);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    height:100%;
+    transition:.2s ease;
+    position:relative;
+  }
+
+  .wall-post::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:5px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+    z-index:2;
+  }
+
+  .wall-post:hover{
+    transform:translateY(-3px);
+    box-shadow:0 14px 26px rgba(0,0,0,.12);
+  }
+
+  .wall-post-image{
+    background:#f8fafc;
+    border-bottom:1px solid rgba(0,0,0,.06);
+    padding:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .wall-post-image img{
+    max-width:100%;
+    max-height:220px;
+    object-fit:contain;
+    border-radius:10px;
+  }
+
+  .wall-post-body{
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    flex-grow:1;
+  }
+
+  .wall-post-title{
+    color:#111;
+    font-weight:800;
+    font-size:17px;
+    line-height:1.3;
+    margin-bottom:8px;
+  }
+
+  .wall-post-text{
+    color:#444;
+    font-size:14px;
+    line-height:1.5;
+    margin-bottom:14px;
+  }
+
+  .wall-post-meta{
+    margin-top:auto;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+    font-size:12px;
+    color:#667085;
+    padding-top:10px;
+    border-top:1px dashed #e5e7eb;
+  }
+
+  .wall-post-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:12px;
+    flex-wrap:wrap;
+  }
+
+  .btn-wall-edit{
+    background:#fff8db;
+    border:1px solid #f5d66f;
+    color:#7a5a00;
+    font-weight:800;
+    border-radius:999px;
+    padding:7px 12px;
+    text-decoration:none;
+    font-size:12px;
+  }
+
+  .btn-wall-edit:hover{
+    background:#ffeeb0;
+    color:#5f4500;
+  }
+
+  .btn-wall-delete{
+    background:#fff1f2;
+    border:1px solid #f4c7cc;
+    color:#b42318;
+    font-weight:800;
+    border-radius:999px;
+    padding:7px 12px;
+    font-size:12px;
+  }
+
+  .btn-wall-delete:hover{
+    background:#ffe4e8;
+    color:#912018;
+  }
+
+  .wall-empty{
+    text-align:center;
+    padding:40px 20px;
+    color:#6b7280;
+    font-weight:600;
+  }
+
+  .wall-footer{
+    background:#fffef8;
+    border-top:1px solid var(--line);
+    text-align:center;
+    padding:10px 12px;
+  }
+
+  .wall-footer small{
+    color:#111;
+    font-weight:700;
+  }
+
+  @media (max-width: 768px){
+    .wall-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .wall-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .wall-hero h1{
+      font-size:22px;
+    }
+
+    .wall-card-header,
+    .wall-card-body{
+      padding:16px;
+    }
+
+    .wall-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="wall-page">
+
+  <div class="wall-hero">
+    <div class="wall-hero-content">
+      <div class="wall-brand">
+        <div class="wall-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="wall-badge">DHL Security Dashboard</div>
+          <h1>Mural de Segurança</h1>
+          <p>
+            Informações, avisos, comunicados e lembretes compartilhados pela equipe
+            de Security no ambiente corporativo interno.
+          </p>
+        </div>
       </div>
 
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('criar_mural') }}"
-           class="btn"
-           style="
-             background:#78BE20;
-             border:1px solid #5AA016;
-             color:#fff;
-             font-weight:700;
-             border-radius:999px;
-             text-transform:uppercase;
-             letter-spacing:.05em;
-           ">
-          Nova Postagem
-        </a>
+      <div class="wall-chip-group">
+        <div class="wall-chip">Uso Restrito</div>
+        <div class="wall-chip">Ambiente Interno</div>
+
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('criar_mural') }}" class="wall-action">
+            Nova Postagem
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="wall-card">
+    <div class="wall-card-header">
+      <div class="wall-card-badge">Mural de postagens</div>
+      <h2 class="wall-card-title">Comunicados internos</h2>
+      <p class="wall-card-subtitle">
+        Espaço centralizado para publicações, orientações e avisos da equipe de Security.
+      </p>
+    </div>
+
+    <div class="wall-card-body">
+      {% if mural_posts and mural_posts|length > 0 %}
+        <div class="wall-grid">
+          {% for post in mural_posts %}
+            <article class="wall-post">
+
+              {% if post.imagem_filename %}
+                <div class="wall-post-image">
+                  <img src="{{ url_for('static', filename='mural/' ~ post.imagem_filename) }}"
+                       alt="{{ post.titulo }}">
+                </div>
+              {% endif %}
+
+              <div class="wall-post-body">
+                <div class="wall-post-title">
+                  {{ post.titulo or 'Postagem sem título' }}
+                </div>
+
+                <div class="wall-post-text">
+                  {{ post.corpo|default('', true)|truncate(140, True, '...') }}
+                </div>
+
+                <div class="wall-post-meta">
+                  <span>{{ post.autor.username if post.autor else 'Sistema' }}</span>
+                  <span>{{ post.data_criacao.strftime('%d/%m/%Y %H:%M') if post.data_criacao }}</span>
+                </div>
+
+                {% if current_user.is_authenticated and post.autor and post.autor.id == current_user.id %}
+                  <div class="wall-post-actions">
+                    <a href="{{ url_for('editar_mural', mural_id=post.id) }}" class="btn-wall-edit">
+                      Editar
+                    </a>
+
+                    <form method="POST"
+                          action="{{ url_for('excluir_mural', mural_id=post.id) }}"
+                          onsubmit="return confirm('Excluir esta postagem?');">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-wall-delete">
+                        Excluir
+                      </button>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="wall-empty">
+          Nenhuma postagem no mural até o momento.
+        </div>
       {% endif %}
     </div>
 
-    <!-- Card principal -->
-    <div class="card border-0 shadow-lg"
-         style="
-           background:#ffffff;
-           border-radius:16px;
-           border:2px solid #78BE20;
-         ">
-
-      <!-- Cabeçalho -->
-      <div style="
-            background:#78BE20;
-            padding:14px 20px;
-            border-radius:14px 14px 0 0;
-          ">
-        <h2 style="margin:0; color:#fff; font-weight:800;">
-          Mural de Postagens
-        </h2>
-        <small style="color:#eaf6e4;">
-          Espaço para comunicados e orientações internas
-        </small>
-      </div>
-
-      <!-- Corpo -->
-      <div class="card-body p-3 p-md-4">
-
-        {% if mural_posts and mural_posts|length > 0 %}
-          <div class="row g-3 g-md-4">
-            {% for post in mural_posts %}
-              <div class="col-12 col-sm-6 col-lg-4">
-                <article class="h-100 d-flex flex-column"
-                         style="
-                           background:#ffffff;
-                           border-radius:12px;
-                           border:1px solid rgba(0,0,0,.08);
-                           box-shadow:0 8px 18px rgba(0,0,0,.08);
-                         ">
-
-                  {% if post.imagem_filename %}
-                    <div style="
-                          background:#f4f4f4;
-                          border-bottom:1px solid rgba(0,0,0,.08);
-                          padding:6px;
-                          display:flex;
-                          align-items:center;
-                          justify-content:center;
-                        ">
-                      <img src="{{ url_for('static', filename='mural/' ~ post.imagem_filename) }}"
-                           alt="{{ post.titulo }}"
-                           style="
-                             max-width:100%;
-                             max-height:220px;
-                             object-fit:contain;
-                           ">
-                    </div>
-                  {% endif %}
-
-                  <div class="p-3 d-flex flex-column flex-grow-1">
-                    <h5 style="color:#111; font-weight:700;">
-                      {{ post.titulo or 'Postagem sem título' }}
-                    </h5>
-
-                    <p style="color:#444; font-size:.9rem; line-height:1.4;">
-                      {{ post.corpo|default('', true)|truncate(140, True, '...') }}
-                    </p>
-
-                    <div class="mt-auto">
-                      <div class="d-flex justify-content-between mb-2"
-                           style="font-size:.75rem; color:#666;">
-                        <span>
-                          {{ post.autor.username if post.autor else 'Sistema' }}
-                        </span>
-                        <span>
-                          {{ post.data_criacao.strftime('%d/%m/%Y %H:%M') if post.data_criacao }}
-                        </span>
-                      </div>
-
-                      {% if current_user.is_authenticated and post.autor and post.autor.id == current_user.id %}
-                        <div class="d-flex justify-content-end gap-2">
-                          <a href="{{ url_for('editar_mural', mural_id=post.id) }}"
-                             class="btn btn-sm"
-                             style="
-                               background:#78BE20;
-                               border:1px solid #5AA016;
-                               color:#fff;
-                               font-weight:600;
-                               border-radius:999px;
-                             ">
-                            Editar
-                          </a>
-
-                          <form method="POST"
-                                action="{{ url_for('excluir_mural', mural_id=post.id) }}"
-                                onsubmit="return confirm('Excluir esta postagem?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit"
-                                    class="btn btn-sm btn-outline-danger"
-                                    style="border-radius:999px;">
-                              Excluir
-                            </button>
-                          </form>
-                        </div>
-                      {% endif %}
-                    </div>
-                  </div>
-                </article>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="text-center py-4" style="color:#666;">
-            Nenhuma postagem no mural até o momento.
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- Rodapé -->
-      <div style="
-            background:#f4f4f4;
-            border-top:1px solid #78BE20;
-            text-align:center;
-            padding:8px;
-            border-radius:0 0 14px 14px;
-          ">
-        <small style="color:#111;">
-          DHL Security · Mural Interno · Uso Restrito
-        </small>
-      </div>
-
+    <div class="wall-footer">
+      <small>DHL Security · Mural Interno · Uso Restrito</small>
     </div>
   </div>
+
 </div>
 {% endblock %}

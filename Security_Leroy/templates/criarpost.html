@@ -1,185 +1,505 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:140px;
-       padding-bottom:80px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  <!-- Logo DHL -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; width:auto; z-index:10;
-         opacity:.9;
-       ">
+  .post-create-page{
+    width:min(1280px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container position-relative" style="z-index:5;">
-    <div class="row g-4 justify-content-center">
+  .post-create-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-      <!-- COLUNA PERFIL -->
-      <div class="col-lg-5 col-md-6">
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid #78BE20;
-             ">
+  .post-create-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:12px 16px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                border-bottom:2px solid #2f5f0f;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:.9rem;">
-              Criar Post
-            </span>
-            <span style="font-size:.75rem; color:#fff; font-weight:600;">
-              ID {{ current_user.id }}
-            </span>
-          </div>
+  .post-create-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-          <div class="p-3 p-md-4 d-flex gap-3" style="color:#222;">
-            <!-- FOTO -->
-            <div style="min-width:140px;">
-              <div style="
-                    width:140px; height:140px;
-                    border-radius:10px;
-                    border:2px solid #78BE20;
-                    overflow:hidden;
-                    background:#f4f6f4;
-              ">
-                <img
-                  src="{% if current_user.is_authenticated and current_user.foto_perfil %}
-                          {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
-                        {% else %}
-                          {{ url_for('static', filename='foto_perfil/default.png') }}
-                        {% endif %}"
-                  alt="Foto de perfil"
-                  style="width:100%; height:100%; object-fit:cover;">
-              </div>
-            </div>
+  .post-create-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-            <!-- INFO -->
-            <div class="flex-grow-1">
-              <h4 class="mb-1" style="font-weight:800; color:#2f5f0f;">
-                {{ current_user.username }}
-              </h4>
-              <p class="mb-2" style="color:#444; font-size:.9rem;">
-                {{ current_user.email }}
-              </p>
-              <p class="mb-3" style="color:#666; font-size:.8rem;">
-                <strong>Último acesso:</strong>
-                {% if current_user.last_login %}
-                  {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
-                {% else %}
-                  —
-                {% endif %}
-              </p>
+  .post-create-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-              <div class="d-flex gap-2">
-                <div class="text-center flex-fill p-2"
-                     style="background:#fff; color:#2f5f0f; border-radius:8px; border:1px solid #78BE20;">
-                  <div style="font-size:.7rem;">ANC</div>
-                  <div style="font-weight:800;">
-                    {{ total_anc if total_anc is defined else 0 }}
-                  </div>
-                </div>
-                <div class="text-center flex-fill p-2"
-                     style="background:#fff; color:#2f5f0f; border-radius:8px; border:1px solid #78BE20;">
-                  <div style="font-size:.7rem;">POSTS</div>
-                  <div style="font-weight:800;">
-                    {{ total_posts if total_posts is defined else 0 }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  .post-create-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-          <div style="
-                background:#f4f6f4;
-                color:#2f5f0f;
-                font-size:.75rem;
-                text-align:center;
-                padding:6px 12px;
-                border-radius:0 0 14px 14px;
-                border-top:1px solid #78BE20;
-          ">
-            DHL SECURITY · PERFIL
-          </div>
+  .post-create-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .post-create-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .post-create-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .post-create-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .post-create-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .post-create-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .post-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .post-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .post-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .post-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .post-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .post-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .post-card-body{
+    padding:22px;
+  }
+
+  .post-card-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .post-card-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .post-card-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .profile-box{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .profile-photo{
+    width:150px;
+    height:150px;
+    border-radius:18px;
+    overflow:hidden;
+    background:#eef1f4;
+    border:1px solid #dfe3ea;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+  }
+
+  .profile-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .profile-name{
+    margin:0 0 6px 0;
+    font-size:24px;
+    font-weight:900;
+    color:var(--dhl-black);
+  }
+
+  .profile-email{
+    margin:0 0 8px 0;
+    font-size:14px;
+    color:#4b5563;
+  }
+
+  .profile-access{
+    margin:0 0 16px 0;
+    font-size:13px;
+    color:#6b7280;
+  }
+
+  .mini-kpis{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px;
+  }
+
+  .mini-kpi{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    padding:12px;
+    text-align:center;
+    box-shadow:0 4px 10px rgba(0,0,0,.04);
+  }
+
+  .mini-kpi-label{
+    font-size:11px;
+    color:#6b7280;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin-bottom:4px;
+  }
+
+  .mini-kpi-value{
+    font-size:22px;
+    font-weight:900;
+    color:var(--dhl-black);
+    line-height:1;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select,
+  textarea.form-control{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus,
+  textarea.form-control:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .post-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .post-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  @media (max-width: 992px){
+    .post-create-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 768px){
+    .post-create-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .post-create-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .post-create-hero h1{
+      font-size:22px;
+    }
+
+    .post-card-header,
+    .post-card-body{
+      padding:16px;
+    }
+
+    .post-create-logo-box img{
+      height:36px;
+    }
+
+    .profile-box{
+      grid-template-columns:1fr;
+    }
+
+    .profile-photo{
+      width:140px;
+      height:140px;
+    }
+  }
+</style>
+
+<div class="post-create-page">
+
+  <div class="post-create-hero">
+    <div class="post-create-hero-content">
+      <div class="post-create-brand">
+        <div class="post-create-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="post-create-badge">DHL Security Dashboard</div>
+          <h1>Criar Post</h1>
+          <p>
+            Publique comunicados internos no mural corporativo, compartilhe informações
+            relevantes com a operação e acompanhe sua atividade no ambiente Security.
+          </p>
         </div>
       </div>
 
-      <!-- COLUNA FORM -->
-      <div class="col-lg-4 col-md-6">
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid #78BE20;
-             ">
+      <div class="post-create-chip-group">
+        <div class="post-create-chip">Uso Restrito</div>
+        <div class="post-create-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:10px 16px;
-                border-bottom:2px solid #2f5f0f;
-          ">
-            <h5 class="mb-0"
-                style="color:#fff; font-weight:800; font-size:.95rem;">
-              Criar Post
-            </h5>
+  <div class="post-create-grid">
+
+    <!-- PERFIL -->
+    <div class="post-card">
+      <div class="post-card-header">
+        <div class="post-card-badge">Perfil do operador</div>
+        <h2 class="post-card-title">Dados do usuário</h2>
+        <p class="post-card-subtitle">
+          Informações do colaborador autenticado para publicação no mural interno.
+        </p>
+      </div>
+
+      <div class="post-card-body">
+        <div class="profile-box">
+
+          <div class="profile-photo">
+            <img
+              src="{% if current_user.is_authenticated and current_user.foto_perfil %}
+                      {{ url_for('static', filename='foto_perfil/' ~ current_user.foto_perfil) }}
+                    {% else %}
+                      {{ url_for('static', filename='foto_perfil/default.png') }}
+                    {% endif %}"
+              alt="Foto de perfil">
           </div>
 
-          <div class="card-body" style="color:#222;">
-            <p class="small mb-3" style="color:#555;">
-              Preencha os campos abaixo para publicar um comunicado no mural interno.
+          <div>
+            <h4 class="profile-name">{{ current_user.username }}</h4>
+            <p class="profile-email">{{ current_user.email }}</p>
+            <p class="profile-access">
+              <strong>Último acesso:</strong>
+              {% if current_user.last_login %}
+                {{ current_user.last_login.strftime("%d/%m/%Y %H:%M") }}
+              {% else %}
+                —
+              {% endif %}
             </p>
 
-            <form method="POST" action="" enctype="multipart/form-data">
-              {{ form.csrf_token }}
-
-              <div class="mb-3">
-                {{ form.titulo.label(class_='form-label', style='font-weight:700; color:#2f5f0f;') }}
-                {{ form.titulo(class_='form-control') }}
+            <div class="mini-kpis">
+              <div class="mini-kpi">
+                <div class="mini-kpi-label">ANC</div>
+                <div class="mini-kpi-value">
+                  {{ total_anc if total_anc is defined else 0 }}
+                </div>
               </div>
 
-              <div class="mb-3">
-                {{ form.corpo.label(class_='form-label', style='font-weight:700; color:#2f5f0f;') }}
-                {{ form.corpo(class_='form-control', rows="5") }}
+              <div class="mini-kpi">
+                <div class="mini-kpi-label">Posts</div>
+                <div class="mini-kpi-value">
+                  {{ total_posts if total_posts is defined else 0 }}
+                </div>
               </div>
-
-              {{ form.botao_submit(
-                   class_="btn w-100 mt-2",
-                   style="background:#78BE20; border:1px solid #5aa014; color:#fff; font-weight:800; border-radius:999px;"
-                 ) }}
-            </form>
+            </div>
           </div>
 
-          <div style="
-                background:#f4f6f4;
-                color:#2f5f0f;
-                font-size:.75rem;
-                text-align:center;
-                padding:6px 10px;
-                border-radius:0 0 14px 14px;
-                border-top:1px solid #78BE20;
-          ">
-            DHL SECURITY · COMUNICADOS INTERNOS
-          </div>
         </div>
       </div>
 
+      <div class="post-card-footer">
+        <small>DHL SECURITY · PERFIL DO OPERADOR</small>
+        <span class="post-card-footer-badge">ID {{ current_user.id }}</span>
+      </div>
     </div>
+
+    <!-- FORMULÁRIO -->
+    <div class="post-card">
+      <div class="post-card-header">
+        <div class="post-card-badge">Novo comunicado</div>
+        <h2 class="post-card-title">Criar post</h2>
+        <p class="post-card-subtitle">
+          Preencha os campos abaixo para publicar um comunicado no mural interno.
+        </p>
+      </div>
+
+      <div class="post-card-body">
+        <form method="POST" action="" enctype="multipart/form-data">
+          {{ form.csrf_token }}
+
+          <div class="mb-3">
+            {{ form.titulo.label(class_='form-label') }}
+            {{ form.titulo(class_='form-control') }}
+          </div>
+
+          <div class="mb-3">
+            {{ form.corpo.label(class_='form-label') }}
+            {{ form.corpo(class_='form-control', rows='5') }}
+          </div>
+
+          {{ form.botao_submit(class_='btn post-submit mt-2') }}
+        </form>
+      </div>
+
+      <div class="post-card-footer">
+        <small>DHL SECURITY · COMUNICADOS INTERNOS</small>
+        <span class="post-card-footer-badge">Publicação corporativa</span>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}

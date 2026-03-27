@@ -1,187 +1,426 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       background:#ffffff;
-       padding:40px 0;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  <!-- Logo DHL discreto -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         opacity:.9;
-       ">
+  .occ-close-page{
+    width:min(1180px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container position-relative" style="max-width:900px;">
+  .occ-close-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <!-- TÍTULO -->
-    <h1 class="text-center mb-3"
-        style="
-          color:#78BE20;
-          font-weight:800;
-          letter-spacing:.02em;
-        ">
-      Fechar Ocorrências
-    </h1>
+  .occ-close-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-    <hr style="max-width:280px; margin:0 auto 24px auto; border-color:#2e7d32;">
+  .occ-close-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-    <!-- CARD -->
-    <div class="card shadow-sm border-0"
-         style="
-           background:#ffffff;
-           border-radius:14px;
-           border:1px solid #e0e0e0;
-         ">
+  .occ-close-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-      <!-- CABEÇALHO VERDE -->
-      <div style="
-            background:#78BE20;
-            border-radius:14px 14px 0 0;
-            padding:14px 20px;
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-          ">
-        <span style="color:#fff; font-weight:800; font-size:1rem;">
-          FECHAMENTO DE OCORRÊNCIA
-        </span>
+  .occ-close-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-        {% if current_user.is_authenticated %}
-          <span style="color:#e8f5e9; font-size:.8rem; font-weight:600;">
-            Operador: {{ current_user.username }}
-          </span>
-        {% endif %}
+  .occ-close-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .occ-close-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+
+  .occ-close-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .occ-close-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .occ-close-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .occ-close-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .occ-close-card{
+    max-width:820px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .occ-close-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .occ-close-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .occ-close-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .occ-close-card-operator{
+    font-size:12px;
+    font-weight:800;
+    color:#6b7280;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:6px 10px;
+    border-radius:999px;
+  }
+
+  .occ-close-card-body{
+    padding:22px;
+  }
+
+  .occ-close-card-title{
+    margin:0 0 6px 0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .occ-close-card-subtitle{
+    margin:0 0 18px 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-text{
+    color:#7b8494 !important;
+    font-size:12px;
+  }
+
+  .occ-close-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .occ-close-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .occ-close-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .occ-close-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .occ-close-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .occ-close-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .occ-close-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .occ-close-hero h1{
+      font-size:22px;
+    }
+
+    .occ-close-card-header,
+    .occ-close-card-body{
+      padding:16px;
+    }
+
+    .occ-close-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="occ-close-page">
+
+  <div class="occ-close-hero">
+    <div class="occ-close-hero-content">
+      <div class="occ-close-brand">
+        <div class="occ-close-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="occ-close-badge">DHL Security Dashboard</div>
+          <h1>Fechar Ocorrências</h1>
+          <p>
+            Conclua o tratamento das ocorrências com registro de analista, data,
+            status, turno, formalização e documento associado ao fechamento.
+          </p>
+        </div>
       </div>
 
-      <!-- CORPO -->
-      <div class="card-body p-4">
-
-        <form method="POST" action="" enctype="multipart/form-data">
-
-          <!-- ID -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              ID da Ocorrência
-            </label>
-            <input type="text"
-                   class="form-control"
-                   name="id_ocorrencia"
-                   placeholder="Digite o ID da ocorrência"
-                   required>
-          </div>
-
-          <!-- Analista -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              Analista
-            </label>
-            <select name="analista" class="form-select">
-              <option selected disabled>Selecionar analista</option>
-              <option>Anderson Souza</option>
-              <option>Giovanna</option>
-              <option>Juliana</option>
-              <option>Vanessa</option>
-            </select>
-          </div>
-
-          <!-- Data -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              Data da Ocorrência
-            </label>
-            <input type="date" class="form-control" name="data_ocorrencia">
-          </div>
-
-          <!-- Status -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              Status
-            </label>
-            <select name="status" class="form-select">
-              <option selected disabled>Status</option>
-              <option>Pendente</option>
-              <option>Fechado</option>
-            </select>
-          </div>
-
-          <!-- Turno -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              Turno
-            </label>
-            <select name="turno" class="form-select">
-              <option selected disabled>Selecionar turno</option>
-              <option value="1">1º Turno</option>
-              <option value="2">2º Turno</option>
-              <option value="3">3º Turno</option>
-              <option value="4">4º Turno</option>
-            </select>
-          </div>
-
-          <!-- Formalização -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">
-              Formalização
-            </label>
-            <select name="formalizacao" class="form-select">
-              <option selected disabled>Selecionar</option>
-              <option>ANC</option>
-              <option>Análise Investigativa</option>
-              <option>Levantamento de imagem</option>
-              <option>Insolúvel</option>
-            </select>
-          </div>
-
-          <!-- Documento -->
-          <div class="mb-4">
-            <label class="form-label fw-semibold text-dark">
-              Nº Documento
-            </label>
-            <input type="text"
-                   class="form-control"
-                   name="documento"
-                   placeholder="Número do documento">
-          </div>
-
-          <!-- BOTÃO -->
-          <button type="submit"
-                  class="btn w-100"
-                  style="
-                    background:#78BE20;
-                    color:#fff;
-                    font-weight:800;
-                    text-transform:uppercase;
-                    letter-spacing:.06em;
-                    border-radius:999px;
-                    padding:10px;
-                  ">
-            Enviar
-          </button>
-
-        </form>
+      <div class="occ-close-chip-group">
+        <div class="occ-close-chip">Uso Restrito</div>
+        <div class="occ-close-chip">Ambiente Interno</div>
       </div>
-
-      <!-- RODAPÉ -->
-      <div style="
-            background:#f5f5f5;
-            color:#333;
-            font-size:.75rem;
-            text-align:center;
-            padding:10px;
-            border-radius:0 0 14px 14px;
-            border-top:1px solid #e0e0e0;
-          ">
-        DHL SECURITY · FECHAMENTO DE OCORRÊNCIAS
-      </div>
-
     </div>
   </div>
+
+  <div class="occ-close-card">
+    <div class="occ-close-card-header">
+      <div class="occ-close-card-badge">Fechamento de ocorrência</div>
+
+      {% if current_user.is_authenticated %}
+        <div class="occ-close-card-operator">
+          Operador: {{ current_user.username }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="occ-close-card-body">
+      <h2 class="occ-close-card-title">Dados do encerramento</h2>
+      <p class="occ-close-card-subtitle">
+        Preencha os campos abaixo para finalizar a ocorrência no sistema.
+      </p>
+
+      <form method="POST" action="" enctype="multipart/form-data">
+
+        <div class="mb-3">
+          <label class="form-label">ID da Ocorrência</label>
+          <input type="text"
+                 class="form-control"
+                 name="id_ocorrencia"
+                 placeholder="Digite o ID da ocorrência"
+                 required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Analista</label>
+          <select name="analista" class="form-select">
+            <option selected disabled>Selecionar analista</option>
+            <option>Anderson Souza</option>
+            <option>Giovanna</option>
+            <option>Juliana</option>
+            <option>Vanessa</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Data da Ocorrência</label>
+          <input type="date" class="form-control" name="data_ocorrencia">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select name="status" class="form-select">
+            <option selected disabled>Status</option>
+            <option>Pendente</option>
+            <option>Fechado</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Turno</label>
+          <select name="turno" class="form-select">
+            <option selected disabled>Selecionar turno</option>
+            <option value="1">1º Turno</option>
+            <option value="2">2º Turno</option>
+            <option value="3">3º Turno</option>
+            <option value="4">4º Turno</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Formalização</label>
+          <select name="formalizacao" class="form-select">
+            <option selected disabled>Selecionar</option>
+            <option>ANC</option>
+            <option>Análise Investigativa</option>
+            <option>Levantamento de imagem</option>
+            <option>Insolúvel</option>
+          </select>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">Nº Documento</label>
+          <input type="text"
+                 class="form-control"
+                 name="documento"
+                 placeholder="Número do documento">
+        </div>
+
+        <button type="submit" class="btn occ-close-submit">
+          Enviar
+        </button>
+
+      </form>
+    </div>
+
+    <div class="occ-close-footer">
+      <small>DHL SECURITY · FECHAMENTO DE OCORRÊNCIAS</small>
+      <span class="occ-close-footer-badge">Registro corporativo</span>
+    </div>
+  </div>
+
 </div>
 {% endblock %}

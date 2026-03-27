@@ -1,296 +1,714 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       background:#f4f6f4;
-       padding-top:90px;
-       padding-bottom:40px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+  }
 
-  <!-- Logo fixo -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         opacity:.85;
-       ">
+  .anc-posts-page{
+    width:min(1320px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container d-flex flex-column align-items-center"
-       style="max-width:1400px;">
+  .anc-top-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:14px;
+  }
 
-    <!-- TÍTULO -->
-    <h1 style="
-          color:#2f5f0f;
-          font-weight:800;
-          margin-bottom:14px;
-          text-align:center;
-        ">
-      Postagens de ANC
-    </h1>
+  .anc-top-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
 
-    <div class="card shadow"
-         style="
-            width:100%;
-            background:#ffffff;
-            border-radius:16px;
-            border:2px solid #78BE20;
-         ">
+  .anc-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-      <!-- Cabeçalho -->
-      <div style="
-            background:#78BE20;
-            border-radius:14px 14px 0 0;
-            padding:14px 20px;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            border-bottom:2px solid #2f5f0f;
-        ">
-        <span style="font-weight:800; color:#fff; font-size:1rem;">
-          Não Conformidades (ANC) registradas
-        </span>
+  .anc-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-        {% if current_user.is_authenticated %}
-          <span style="font-size:0.75rem; color:#fff; font-weight:600;">
-            Operador: {{ current_user.username }}
-          </span>
-        {% endif %}
+  .anc-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .anc-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .anc-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .anc-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .anc-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .anc-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .anc-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .anc-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .anc-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .anc-board{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .anc-board-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .anc-board-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .anc-board-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .anc-board-operator{
+    font-size:12px;
+    font-weight:800;
+    color:#6b7280;
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    padding:6px 10px;
+    border-radius:999px;
+  }
+
+  .anc-board-body{
+    padding:20px;
+    max-height:calc(82vh - 90px);
+    overflow-y:auto;
+    background:linear-gradient(180deg,#ffffff 0%, #fcfcfd 100%);
+  }
+
+  .anc-item{
+    background:#fff;
+    border:1px solid var(--line);
+    border-left:6px solid var(--danger);
+    border-radius:16px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    padding:18px;
+    margin-bottom:16px;
+  }
+
+  .anc-item.status-success{ border-left-color:var(--success); }
+  .anc-item.status-warning{ border-left-color:var(--warning); }
+  .anc-item.status-danger{ border-left-color:var(--danger); }
+
+  .anc-item-header{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+
+  .anc-item-title{
+    margin:0 0 6px 0;
+    color:var(--dhl-black);
+    font-size:18px;
+    font-weight:900;
+    line-height:1.2;
+  }
+
+  .anc-item-meta{
+    color:#667085;
+    font-size:13px;
+    line-height:1.45;
+  }
+
+  .anc-status-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    color:#fff;
+    white-space:nowrap;
+  }
+
+  .anc-status-badge.status-success{ background:var(--success); }
+  .anc-status-badge.status-warning{ background:var(--warning); color:#111; }
+  .anc-status-badge.status-danger{ background:var(--danger); }
+
+  .anc-description{
+    color:#1f2937;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:12px;
+    white-space:pre-wrap;
+  }
+
+  .anc-details{
+    font-size:13px;
+    line-height:1.55;
+    color:#475467;
+    margin-bottom:14px;
+  }
+
+  .anc-actions{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+
+  .anc-inline-form{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+
+  .btn-dhl-primary,
+  .btn-dhl-secondary,
+  .btn-dhl-ghost{
+    border:none;
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:12px;
+    font-weight:800;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    transition:.2s ease;
+  }
+
+  .btn-dhl-primary{
+    background:var(--dhl-red);
+    color:#fff;
+    box-shadow:0 8px 18px rgba(212,5,17,.16);
+  }
+
+  .btn-dhl-primary:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+  }
+
+  .btn-dhl-secondary{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+  }
+
+  .btn-dhl-secondary:hover{
+    background:#ffeeb0;
+    color:#5f4500;
+  }
+
+  .btn-dhl-ghost{
+    background:#fff;
+    color:#475467;
+    border:1px solid #d0d5dd;
+  }
+
+  .btn-dhl-ghost:hover{
+    background:#f9fafb;
+    color:#111827;
+  }
+
+  .anc-file-input{
+    display:none;
+  }
+
+  .anc-preview{
+    margin-top:14px;
+    padding:12px;
+    border:1px solid #e5e7eb;
+    border-radius:14px;
+    background:#f8fafc;
+    max-width:240px;
+  }
+
+  .anc-preview img{
+    display:none;
+    max-width:100%;
+    margin-top:8px;
+    border-radius:10px;
+    border:1px solid #e5e7eb;
+  }
+
+  .anc-signature{
+    margin-top:14px;
+    padding:14px;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    background:#fff;
+  }
+
+  .anc-signature-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .anc-signature-title{
+    color:var(--dhl-black);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+  }
+
+  .anc-signature-box{
+    margin-top:10px;
+    border:2px dashed #d0d5dd;
+    border-radius:14px;
+    overflow:hidden;
+    max-width:540px;
+    background:#fff;
+  }
+
+  .anc-signature-box canvas{
+    display:block;
+    width:100%;
+    height:auto;
+    background:#fff;
+  }
+
+  .anc-signature-help{
+    margin-top:8px;
+    font-size:12px;
+    color:#6b7280;
+  }
+
+  .anc-gallery{
+    margin-top:16px;
+  }
+
+  .anc-gallery-title{
+    color:var(--dhl-black);
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+  }
+
+  .anc-gallery-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+  }
+
+  .anc-thumb{
+    display:block;
+    width:150px;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    overflow:hidden;
+    background:#fff;
+    text-decoration:none;
+    box-shadow:0 4px 10px rgba(0,0,0,.04);
+  }
+
+  .anc-thumb img{
+    width:150px;
+    height:110px;
+    object-fit:cover;
+    display:block;
+  }
+
+  .anc-empty{
+    text-align:center;
+    padding:32px 20px;
+    color:#6b7280;
+    font-weight:600;
+  }
+
+  .anc-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .anc-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .anc-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .anc-posts-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .anc-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .anc-hero h1{
+      font-size:22px;
+    }
+
+    .anc-board-header,
+    .anc-board-body{
+      padding:16px;
+    }
+
+    .anc-item{
+      padding:14px;
+    }
+
+    .anc-thumb,
+    .anc-thumb img{
+      width:130px;
+      height:96px;
+    }
+
+    .anc-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="anc-posts-page">
+
+  <a href="{{ url_for('anc_posts') }}" class="anc-top-link">← Fechamento de ANC</a>
+
+  <div class="anc-hero">
+    <div class="anc-hero-content">
+      <div class="anc-brand">
+        <div class="anc-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="anc-badge">DHL Security Dashboard</div>
+          <h1>Postagens de ANC</h1>
+          <p>
+            Consulte as não conformidades registradas, anexe evidências, inclua assinatura
+            e acompanhe a evolução dos status dentro do ambiente corporativo.
+          </p>
+        </div>
       </div>
 
-      <!-- Corpo -->
-      <div class="p-3 p-md-4"
-           style="max-height: calc(80vh - 70px); overflow-y:auto;">
+      <div class="anc-chip-group">
+        <div class="anc-chip">Uso Restrito</div>
+        <div class="anc-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
-        {% if anc_posts %}
-          {% for anc in anc_posts %}
-            {% set status_lower = (anc.status or 'aberta')|lower %}
-            {% if status_lower in ['concluída','concluida','fechada'] %}
-              {% set border_color = '#28a745' %}
-            {% elif status_lower in ['em análise','em analise'] %}
-              {% set border_color = '#ffc107' %}
-            {% else %}
-              {% set border_color = '#dc3545' %}
+  <div class="anc-board">
+    <div class="anc-board-header">
+      <div class="anc-board-badge">Não conformidades registradas</div>
+
+      {% if current_user.is_authenticated %}
+        <div class="anc-board-operator">
+          Operador: {{ current_user.username }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="anc-board-body">
+      {% if anc_posts %}
+        {% for anc in anc_posts %}
+          {% set status_lower = (anc.status or 'aberta')|lower %}
+          {% if status_lower in ['concluída','concluida','fechada'] %}
+            {% set status_class = 'status-success' %}
+          {% elif status_lower in ['em análise','em analise'] %}
+            {% set status_class = 'status-warning' %}
+          {% else %}
+            {% set status_class = 'status-danger' %}
+          {% endif %}
+
+          <article class="anc-item {{ status_class }}">
+            <header class="anc-item-header">
+              <div>
+                <h5 class="anc-item-title">
+                  ANC #{{ anc.id }}
+                  {% if anc.natureza %} · {{ anc.natureza.value }}{% endif %}
+                </h5>
+
+                <div class="anc-item-meta">
+                  {% if anc.local %}Local: {{ anc.local.value }} · {% endif %}
+                  {% if anc.turno %}Turno: {{ anc.turno }} · {% endif %}
+                  {% if anc.data_ocorrencia %}
+                    Ocorrência: {{ anc.data_ocorrencia.strftime('%d/%m/%Y') }}
+                  {% endif %}
+                </div>
+              </div>
+
+              <span class="anc-status-badge {{ status_class }}">
+                {{ anc.status or 'Aberta' }}
+              </span>
+            </header>
+
+            <div class="anc-description">
+              {{ anc.descricao }}
+            </div>
+
+            <div class="anc-details">
+              {% if anc.responsavel %}
+                <strong>Responsável:</strong> {{ anc.responsavel }}<br>
+              {% endif %}
+              {% if anc.envolvido_gc %}
+                <strong>Envolvido:</strong> {{ anc.envolvido_gc }}<br>
+              {% endif %}
+              {% if anc.created_at %}
+                <strong>Criado em:</strong>
+                {{ anc.created_at.strftime('%d/%m/%Y %H:%M') }}
+              {% endif %}
+            </div>
+
+            <div class="anc-actions">
+              <form method="POST"
+                    action="{{ url_for('anc_alterar_status', anc_id=anc.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn-dhl-primary"
+                        {% if status_lower in ['concluída','concluida','fechada'] %}disabled{% endif %}>
+                  Fechar ANC
+                </button>
+              </form>
+
+              <form method="POST"
+                    action="{{ url_for('anc_anexar_arquivo', anc_id=anc.id) }}"
+                    enctype="multipart/form-data"
+                    class="anc-inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                {% set input_id = 'file_anc_' ~ anc.id %}
+                {% set preview_id = 'preview_anc_' ~ anc.id %}
+                {% set canvas_id = 'sign_canvas_' ~ anc.id %}
+                {% set clear_id = 'sign_clear_' ~ anc.id %}
+                {% set sign_input_id = 'sign_data_' ~ anc.id %}
+
+                <input type="file"
+                       id="{{ input_id }}"
+                       name="arquivo"
+                       accept="image/*"
+                       class="anc-file-input"
+                       data-preview-id="{{ preview_id }}"
+                       required>
+
+                <label for="{{ input_id }}" class="btn-dhl-ghost">
+                  Selecionar imagem
+                </label>
+
+                <button type="submit" class="btn-dhl-secondary">
+                  Enviar anexo
+                </button>
+
+                <input type="hidden" name="assinatura_base64" id="{{ sign_input_id }}">
+              </form>
+            </div>
+
+            <div id="{{ preview_id }}" class="anc-preview">
+              <span class="anc-preview-placeholder small text-muted">
+                Nenhum arquivo selecionado
+              </span>
+              <img alt="Preview do anexo">
+            </div>
+
+            <div class="anc-signature">
+              <div class="anc-signature-top">
+                <div class="anc-signature-title">
+                  Assinatura digital
+                </div>
+
+                <button type="button" id="{{ clear_id }}" class="btn-dhl-ghost">
+                  Limpar
+                </button>
+              </div>
+
+              <div class="anc-signature-box">
+                <canvas id="{{ canvas_id }}"
+                        width="520" height="160"></canvas>
+              </div>
+
+              <div class="anc-signature-help">
+                Dica: use o mouse no computador ou o dedo no celular. A assinatura será enviada junto com o anexo.
+              </div>
+            </div>
+
+            {% if anc.fotos and anc.fotos|length > 0 %}
+              <div class="anc-gallery">
+                <div class="anc-gallery-title">Anexos / Imagens</div>
+
+                <div class="anc-gallery-grid">
+                  {% for f in anc.fotos %}
+                    {% set file_url = url_for('static', filename=f.filename) %}
+                    <a href="{{ file_url }}" target="_blank" class="anc-thumb">
+                      <img src="{{ file_url }}" alt="Anexo ANC {{ anc.id }}">
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
             {% endif %}
 
-            <article class="mb-3 p-3"
-                     style="
-                       background:#ffffff;
-                       border:1px solid #ddd;
-                       border-left:6px solid {{ border_color }};
-                       border-radius:10px;
-                     ">
+          </article>
+        {% endfor %}
+      {% else %}
+        <div class="anc-empty">
+          Nenhuma ANC registrada.
+        </div>
+      {% endif %}
+    </div>
 
-              <header class="d-flex justify-content-between flex-wrap mb-1">
-                <div>
-                  <h5 style="font-weight:800; color:#2f5f0f;">
-                    ANC #{{ anc.id }}
-                    {% if anc.natureza %} · {{ anc.natureza.value }}{% endif %}
-                  </h5>
-
-                  <small style="color:#555;">
-                    {% if anc.local %}Local: {{ anc.local.value }} ·{% endif %}
-                    {% if anc.turno %} Turno: {{ anc.turno }} ·{% endif %}
-                    {% if anc.data_ocorrencia %}
-                      Ocorrência: {{ anc.data_ocorrencia.strftime('%d/%m/%Y') }}
-                    {% endif %}
-                  </small>
-                </div>
-
-                <span class="badge"
-                      style="
-                        background:{{ border_color }};
-                        color:#fff;
-                        font-weight:700;
-                      ">
-                  {{ anc.status or 'Aberta' }}
-                </span>
-              </header>
-
-              <p style="color:#222; font-size:.9rem;">
-                {{ anc.descricao }}
-              </p>
-
-              <div style="font-size:.85rem; color:#444;">
-                {% if anc.responsavel %}
-                  <strong>Responsável:</strong> {{ anc.responsavel }}<br>
-                {% endif %}
-                {% if anc.envolvido_gc %}
-                  <strong>Envolvido:</strong> {{ anc.envolvido_gc }}<br>
-                {% endif %}
-                {% if anc.created_at %}
-                  <strong>Criado em:</strong>
-                  {{ anc.created_at.strftime('%d/%m/%Y %H:%M') }}
-                {% endif %}
-              </div>
-
-              <!-- AÇÕES -->
-              <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
-
-                <form method="POST"
-                      action="{{ url_for('anc_alterar_status', anc_id=anc.id) }}">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <button class="btn btn-sm"
-                          style="
-                            background:#78BE20;
-                            color:#fff;
-                            font-weight:700;
-                            border-radius:999px;
-                            padding:4px 14px;
-                          "
-                          {% if status_lower in ['concluída','concluida','fechada'] %}disabled{% endif %}>
-                    Fechar ANC
-                  </button>
-                </form>
-
-                <form method="POST"
-                      action="{{ url_for('anc_anexar_arquivo', anc_id=anc.id) }}"
-                      enctype="multipart/form-data"
-                      class="d-flex flex-wrap gap-2 align-items-center">
-                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-                  {% set input_id = 'file_anc_' ~ anc.id %}
-                  {% set preview_id = 'preview_anc_' ~ anc.id %}
-                  {% set canvas_id = 'sign_canvas_' ~ anc.id %}
-                  {% set clear_id = 'sign_clear_' ~ anc.id %}
-                  {% set sign_input_id = 'sign_data_' ~ anc.id %}
-
-                  <!-- Somente imagens (sem PDF) -->
-                  <input type="file"
-                         id="{{ input_id }}"
-                         name="arquivo"
-                         accept="image/*"
-                         class="anc-file-input"
-                         data-preview-id="{{ preview_id }}"
-                         style="display:none;" required>
-
-                  <label for="{{ input_id }}"
-                         class="btn btn-sm"
-                         style="
-                           background:#ffffff;
-                           border:1px solid #ccc;
-                           border-radius:999px;
-                           font-weight:600;
-                         ">
-                    Selecionar imagem
-                  </label>
-
-                  <button type="submit" class="btn btn-sm"
-                          style="
-                            background:#2f5f0f;
-                            color:#fff;
-                            border-radius:999px;
-                            font-weight:700;
-                          ">
-                    Enviar
-                  </button>
-
-                  <!-- assinatura base64 -->
-                  <input type="hidden" name="assinatura_base64" id="{{ sign_input_id }}">
-                </form>
-              </div>
-
-              <!-- PREVIEW da imagem selecionada -->
-              <div id="{{ preview_id }}"
-                   class="mt-2 p-2 border rounded bg-light"
-                   style="max-width:220px;">
-                <span class="anc-preview-placeholder small text-muted">
-                  Nenhum arquivo selecionado
-                </span>
-                <img style="display:none; max-width:100%; margin-top:6px;">
-              </div>
-
-              <!-- ✅ CAMPO DE ASSINATURA -->
-              <div class="mt-3 p-3 border rounded"
-                   style="background:#ffffff; border-color:#ddd;">
-                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                  <div class="small" style="color:#2f5f0f; font-weight:800;">
-                    ASSINATURA (desenhe no quadro abaixo)
-                  </div>
-                  <button type="button" id="{{ clear_id }}" class="btn btn-sm"
-                          style="border-radius:999px; border:1px solid #ccc; background:#fff; font-weight:700;">
-                    Limpar
-                  </button>
-                </div>
-
-                <div class="mt-2"
-                     style="border:2px dashed #cfcfcf; border-radius:12px; overflow:hidden; max-width:520px;">
-                  <canvas id="{{ canvas_id }}"
-                          width="520" height="160"
-                          style="display:block; width:100%; height:auto; background:#fff;"></canvas>
-                </div>
-
-                <div class="small text-muted mt-2">
-                  Dica: use o mouse (PC) ou o dedo (celular). A assinatura será enviada junto com o anexo.
-                </div>
-              </div>
-
-              <!-- ✅ IMAGENS ANEXADAS (GALERIA) -->
-              {% if anc.fotos and anc.fotos|length > 0 %}
-                <div class="mt-3">
-                  <div class="small" style="color:#2f5f0f; font-weight:800; margin-bottom:6px;">
-                    ANEXOS / IMAGENS
-                  </div>
-
-                  <div style="display:flex; flex-wrap:wrap; gap:10px;">
-                    {% for f in anc.fotos %}
-                      {% set file_url = url_for('static', filename=f.filename) %}
-                      <a href="{{ file_url }}" target="_blank"
-                         style="
-                           display:block;
-                           border:1px solid #ddd;
-                           border-radius:10px;
-                           overflow:hidden;
-                           background:#fff;
-                           width:150px;
-                           text-decoration:none;
-                         ">
-                        <img src="{{ file_url }}"
-                             alt="Anexo ANC {{ anc.id }}"
-                             style="
-                               width:150px;
-                               height:110px;
-                               object-fit:cover;
-                               display:block;
-                             ">
-                      </a>
-                    {% endfor %}
-                  </div>
-                </div>
-              {% endif %}
-
-            </article>
-          {% endfor %}
-        {% else %}
-          <div class="text-center py-4 text-muted">
-            Nenhuma ANC registrada.
-          </div>
-        {% endif %}
-      </div>
-
-      <!-- Rodapé -->
-      <div style="
-            background:#f4f6f4;
-            color:#2f5f0f;
-            font-size:0.75rem;
-            text-align:center;
-            padding:8px;
-            border-top:1px solid #78BE20;
-        ">
-        SECURITY · NÃO CONFORMIDADES (ANC)
-      </div>
-
+    <div class="anc-footer">
+      <small>SECURITY · NÃO CONFORMIDADES (ANC)</small>
+      <span class="anc-footer-badge">Monitoramento corporativo</span>
     </div>
   </div>
 </div>
 
-<!-- JS: assinatura + preview (sem PDF) -->
 <script>
 (function () {
-  // Preview simples (imagem)
   document.querySelectorAll(".anc-file-input").forEach(function(input){
     input.addEventListener("change", function(){
       const previewId = input.getAttribute("data-preview-id");
@@ -303,15 +721,19 @@
 
       if (!file) {
         if (img) img.style.display = "none";
-        if (placeholder) placeholder.style.display = "inline";
+        if (placeholder) {
+          placeholder.textContent = "Nenhum arquivo selecionado";
+          placeholder.style.display = "inline";
+        }
         return;
       }
 
       if (!file.type.startsWith("image/")) {
-        // como agora só aceita image/*, isso quase não acontece, mas deixei seguro
         if (img) img.style.display = "none";
-        if (placeholder) placeholder.textContent = "Arquivo não é imagem.";
-        if (placeholder) placeholder.style.display = "inline";
+        if (placeholder) {
+          placeholder.textContent = "Arquivo não é imagem.";
+          placeholder.style.display = "inline";
+        }
         return;
       }
 
@@ -324,8 +746,6 @@
     });
   });
 
-  // Assinatura: canvas por ANC (id dinâmico)
-  // Estratégia: encontrar todos canvases cujo id começa com "sign_canvas_"
   document.querySelectorAll("canvas[id^='sign_canvas_']").forEach(function(canvas){
     const ancId = canvas.id.replace("sign_canvas_", "");
     const clearBtn = document.getElementById("sign_clear_" + ancId);
@@ -364,7 +784,6 @@
 
     function end(){
       drawing = false;
-      // salva a assinatura no input hidden como PNG base64
       if (hiddenInput) hiddenInput.value = canvas.toDataURL("image/png");
     }
 

@@ -1,191 +1,561 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+  }
 
-  <!-- botão de atalho -->
-  <a href="{{ url_for('retirada') }}"
-     style="
-       position:fixed; top:150px; left:16px; z-index:10;
-       display:flex; align-items:center; gap:8px; text-decoration:none;
-       padding:8px 12px; border-radius:10px;
-       background:#ffffff;
-       border:2px solid #78BE20;
-       box-shadow:0 4px 10px rgba(0,0,0,.15);
-       color:#2f5f0f;
-       font-weight:700;
-       font-size:.9rem;
-     ">
-    Reserva / Devolução
-  </a>
+  .rotary-page{
+    width:min(1320px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <!-- Logo rodapé -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; width:auto; z-index:10;
-         opacity:.9;
-       ">
+  .rotary-top-actions{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
 
-  <div class="container py-4 position-relative" style="z-index:5;">
-    <div class="row">
-      <h1 class="text-center mb-2"
-          style="color:#2f5f0f; font-weight:800;">
-        Armário Rotativo
-      </h1>
-      <hr class="border-3 opacity-100"
-          style="border-color:#78BE20; max-width:260px; margin:0.25rem auto 1.5rem auto;">
-    </div>
+  .rotary-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+  }
 
-    <div class="row g-4">
-      <!-- COLUNA ESQUERDA -->
-      <div class="col-lg-8">
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid #78BE20;
-             ">
+  .rotary-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
 
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:12px 18px;
-                border-bottom:2px solid #2f5f0f;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:.95rem;">
-              CADASTRO · ARMÁRIO ROTATIVO
-            </span>
-          </div>
+  .rotary-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-          <div class="card-body p-3 p-md-4" style="color:#222;">
-            <form method="POST"
-                  action="{{ url_for('armarios_rotativos') }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  .rotary-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-              {% set label_style = "color:#2f5f0f; font-weight:700;" %}
+  .rotary-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Nome</label>
-                <input name="nome" type="text" class="form-control">
-              </div>
+  .rotary-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Empresa</label>
-                <select name="empresa" class="form-select">
-                  <option value="">Selecione</option>
-                  <option value="dhl">DHL</option>
-                  <option value="adecco">Adecco</option>
-                  <option value="mentes">Mentes</option>
-                </select>
-              </div>
+  .rotary-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">CPF</label>
-                <input name="cpf" type="text" class="form-control">
-              </div>
+  .rotary-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Armário</label>
-                <input name="armario" type="text" class="form-control">
-              </div>
+  .rotary-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Chave</label>
-                <input name="chave" type="text" class="form-control">
-              </div>
+  .rotary-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Status</label>
-                <select name="status" class="form-select">
-                  <option value="Ocupado">Ocupado</option>
-                  <option value="Livre">Livre</option>
-                  <option value="Manutenção">Manutenção</option>
-                </select>
-              </div>
+  .rotary-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
 
-              <div class="mb-3">
-                <label class="form-label" style="{{ label_style }}">Turno</label>
-                <select name="turno" class="form-select">
-                  <option value="">Selecione</option>
-                  <option value="1">1° Turno</option>
-                  <option value="2">2° Turno</option>
-                  <option value="3">3° Turno</option>
-                  <option value="4">4° Turno</option>
-                </select>
-              </div>
+  .rotary-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
-              <button type="submit"
-                      class="btn w-100"
-                      style="
-                        background:#78BE20;
-                        color:#fff;
-                        font-weight:800;
-                        border-radius:999px;
-                        letter-spacing:.08em;
-                      ">
-                Salvar e gerar QR
-              </button>
-            </form>
-          </div>
+  .rotary-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
 
-          <div style="
-                background:#f4f6f4;
-                color:#2f5f0f;
-                font-size:.75rem;
-                text-align:center;
-                padding:8px;
-                border-top:1px solid #78BE20;
-          ">
-            SECURITY · ARMÁRIOS ROTATIVOS
-          </div>
+  .rotary-grid{
+    display:grid;
+    grid-template-columns:1.2fr .8fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .rotary-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .rotary-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .rotary-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .rotary-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .rotary-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .rotary-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .rotary-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .rotary-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .rotary-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .rotary-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .rotary-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .rotary-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .recent-stack{
+    display:grid;
+    gap:12px;
+  }
+
+  .recent-item{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    padding:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .recent-item::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:5px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .recent-name{
+    font-size:15px;
+    font-weight:900;
+    color:var(--dhl-black);
+    margin-bottom:6px;
+  }
+
+  .recent-meta{
+    font-size:13px;
+    color:#475467;
+    line-height:1.55;
+  }
+
+  .status-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:28px;
+    padding:6px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    margin-top:8px;
+  }
+
+  .status-ocupado{
+    background:#fff1f2;
+    color:#b42318;
+    border:1px solid #f4c7cc;
+  }
+
+  .status-livre{
+    background:#edf9f0;
+    color:#166534;
+    border:1px solid #b7ebc2;
+  }
+
+  .status-manutencao{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:24px 16px;
+    color:#6b7280;
+    font-weight:600;
+  }
+
+  @media (max-width: 992px){
+    .rotary-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 768px){
+    .rotary-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .rotary-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .rotary-hero h1{
+      font-size:22px;
+    }
+
+    .rotary-card-header,
+    .rotary-card-body{
+      padding:16px;
+    }
+
+    .rotary-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="rotary-page">
+
+  <div class="rotary-top-actions">
+    <a href="{{ url_for('retirada') }}" class="rotary-link">← Reserva / Devolução</a>
+  </div>
+
+  <div class="rotary-hero">
+    <div class="rotary-hero-content">
+      <div class="rotary-brand">
+        <div class="rotary-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="rotary-badge">DHL Security Dashboard</div>
+          <h1>Armário Rotativo</h1>
+          <p>
+            Gerencie o cadastro de armários rotativos, controle disponibilidade,
+            acompanhe ocupação e mantenha a rastreabilidade dos últimos registros.
+          </p>
         </div>
       </div>
 
-      <!-- COLUNA DIREITA -->
-      <div class="col-lg-4">
-        <div class="card shadow border-0"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid #78BE20;
-             ">
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:10px 14px;
-          ">
-            <h5 class="mb-0"
-                style="color:#fff; font-weight:800; font-size:.95rem;">
-              Últimos registros
-            </h5>
+      <div class="rotary-chip-group">
+        <div class="rotary-chip">Uso Restrito</div>
+        <div class="rotary-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rotary-grid">
+
+    <!-- FORMULÁRIO -->
+    <div class="rotary-card">
+      <div class="rotary-card-header">
+        <div class="rotary-card-badge">Cadastro de armário rotativo</div>
+        <h2 class="rotary-card-title">Dados do registro</h2>
+        <p class="rotary-card-subtitle">
+          Preencha as informações para salvar o armário e gerar o QR Code correspondente.
+        </p>
+      </div>
+
+      <div class="rotary-card-body">
+        <form method="POST" action="{{ url_for('armarios_rotativos') }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input name="nome" type="text" class="form-control">
           </div>
 
-          <div class="p-3">
-            {% if registros %}
-              {% for r in registros %}
-                <div class="mb-3 p-2"
-                     style="border:1px solid #ddd; border-radius:8px;">
-                  <strong>{{ r.nome }}</strong><br>
-                  Armário: {{ r.armario }}<br>
-                  Status: {{ r.status }}
+          <div class="mb-3">
+            <label class="form-label">Empresa</label>
+            <select name="empresa" class="form-select">
+              <option value="">Selecione</option>
+              <option value="dhl">DHL</option>
+              <option value="adecco">Adecco</option>
+              <option value="mentes">Mentes</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CPF</label>
+            <input name="cpf" type="text" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Armário</label>
+            <input name="armario" type="text" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Chave</label>
+            <input name="chave" type="text" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+              <option value="Ocupado">Ocupado</option>
+              <option value="Livre">Livre</option>
+              <option value="Manutenção">Manutenção</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Turno</label>
+            <select name="turno" class="form-select">
+              <option value="">Selecione</option>
+              <option value="1">1° Turno</option>
+              <option value="2">2° Turno</option>
+              <option value="3">3° Turno</option>
+              <option value="4">4° Turno</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn rotary-submit">
+            Salvar e gerar QR
+          </button>
+        </form>
+      </div>
+
+      <div class="rotary-footer">
+        <small>SECURITY · ARMÁRIOS ROTATIVOS · USO RESTRITO</small>
+        <span class="rotary-footer-badge">Cadastro corporativo</span>
+      </div>
+    </div>
+
+    <!-- ÚLTIMOS REGISTROS -->
+    <div class="rotary-card">
+      <div class="rotary-card-header">
+        <div class="rotary-card-badge">Últimos registros</div>
+        <h2 class="rotary-card-title">Monitoramento recente</h2>
+        <p class="rotary-card-subtitle">
+          Acompanhe rapidamente os armários cadastrados mais recentemente.
+        </p>
+      </div>
+
+      <div class="rotary-card-body">
+        {% if registros %}
+          <div class="recent-stack">
+            {% for r in registros %}
+              {% set status_lower = (r.status or '')|lower %}
+              {% if status_lower == 'livre' %}
+                {% set status_class = 'status-livre' %}
+              {% elif status_lower == 'manutenção' or status_lower == 'manutencao' %}
+                {% set status_class = 'status-manutencao' %}
+              {% else %}
+                {% set status_class = 'status-ocupado' %}
+              {% endif %}
+
+              <div class="recent-item">
+                <div class="recent-name">{{ r.nome }}</div>
+                <div class="recent-meta">
+                  <strong>Armário:</strong> {{ r.armario }}<br>
+                  {% if r.empresa %}<strong>Empresa:</strong> {{ r.empresa|upper }}<br>{% endif %}
+                  {% if r.turno %}<strong>Turno:</strong> {{ r.turno }}<br>{% endif %}
                 </div>
-              {% endfor %}
-            {% else %}
-              <p class="text-muted small mb-0">
-                Nenhum registro ainda.
-              </p>
-            {% endif %}
+                <span class="status-pill {{ status_class }}">
+                  {{ r.status }}
+                </span>
+              </div>
+            {% endfor %}
           </div>
-        </div>
+        {% else %}
+          <div class="empty-state">
+            Nenhum registro ainda.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="rotary-footer">
+        <small>SECURITY · CONSULTA DE MOVIMENTAÇÃO</small>
+        <span class="rotary-footer-badge">Painel interno</span>
       </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

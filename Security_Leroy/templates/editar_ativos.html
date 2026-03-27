@@ -1,168 +1,482 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:120px;
-       padding-bottom:70px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  <!-- Logo fixo no rodapé direito -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; width:auto; z-index:10;
-         opacity:.9;
-       ">
+  .asset-edit-page{
+    width:min(1180px, calc(100vw - 28px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container position-relative py-4" style="z-index:5; max-width:820px;">
-    <div class="row justify-content-center">
-      <div class="col-12">
+  .asset-edit-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-        <!-- TÍTULO -->
-        <div class="text-center mb-3">
-          <h1 style="color:#1f7f3b; font-weight:800;">
-            Editar Ativos
-          </h1>
-          <hr style="border-color:#1f7f3b; max-width:280px; margin:.4rem auto;">
+  .asset-edit-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
+
+  .asset-edit-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .asset-edit-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .asset-edit-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .asset-edit-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .asset-edit-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    margin-bottom:10px;
+  }
+
+  .asset-edit-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .asset-edit-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .asset-edit-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .asset-edit-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .asset-edit-card{
+    max-width:860px;
+    margin:0 auto;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .asset-edit-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .asset-edit-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .asset-edit-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .asset-edit-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .asset-edit-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .asset-edit-card-body{
+    padding:22px;
+  }
+
+  .search-box{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    padding:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    margin-bottom:18px;
+  }
+
+  .search-box-title{
+    color:var(--dhl-black);
+    font-size:14px;
+    font-weight:900;
+    margin-bottom:8px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select,
+  textarea.form-control{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus,
+  textarea.form-control:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .asset-selected{
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    padding:12px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .search-btn{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    font-weight:800;
+    border-radius:12px;
+    min-width:92px;
+  }
+
+  .search-btn:hover{
+    background:#ffeeb0;
+    color:#5f4500;
+  }
+
+  .asset-edit-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:14px;
+  }
+
+  .btn-save-asset{
+    min-height:46px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .btn-save-asset:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .btn-clear-asset{
+    min-height:46px;
+    border-radius:999px;
+    background:#fff;
+    color:#4b5563;
+    font-weight:800;
+    padding:10px 18px;
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #d1d5db;
+    transition:.2s ease;
+  }
+
+  .btn-clear-asset:hover{
+    background:#f9fafb;
+    color:#111827;
+  }
+
+  .asset-edit-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .asset-edit-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .asset-edit-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .asset-edit-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .asset-edit-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .asset-edit-hero h1{
+      font-size:22px;
+    }
+
+    .asset-edit-card-header,
+    .asset-edit-card-body{
+      padding:16px;
+    }
+
+    .asset-edit-logo-box img{
+      height:36px;
+    }
+
+    .asset-edit-actions{
+      flex-direction:column;
+    }
+
+    .btn-save-asset,
+    .btn-clear-asset{
+      width:100%;
+    }
+  }
+</style>
+
+<div class="asset-edit-page">
+
+  <div class="asset-edit-hero">
+    <div class="asset-edit-hero-content">
+      <div class="asset-edit-brand">
+        <div class="asset-edit-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
         </div>
 
-        <!-- CARD PRINCIPAL -->
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid #1f7f3b;
-             ">
-
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:12px 16px;
-                border-bottom:2px solid #145c2a;
-          ">
-            <h5 class="mb-0"
-                style="color:#ffffff; font-weight:800;">
-              Editar Ativo
-            </h5>
-          </div>
-
-          <div class="card-body p-4" style="color:#222;">
-
-            <!-- BUSCA POR CPF -->
-            <form method="GET"
-                  action="{{ url_for('editar_ativos') }}"
-                  class="border rounded-3 p-3 mb-4"
-                  style="border-color:#cfe7da; background:#f6fbf8;">
-              <label class="form-label fw-semibold" style="color:#1f7f3b;">
-                Buscar cadastro por CPF
-              </label>
-              <div class="input-group">
-                <input type="text"
-                       name="cpf"
-                       class="form-control"
-                       placeholder="Digite o CPF"
-                       value="{{ cpf_busca or '' }}">
-                <button type="submit"
-                        class="btn"
-                        style="background:#78BE205; color:#ffffff; font-weight:700;">
-                  Buscar
-                </button>
-              </div>
-            </form>
-
-            <!-- FORM EDIÇÃO -->
-            <form method="POST"
-                  action="{{ url_for('editar_ativo', ativo_id=ativo_edit.id) if ativo_edit else '' }}"
-                  enctype="multipart/form-data">
-
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-              <fieldset {% if not ativo_edit %}disabled{% endif %}>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" style="color:#1f7f3b;">
-                    Ativo selecionado
-                  </label>
-                  <input type="text"
-                         class="form-control"
-                         readonly
-                         value="{% if ativo_edit %}ID {{ ativo_edit.id }} · {{ ativo_edit.imei_ou_numero }}{% else %}Nenhum ativo selecionado{% endif %}">
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" style="color:#1f7f3b;">
-                    Tipo de ativo
-                  </label>
-                  <select name="tipo_ativo" class="form-select">
-                    {% set tipo_sel = ativo_edit.tipo if ativo_edit else '' %}
-                    <option value="Notebook" {% if tipo_sel == 'Notebook' %}selected{% endif %}>Notebook</option>
-                    <option value="Desktop" {% if tipo_sel == 'Desktop' %}selected{% endif %}>Desktop</option>
-                    <option value="Celular" {% if tipo_sel == 'Celular' %}selected{% endif %}>Celular</option>
-                    <option value="Tablet" {% if tipo_sel == 'Tablet' %}selected{% endif %}>Tablet</option>
-                    <option value="Impressora" {% if tipo_sel == 'Impressora' %}selected{% endif %}>Impressora</option>
-                    <option value="Acessório" {% if tipo_sel == 'Acessório' %}selected{% endif %}>Acessório</option>
-                    <option value="Outro" {% if tipo_sel == 'Outro' %}selected{% endif %}>Outro</option>
-                  </select>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" style="color:#1f7f3b;">
-                    Observações
-                  </label>
-                  <textarea name="observacoes"
-                            class="form-control"
-                            rows="3">{{ ativo_edit.observacoes if ativo_edit }}</textarea>
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label fw-semibold" style="color:#1f7f3b;">
-                    Adicionar novas fotos
-                  </label>
-                  <input type="file"
-                         name="fotos"
-                         class="form-control"
-                         multiple>
-                </div>
-
-                <div class="d-flex gap-2">
-                  <button type="submit"
-                          class="btn"
-                          style="background:#78BE20; color:#fff; font-weight:800; border-radius:999px;">
-                    Salvar alterações
-                  </button>
-                  <a href="{{ url_for('editar_ativos') }}"
-                     class="btn btn-outline-secondary"
-                     style="border-radius:999px;">
-                    Limpar seleção
-                  </a>
-                </div>
-
-              </fieldset>
-            </form>
-
-          </div>
-
-          <!-- Rodapé -->
-          <div style="
-                background:#eaf5ef;
-                color:#1f7f3b;
-                font-size:.75rem;
-                text-align:center;
-                padding:6px 10px;
-                border-radius:0 0 14px 14px;
-                border-top:1px solid #cfe7da;
-          ">
-            DHL SECURITY · EDIÇÃO DE ATIVOS
-          </div>
-
+        <div>
+          <div class="asset-edit-badge">DHL Security Dashboard</div>
+          <h1>Editar Ativos</h1>
+          <p>
+            Busque um cadastro por CPF, selecione o ativo desejado e atualize suas
+            informações, observações e evidências fotográficas no sistema.
+          </p>
         </div>
+      </div>
+
+      <div class="asset-edit-chip-group">
+        <div class="asset-edit-chip">Uso Restrito</div>
+        <div class="asset-edit-chip">Ambiente Interno</div>
       </div>
     </div>
   </div>
+
+  <div class="asset-edit-card">
+    <div class="asset-edit-card-header">
+      <div class="asset-edit-card-badge">Edição de ativo</div>
+      <h2 class="asset-edit-card-title">Atualização de cadastro</h2>
+      <p class="asset-edit-card-subtitle">
+        Localize o colaborador pelo CPF e edite os dados do ativo selecionado.
+      </p>
+    </div>
+
+    <div class="asset-edit-card-body">
+
+      <!-- BUSCA POR CPF -->
+      <form method="GET" action="{{ url_for('editar_ativos') }}" class="search-box">
+        <div class="search-box-title">Buscar cadastro por CPF</div>
+        <div class="input-group">
+          <input type="text"
+                 name="cpf"
+                 class="form-control"
+                 placeholder="Digite o CPF"
+                 value="{{ cpf_busca or '' }}">
+          <button type="submit" class="btn search-btn">Buscar</button>
+        </div>
+      </form>
+
+      <!-- FORM EDIÇÃO -->
+      <form method="POST"
+            action="{{ url_for('editar_ativo', ativo_id=ativo_edit.id) if ativo_edit else '' }}"
+            enctype="multipart/form-data">
+
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <fieldset {% if not ativo_edit %}disabled{% endif %}>
+
+          <div class="mb-3">
+            <label class="form-label">Ativo selecionado</label>
+            <div class="asset-selected">
+              <input type="text"
+                     class="form-control"
+                     readonly
+                     value="{% if ativo_edit %}ID {{ ativo_edit.id }} · {{ ativo_edit.imei_ou_numero }}{% else %}Nenhum ativo selecionado{% endif %}">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Tipo de ativo</label>
+            <select name="tipo_ativo" class="form-select">
+              {% set tipo_sel = ativo_edit.tipo if ativo_edit else '' %}
+              <option value="Notebook" {% if tipo_sel == 'Notebook' %}selected{% endif %}>Notebook</option>
+              <option value="Desktop" {% if tipo_sel == 'Desktop' %}selected{% endif %}>Desktop</option>
+              <option value="Celular" {% if tipo_sel == 'Celular' %}selected{% endif %}>Celular</option>
+              <option value="Tablet" {% if tipo_sel == 'Tablet' %}selected{% endif %}>Tablet</option>
+              <option value="Impressora" {% if tipo_sel == 'Impressora' %}selected{% endif %}>Impressora</option>
+              <option value="Acessório" {% if tipo_sel == 'Acessório' %}selected{% endif %}>Acessório</option>
+              <option value="Outro" {% if tipo_sel == 'Outro' %}selected{% endif %}>Outro</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Observações</label>
+            <textarea name="observacoes"
+                      class="form-control"
+                      rows="3">{{ ativo_edit.observacoes if ativo_edit else '' }}</textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Adicionar novas fotos</label>
+            <input type="file"
+                   name="fotos"
+                   class="form-control"
+                   multiple>
+          </div>
+
+          <div class="asset-edit-actions">
+            <button type="submit" class="btn-save-asset">
+              Salvar alterações
+            </button>
+
+            <a href="{{ url_for('editar_ativos') }}" class="btn-clear-asset">
+              Limpar seleção
+            </a>
+          </div>
+
+        </fieldset>
+      </form>
+
+    </div>
+
+    <div class="asset-edit-footer">
+      <small>DHL SECURITY · EDIÇÃO DE ATIVOS</small>
+      <span class="asset-edit-footer-badge">Atualização corporativa</span>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
