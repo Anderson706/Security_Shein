@@ -1,174 +1,228 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       position:relative;
-       background:#ffffff;
-     ">
+<style>
+:root{
+  --dhl-yellow:#ffcc00;
+  --dhl-red:#d40511;
+  --dhl-red-dark:#b3030e;
+  --dhl-black:#1f1f1f;
+  --bg:#f4f5f7;
+  --card:#ffffff;
+  --line:#e5e7eb;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --shadow:0 10px 24px rgba(0,0,0,.08);
+  --radius:18px;
+}
 
-  <!-- Link fixo topo esquerdo -->
-  <a href="{{ url_for('fechar_ocorrencia') }}"
-     style="
-       position:fixed; top:150px; left:16px; z-index:10;
-       display:flex; align-items:center; gap:8px; text-decoration:none;
-       padding:6px 12px; border-radius:10px;
-       background:#ffffff;
-       border:2px solid #78BE20;
-       box-shadow:0 4px 10px rgba(0,0,0,.15);
-     ">
-    <span style="color:#4E8F00; font-weight:700; font-size:.9rem;">
+/* PAGE */
+.ocorrencia-page{
+  width:min(1200px, calc(100vw - 24px));
+  margin:20px auto;
+}
+
+/* HERO */
+.hero{
+  background:linear-gradient(135deg,#d40511,#9e000c);
+  color:#fff;
+  border-radius:22px;
+  padding:24px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+}
+
+.hero h1{
+  font-weight:900;
+  margin:0;
+}
+
+.hero p{
+  margin:8px 0 0;
+  opacity:.9;
+}
+
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:18px;
+}
+
+/* CARD */
+.card-dhl{
+  background:#fff;
+  border-radius:22px;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+/* HEADER */
+.card-header-dhl{
+  padding:18px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#fff,#fffef8);
+  position:relative;
+}
+
+.card-header-dhl::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:6px;
+  background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+}
+
+.badge-dhl{
+  background:#fff8db;
+  border:1px solid #f5d66f;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:12px;
+}
+
+/* BODY */
+.card-body-dhl{
+  padding:20px;
+}
+
+/* INPUTS */
+.form-control, .form-select{
+  border-radius:12px;
+  border:1px solid #d6dbe3;
+  min-height:46px;
+}
+
+.form-control:focus, .form-select:focus{
+  border-color:#ffcc00;
+  box-shadow:0 0 0 .18rem rgba(255,204,0,.25);
+}
+
+/* BUTTON */
+.btn-dhl{
+  width:100%;
+  background:var(--dhl-red);
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  font-weight:900;
+  padding:12px;
+  letter-spacing:.08em;
+}
+
+.btn-dhl:hover{
+  background:var(--dhl-red-dark);
+}
+
+/* INSTRUÇÃO */
+.info-box{
+  background:#fff;
+  border-radius:18px;
+  border:1px solid var(--line);
+  padding:18px;
+  box-shadow:var(--shadow);
+  position:sticky;
+  top:20px;
+}
+
+@media(max-width:900px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+
+<div class="ocorrencia-page">
+
+  <!-- HERO -->
+  <div class="hero d-flex justify-content-between align-items-center flex-wrap">
+    <div>
+      <h1>Registro de Ocorrências</h1>
+      <p>Cadastre eventos operacionais com evidências e rastreabilidade completa.</p>
+    </div>
+
+    <a href="{{ url_for('fechar_ocorrencia') }}"
+       class="badge-dhl"
+       style="text-decoration:none;">
       Fechar Ocorrência
-    </span>
-  </a>
+    </a>
+  </div>
 
-  <!-- Logo -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:150px; width:auto; z-index:10;
-         opacity:.85;
-       ">
+  <div class="grid">
 
-  <div class="container py-4 position-relative" style="z-index:5; color:#222;">
-    <div class="row">
-      <h1 class="text-center mb-2"
-          style="color:#4E8F00; font-weight:800;">
-        Ocorrências
-      </h1>
-      <hr class="border-2 opacity-100"
-          style="border-color:#78BE20; max-width:260px; margin:0.25rem auto 1.5rem auto;">
-    </div>
-
-    <div class="row g-4">
-      <!-- FORMULÁRIO -->
-      <div class="col-lg-8">
-        <div class="card shadow"
-             style="
-               background:#ffffff;
-               border:2px solid #78BE20;
-               border-radius:14px;
-               max-width:780px;
-               margin:0 auto;
-             ">
-
-          <!-- Cabeçalho -->
-          <div style="
-                background:#78BE20;
-                border-radius:12px 12px 0 0;
-                padding:12px 18px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:.95rem;">
-              REGISTRO DE OCORRÊNCIA
-            </span>
-          </div>
-
-          <div class="card-body" style="padding:20px; color:#222;">
-            <form method="POST" enctype="multipart/form-data">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Nome</label>
-                <input type="text" class="form-control"
-                       name="nome_solicitante"
-                       placeholder="Inserir nome do solicitante">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Data da Ocorrência</label>
-                <input type="date" class="form-control"
-                       name="data_ocorrencia">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Descrição</label>
-                <input type="text" class="form-control"
-                       name="descricao"
-                       placeholder="Inserir breve relato">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Envolvido e/ou GC</label>
-                <input type="text" class="form-control"
-                       name="envolvido_gc"
-                       placeholder="Nome ou código do pacote">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Turno</label>
-                <select name="turno" class="form-select form-select-lg">
-                  <option selected disabled>Inserir o Turno</option>
-                  <option value="1">1° Turno</option>
-                  <option value="2">2° Turno</option>
-                  <option value="3">3° Turno</option>
-                  <option value="4">4º Turno</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label fw-semibold">Foto</label>
-                <input type="file" class="form-control" name="foto" accept="image/*">
-              </div>
-
-              <button type="submit"
-                      class="btn w-100 mt-2"
-                      style="
-                        background:#78BE20;
-                        border:1px solid #4E8F00;
-                        color:#fff;
-                        font-weight:800;
-                        padding:.55rem 1.6rem;
-                        border-radius:999px;
-                        text-transform:uppercase;
-                        letter-spacing:.08em;
-                      ">
-                Enviar
-              </button>
-            </form>
-          </div>
-
-          <div style="
-                background:#f4f4f4;
-                color:#4E8F00;
-                font-size:.7rem;
-                text-align:center;
-                padding:6px 10px;
-                border-radius:0 0 12px 12px;
-                border-top:1px solid #78BE20;
-          ">
-            SECURITY · REGISTRO DE OCORRÊNCIAS
-          </div>
-        </div>
+    <!-- FORM -->
+    <div class="card-dhl">
+      <div class="card-header-dhl">
+        <div class="badge-dhl">Cadastro</div>
+        <h4 style="margin:8px 0 0;font-weight:900;">Nova ocorrência</h4>
       </div>
 
-      <!-- INSTRUÇÕES -->
-      <div class="col-lg-4">
-        <div class="rounded-3 p-3"
-             style="
-               background:#ffffff;
-               position:sticky; top:16px;
-               box-shadow:0 10px 24px rgba(0,0,0,.15);
-               border:2px solid #78BE20;
-             ">
-          <h5 class="mb-3" style="color:#4E8F00; font-weight:800;">
-            Como preencher
-          </h5>
+      <div class="card-body-dhl">
+        <form method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-          <ul class="ps-3 mb-0" style="color:#222; font-size:.9rem;">
-            <li class="mb-2"><strong>Nome:</strong> Nome completo</li>
-            <li class="mb-2"><strong>Data:</strong> Data correta</li>
-            <li class="mb-2"><strong>Descrição:</strong> O que, onde, quando</li>
-            <li class="mb-2"><strong>Envolvido:</strong> Nome ou GC</li>
-            <li class="mb-2"><strong>Turno:</strong> 1º ao 4º</li>
-            <li><strong>Foto:</strong> Opcional</li>
-          </ul>
-        </div>
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text" class="form-control" name="nome_solicitante">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Data</label>
+            <input type="date" class="form-control" name="data_ocorrencia">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <input type="text" class="form-control" name="descricao">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Envolvido / GC</label>
+            <input type="text" class="form-control" name="envolvido_gc">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Turno</label>
+            <select name="turno" class="form-select">
+              <option selected disabled>Selecionar</option>
+              <option>1° Turno</option>
+              <option>2° Turno</option>
+              <option>3° Turno</option>
+              <option>4º Turno</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Foto</label>
+            <input type="file" class="form-control" name="foto">
+          </div>
+
+          <button class="btn-dhl mt-2">Enviar</button>
+        </form>
+      </div>
+
+      <div style="padding:10px;text-align:center;font-size:12px;color:#777;">
+        DHL SECURITY · REGISTRO OPERACIONAL
       </div>
     </div>
+
+    <!-- INSTRUÇÕES -->
+    <div class="info-box">
+      <h5 style="font-weight:900;">Como preencher</h5>
+      <ul style="font-size:14px;color:#444;">
+        <li><b>Nome:</b> completo</li>
+        <li><b>Data:</b> correta</li>
+        <li><b>Descrição:</b> o que ocorreu</li>
+        <li><b>Envolvido:</b> nome ou GC</li>
+        <li><b>Turno:</b> correspondente</li>
+        <li><b>Foto:</b> opcional</li>
+      </ul>
+    </div>
+
   </div>
 </div>
 {% endblock %}

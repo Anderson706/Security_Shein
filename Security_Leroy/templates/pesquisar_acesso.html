@@ -1,185 +1,625 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:120px;
-       padding-bottom:80px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- Logo fixa no rodapé direito -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+  .access-page{
+    width:min(1280px, calc(100vw - 24px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container text-dark py-4 position-relative">
+  .access-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <!-- TÍTULO -->
-    <div class="row">
-      <h1 class="text-center mb-2"
-          style="color:#78BE20; font-weight:800;">
-        Pesquisar / Postagens de Acesso
-      </h1>
-      <hr class="border-2 opacity-100"
-          style="border-color:#2E7D32; max-width:340px; margin:0.25rem auto 1.5rem auto;">
-    </div>
+  .access-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-    <div class="row g-4">
+  .access-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-      <!-- COLUNA ESQUERDA: FILTROS -->
-      <div class="col-lg-4">
-        <div class="rounded-3 p-3 p-md-4 shadow-sm"
-             style="
-               background:#ffffff;
-               border:1px solid #dcdcdc;
-             ">
+  .access-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-          <h5 class="mb-3"
-              style="color:#78BE20; font-weight:800;">
-            Filtros de Pesquisa
-          </h5>
+  .access-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-          <form method="GET" action="{{ url_for('pesquisar_acesso') }}">
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Nome</label>
-              <input type="text"
-                     class="form-control"
-                     name="nome"
-                     value="{{ filtro_nome or '' }}">
-            </div>
+  .access-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">CPF</label>
-              <input type="text"
-                     class="form-control"
-                     name="cpf"
-                     value="{{ filtro_cpf or '' }}">
-            </div>
+  .access-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
 
-            <div class="mb-3">
-              <label class="form-label fw-semibold">Data do Registro</label>
-              <input type="date"
-                     class="form-control"
-                     name="data"
-                     value="{{ filtro_data or '' }}">
-            </div>
+  .access-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
 
-            <div class="d-flex gap-2">
-              <button type="submit"
-                      class="btn flex-fill"
-                      style="
-                        background:#78BE20;
-                        border:none;
-                        color:#fff;
-                        font-weight:700;">
-                Buscar
-              </button>
-              <a href="{{ url_for('pesquisar_acesso') }}"
-                 class="btn btn-outline-secondary flex-fill">
-                Limpar
-              </a>
-            </div>
-          </form>
+  .access-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
 
-          <hr class="my-4">
+  .access-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
-          <a href="{{ url_for('controle_acessos') }}"
-             class="btn w-100"
-             style="
-               background:#78BE20;
-               border:none;
-               color:#fff;
-               font-weight:700;">
-            Novo Registro de Acesso
-          </a>
+  .access-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .access-grid{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .access-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .access-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .access-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .access-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .access-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .access-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .access-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .btn-dhl{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:46px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    padding:0 16px;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+    text-decoration:none;
+  }
+
+  .btn-dhl:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .btn-dhl-outline{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:46px;
+    border-radius:999px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    font-weight:800;
+    padding:0 16px;
+    text-decoration:none;
+    transition:.2s ease;
+  }
+
+  .btn-dhl-outline:hover{
+    background:#ffeeb0;
+    color:#5f4500;
+  }
+
+  .filter-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-top:10px;
+  }
+
+  .new-access-link{
+    width:100%;
+    margin-top:14px;
+  }
+
+  .result-stack{
+    display:grid;
+    gap:14px;
+  }
+
+  .result-card{
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    overflow:hidden;
+  }
+
+  .result-card-body{
+    padding:18px;
+  }
+
+  .result-wrap{
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+
+  .result-photo{
+    width:140px;
+    height:140px;
+    border-radius:16px;
+    border:1px solid #dfe3ea;
+    background:#eef1f4;
+    overflow:hidden;
+    flex:0 0 auto;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .result-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .result-main{
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  .result-name{
+    margin:0 0 4px 0;
+    font-size:20px;
+    font-weight:900;
+    color:var(--dhl-black);
+  }
+
+  .result-date{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:12px;
+  }
+
+  .result-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px 18px;
+    font-size:13px;
+    color:#475467;
+    line-height:1.6;
+  }
+
+  .result-grid strong{
+    color:#111827;
+  }
+
+  .result-actions{
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+    flex:0 0 auto;
+  }
+
+  .delete-btn{
+    min-height:38px;
+    padding:0 14px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:800;
+    font-size:12px;
+    letter-spacing:.04em;
+    box-shadow:0 6px 14px rgba(212,5,17,.18);
+    transition:.2s ease;
+  }
+
+  .delete-btn:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+  }
+
+  .empty-state{
+    border:1px dashed #d6dbe3;
+    border-radius:20px;
+    padding:28px 18px;
+    text-align:center;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    color:#6b7280;
+    font-weight:700;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .access-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .access-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .access-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 1100px){
+    .access-grid{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media (max-width: 768px){
+    .access-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .access-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .access-hero h1{
+      font-size:22px;
+    }
+
+    .access-card-header,
+    .access-card-body{
+      padding:16px;
+    }
+
+    .access-logo-box img{
+      height:36px;
+    }
+
+    .result-wrap{
+      flex-direction:column;
+    }
+
+    .result-photo{
+      width:100%;
+      max-width:200px;
+      height:200px;
+    }
+
+    .result-grid{
+      grid-template-columns:1fr;
+    }
+
+    .result-actions{
+      justify-content:flex-start;
+      margin-top:8px;
+    }
+
+    .filter-actions{
+      grid-template-columns:1fr;
+    }
+  }
+</style>
+
+<div class="access-page">
+
+  <div class="access-hero">
+    <div class="access-hero-content">
+      <div class="access-brand">
+        <div class="access-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="access-badge">DHL Security Dashboard</div>
+          <h1>Pesquisar / Postagens de Acesso</h1>
+          <p>
+            Consulte registros de acesso por nome, CPF ou data, visualize evidências
+            cadastradas e gerencie os registros operacionais com mais organização.
+          </p>
         </div>
       </div>
 
-      <!-- COLUNA DIREITA: RESULTADOS -->
-      <div class="col-lg-8">
+      <div class="access-chip-group">
+        <div class="access-chip">Uso Restrito</div>
+        <div class="access-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
+  <div class="access-grid">
+
+    <!-- FILTROS -->
+    <div class="access-card">
+      <div class="access-card-header">
+        <div class="access-card-badge">Pesquisa</div>
+        <h2 class="access-card-title">Filtros de pesquisa</h2>
+        <p class="access-card-subtitle">
+          Utilize os campos abaixo para localizar registros específicos de acesso.
+        </p>
+      </div>
+
+      <div class="access-card-body">
+        <form method="GET" action="{{ url_for('pesquisar_acesso') }}" autocomplete="off">
+          <div class="mb-3">
+            <label class="form-label">Nome</label>
+            <input type="text"
+                   class="form-control"
+                   name="nome"
+                   value="{{ filtro_nome or '' }}"
+                   placeholder="Digite o nome">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">CPF</label>
+            <input type="text"
+                   class="form-control"
+                   name="cpf"
+                   value="{{ filtro_cpf or '' }}"
+                   placeholder="Digite o CPF">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Data do Registro</label>
+            <input type="date"
+                   class="form-control"
+                   name="data"
+                   value="{{ filtro_data or '' }}">
+          </div>
+
+          <div class="filter-actions">
+            <button type="submit" class="btn-dhl">
+              Buscar
+            </button>
+            <a href="{{ url_for('pesquisar_acesso') }}" class="btn-dhl-outline">
+              Limpar
+            </a>
+          </div>
+        </form>
+
+        <a href="{{ url_for('controle_acessos') }}" class="btn-dhl new-access-link">
+          Novo Registro de Acesso
+        </a>
+      </div>
+
+      <div class="access-footer">
+        <small>DHL SECURITY · CONSULTA DE ACESSOS</small>
+        <span class="access-footer-badge">Filtros corporativos</span>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div class="access-card">
+      <div class="access-card-header">
+        <div class="access-card-badge">Resultados</div>
+        <h2 class="access-card-title">Registros encontrados</h2>
+        <p class="access-card-subtitle">
+          Visualize as postagens cadastradas e gerencie os registros conforme necessário.
+        </p>
+      </div>
+
+      <div class="access-card-body">
         {% if registros %}
-          {% for r in registros %}
-            {% set foto_url = foto_static_url(r.foto_filename) %}
+          <div class="result-stack">
+            {% for r in registros %}
+              {% set foto_url = foto_static_url(r.foto_filename) %}
 
-            <div class="card mb-3 shadow-sm"
-                 style="border-radius:12px;">
+              <div class="result-card">
+                <div class="result-card-body">
+                  <div class="result-wrap">
 
-              <div class="card-body">
-                <div class="d-flex flex-column flex-md-row gap-3">
+                    {% if foto_url %}
+                      <div class="result-photo">
+                        <img src="{{ foto_url }}" alt="Foto do registro">
+                      </div>
+                    {% else %}
+                      <div class="result-photo"></div>
+                    {% endif %}
 
-                  {% if foto_url %}
-                    <img src="{{ foto_url }}"
-                         style="
-                           width:140px;
-                           height:140px;
-                           object-fit:cover;
-                           border-radius:10px;
-                           border:2px solid #2E7D32;">
-                  {% else %}
-                    <div style="
-                           width:140px;
-                           height:140px;
-                           background:#e9ecef;
-                           border-radius:10px;
-                           border:1px solid #ccc;">
-                    </div>
-                  {% endif %}
+                    <div class="result-main">
+                      <h5 class="result-name">{{ r.nome }}</h5>
+                      <div class="result-date">
+                        {{ r.data_registro.strftime('%d/%m/%Y') if r.data_registro }}
+                      </div>
 
-                  <div class="flex-grow-1">
-                    <h5 style="font-weight:800;">{{ r.nome }}</h5>
-                    <div class="text-muted small mb-2">
-                      {{ r.data_registro.strftime('%d/%m/%Y') if r.data_registro }}
+                      <div class="result-grid">
+                        <div><strong>Empresa:</strong> {{ r.empresa }}</div>
+                        <div><strong>CPF:</strong> {{ r.cpf }}</div>
+                        <div><strong>Responsável:</strong> {{ r.responsavel }}</div>
+                        <div><strong>Turno:</strong> {{ turno_label(r.turno) }}</div>
+                      </div>
                     </div>
 
-                    <div class="row g-2 small">
-                      <div class="col-6"><strong>Empresa:</strong> {{ r.empresa }}</div>
-                      <div class="col-6"><strong>CPF:</strong> {{ r.cpf }}</div>
-                      <div class="col-6"><strong>Responsável:</strong> {{ r.responsavel }}</div>
-                      <div class="col-6"><strong>Turno:</strong> {{ turno_label(r.turno) }}</div>
+                    <div class="result-actions">
+                      <form method="POST"
+                            action="{{ url_for('excluir_acesso', acesso_id=r.id) }}"
+                            onsubmit="return confirm('Excluir este registro?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="delete-btn">
+                          Excluir
+                        </button>
+                      </form>
                     </div>
+
                   </div>
-
-                  <div class="text-md-end">
-                    <form method="POST"
-                          action="{{ url_for('excluir_acesso', acesso_id=r.id) }}"
-                          onsubmit="return confirm('Excluir este registro?');">
-                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                      <button type="submit"
-                              class="btn btn-sm"
-                              style="
-                                background:#78BE20;
-                                color:#fff;
-                                border:none;
-                                font-weight:700;
-                                border-radius:999px;">
-                        Excluir
-                      </button>
-                    </form>
-                  </div>
-
                 </div>
               </div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         {% else %}
-          <div class="alert alert-light shadow-sm">
+          <div class="empty-state">
             Nenhum registro encontrado.
           </div>
         {% endif %}
+      </div>
 
+      <div class="access-footer">
+        <small>DHL SECURITY · POSTAGENS DE ACESSO</small>
+        <span class="access-footer-badge">Gestão operacional</span>
       </div>
     </div>
+
   </div>
 </div>
 {% endblock %}

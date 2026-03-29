@@ -1,289 +1,677 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       position:relative;
-       background:#ffffff;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- Overlay leve branco/verde (bem sutil) -->
-  <div style="
-        position:absolute; inset:0;
-        background: linear-gradient(
-          180deg,
-          rgba(255,255,255,.98) 0%,
-          rgba(255,255,255,.96) 55%,
-          rgba(120,190,32,.14) 100%
-        );
-        pointer-events:none;
-  "></div>
+  .access-create-page{
+    width:min(1280px, calc(100vw - 24px));
+    margin:18px auto 28px;
+  }
 
-  <!-- Logo (mantido) -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo DHL"
-       style="
-         position:fixed; right:16px; bottom:16px;
-         height:170px; width:auto; z-index:10;
-         opacity:.92;
-         filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
-       ">
+  .access-top-actions{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
 
-  <!-- Link topo esquerdo: Pesquisar acesso (mantido) -->
-  <a href="{{ url_for('pesquisar_acesso') }}"
-     style="
-       position:fixed; top:150px; left:16px; z-index:10;
-       display:flex; align-items:center; gap:8px; text-decoration:none;
-       padding:8px 12px; border-radius:12px;
-       background:#ffffff;
-       border:2px solid #78BE20;
-       box-shadow:0 6px 16px rgba(0,0,0,.12);
-       color:#2f5f0f;
-       font-weight:800;
-       font-size:.9rem;
-     ">
-    Pesquisar Acesso
-  </a>
+  .access-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    box-shadow:0 4px 10px rgba(0,0,0,.06);
+  }
 
-  <!-- CONTEÚDO CENTRAL -->
-  <div class="container py-4 position-relative" style="z-index:5;">
-    <div class="row justify-content-center">
-      <div class="col-12 text-center">
-        <h1 class="mb-2"
-            style="color:#2f5f0f; font-weight:900; letter-spacing:.02em;">
-          Controle de Acessos
-        </h1>
-        <hr class="border-3 opacity-100"
-            style="border-color:#78BE20; max-width:320px; margin:0.25rem auto 1.5rem auto;">
+  .access-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
+
+  .access-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
+
+  .access-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
+
+  .access-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .access-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .access-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .access-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .access-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .access-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .access-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .access-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .access-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .access-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:18px;
+    align-items:start;
+  }
+
+  .access-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .access-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .access-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .access-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .access-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .access-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .access-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-text{
+    color:#7b8494 !important;
+    font-size:12px;
+  }
+
+  .access-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .access-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .access-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .access-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .access-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .preview-card{
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:sticky;
+    top:16px;
+  }
+
+  .preview-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .preview-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .preview-card-body{
+    padding:20px;
+  }
+
+  .preview-live{
+    font-size:12px;
+    font-weight:900;
+    color:#7a5a00;
+    background:#fff8db;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+  }
+
+  .preview-image-wrap{
+    width:100%;
+    min-height:220px;
+    border-radius:18px;
+    border:1px dashed #d6dbe3;
+    background:linear-gradient(180deg,#fafafa,#f4f5f7);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    margin-bottom:16px;
+  }
+
+  .preview-image{
+    max-width:100%;
+    max-height:220px;
+    border-radius:14px;
+    display:none;
+    object-fit:cover;
+  }
+
+  .preview-empty{
+    color:#9aa3b2;
+    font-size:13px;
+    font-weight:700;
+    text-align:center;
+    padding:18px;
+  }
+
+  .preview-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:grid;
+    gap:10px;
+  }
+
+  .preview-item{
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:12px 14px;
+    background:#fff;
+    font-size:13px;
+    color:#475467;
+    line-height:1.5;
+  }
+
+  .preview-item strong{
+    color:#111827;
+    display:block;
+    margin-bottom:3px;
+  }
+
+  @media (max-width: 992px){
+    .access-grid{
+      grid-template-columns:1fr;
+    }
+
+    .preview-card{
+      position:relative;
+      top:auto;
+    }
+  }
+
+  @media (max-width: 768px){
+    .access-create-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .access-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .access-hero h1{
+      font-size:22px;
+    }
+
+    .access-card-header,
+    .access-card-body,
+    .preview-card-header,
+    .preview-card-body{
+      padding:16px;
+    }
+
+    .access-logo-box img{
+      height:36px;
+    }
+
+    .preview-image-wrap{
+      min-height:180px;
+    }
+  }
+</style>
+
+<div class="access-create-page">
+
+  <div class="access-top-actions">
+    <a href="{{ url_for('pesquisar_acesso') }}" class="access-link">Pesquisar Acesso</a>
+  </div>
+
+  <div class="access-hero">
+    <div class="access-hero-content">
+      <div class="access-brand">
+        <div class="access-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="access-badge">DHL Security Dashboard</div>
+          <h1>Controle de Acessos</h1>
+          <p>
+            Registre acessos de colaboradores com evidência fotográfica, dados do responsável
+            e visualização imediata das informações para conferência antes do envio.
+          </p>
+        </div>
+      </div>
+
+      <div class="access-chip-group">
+        <div class="access-chip">Uso Restrito</div>
+        <div class="access-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="access-grid">
+
+    <!-- FORMULÁRIO -->
+    <div class="access-card">
+      <div class="access-card-header">
+        <div class="access-card-badge">Cadastro de acesso</div>
+        <h2 class="access-card-title">Dados do colaborador</h2>
+        <p class="access-card-subtitle">
+          Preencha os dados abaixo para registrar o acesso no sistema com padronização e rastreabilidade.
+        </p>
+      </div>
+
+      <div class="access-card-body">
+        <form method="POST"
+              action="{{ url_for('controle_acessos') }}"
+              enctype="multipart/form-data"
+              autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="nome_solicitante" class="form-label">Nome</label>
+              <input type="text"
+                     class="form-control"
+                     id="nome_solicitante"
+                     name="nome_solicitante"
+                     placeholder="Inserir nome completo"
+                     aria-describedby="nomeHelp">
+              <div id="nomeHelp" class="form-text">
+                Inserir o nome completo do colaborador.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="data_ocorrencia" class="form-label">Data do Registro</label>
+              <input type="date"
+                     class="form-control"
+                     id="data_ocorrencia"
+                     name="data_ocorrencia">
+            </div>
+
+            <div class="col-md-6">
+              <label for="empresa" class="form-label">Empresa</label>
+              <select id="empresa" name="empresa" class="form-select">
+                <option selected disabled>Inserir parceiro</option>
+                <option>Addeco</option>
+                <option>Sertec</option>
+                <option>3P</option>
+                <option>Polli</option>
+                <option>TSI</option>
+                <option>DHL</option>
+                <option>Leadec</option>
+                <option>4t</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="envolvido_gc" class="form-label">CPF</label>
+              <input type="text"
+                     class="form-control"
+                     id="envolvido_gc"
+                     name="envolvido_gc"
+                     placeholder="Inserir o número do CPF"
+                     aria-describedby="envolvidoHelp">
+              <div id="envolvidoHelp" class="form-text">
+                Todas as informações são confidenciais.
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="responsavel" class="form-label">Responsável</label>
+              <select id="responsavel" name="responsavel" class="form-select">
+                <option selected disabled>Inserir o responsável</option>
+                <option>Anderson Souza</option>
+                <option>Giovanna</option>
+                <option>Juliana</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="turno" class="form-label">Turno</label>
+              <select id="turno" name="turno" class="form-select">
+                <option value="" selected disabled>Inserir o turno</option>
+                <option value="1">1° Turno</option>
+                <option value="2">2° Turno</option>
+                <option value="3">3° Turno</option>
+                <option value="4">4º Turno</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="foto" class="form-label">Inserir a Foto do Colaborador</label>
+              <input type="file"
+                     class="form-control"
+                     id="foto"
+                     name="foto"
+                     accept="image/*">
+            </div>
+          </div>
+
+          <button type="submit" class="btn access-submit mt-3">
+            Enviar
+          </button>
+        </form>
+      </div>
+
+      <div class="access-footer">
+        <small>DHL SECURITY · CONTROLE DE ACESSOS</small>
+        <span class="access-footer-badge">
+          {% if current_user.is_authenticated %}
+            Operador: {{ current_user.username }}
+          {% else %}
+            Uso restrito
+          {% endif %}
+        </span>
       </div>
     </div>
 
-    <div class="row g-4 align-items-stretch justify-content-center">
-
-      <!-- COLUNA ESQUERDA – FORMULÁRIO (CENTRALIZADO E LIMPO) -->
-      <div class="col-lg-8">
-        <div class="card border-0 shadow"
-             style="
-               background:#ffffff;
-               border-radius:16px;
-               border:2px solid rgba(120,190,32,.55);
-               box-shadow:0 18px 40px rgba(0,0,0,.12);
-               overflow:hidden;
-             ">
-
-          <!-- Cabeçalho verde -->
-          <div style="
-                background: linear-gradient(135deg, #78BE20 0%, #62A815 100%);
-                padding:12px 18px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                border-bottom:2px solid #2f5f0f;
-          ">
-            <span style="font-weight:900; color:#ffcc00; font-size:.95rem; letter-spacing:.05em;">
-              CONTROLE DE ACESSO · CADASTRO
-            </span>
-            {% if current_user.is_authenticated %}
-              <span style="font-size:.75rem; color:rgba(255,255,255,.95); font-weight:700;">
-                Operador: {{ current_user.username }}
-              </span>
-            {% endif %}
-          </div>
-
-          <!-- Corpo do card -->
-          <div class="card-body" style="padding:18px 18px 14px 18px; color:#222;">
-            <form method="POST"
-                  action="{{ url_for('controle_acessos') }}"
-                  enctype="multipart/form-data">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-
-              {% set label_style = "color:#2f5f0f; font-weight:800; margin-bottom:.25rem;" %}
-              {% set help_style  = "color:#6b7280; font-size:.82rem;" %}
-
-              <div class="mb-3">
-                <label for="nome_solicitante" class="form-label" style="{{ label_style }}">Nome</label>
-                <input type="text"
-                       class="form-control"
-                       id="nome_solicitante" name="nome_solicitante"
-                       placeholder="Inserir Nome" aria-describedby="nomeHelp"
-                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-                <div id="nomeHelp" class="form-text" style="{{ help_style }}">
-                  Inserir o nome completo do colaborador.
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="data_ocorrencia" class="form-label" style="{{ label_style }}">Data do Registro</label>
-                <input type="date"
-                       class="form-control"
-                       id="data_ocorrencia" name="data_ocorrencia"
-                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-              </div>
-
-              <div class="mb-3">
-                <label for="empresa" class="form-label" style="{{ label_style }}">Empresa</label>
-                <select id="empresa" name="empresa"
-                        class="form-select form-select-lg"
-                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-                  <option selected disabled>Inserir Parceiro</option>
-                  <option>Addeco</option>
-                  <option>Sertec</option>
-                  <option>3P</option>
-                  <option>Polli</option>
-                  <option>TSI</option>
-                  <option>DHL</option>
-                  <option>Leadec</option>
-                  <option>4t</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="envolvido_gc" class="form-label" style="{{ label_style }}">CPF</label>
-                <input type="text"
-                       class="form-control"
-                       id="envolvido_gc" name="envolvido_gc"
-                       placeholder="Inserir o número do CPF"
-                       aria-describedby="envolvidoHelp"
-                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-                <div id="envolvidoHelp" class="form-text" style="{{ help_style }}">
-                  Todas as informações são confidenciais.
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label for="responsavel" class="form-label" style="{{ label_style }}">Responsável</label>
-                <select id="responsavel" name="responsavel"
-                        class="form-select form-select-lg"
-                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-                  <option selected disabled>Inserir o Responsável</option>
-                  <option>Anderson Souza</option>
-                  <option>Giovanna</option>
-                  <option>Juliana</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="turno" class="form-label" style="{{ label_style }}">Turno</label>
-                <select id="turno" name="turno"
-                        class="form-select form-select-lg"
-                        style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-                  <option value="" selected disabled>Inserir o Turno</option>
-                  <option value="1">1° Turno</option>
-                  <option value="2">2° Turno</option>
-                  <option value="3">3° Turno</option>
-                  <option value="4">4º Turno</option>
-                </select>
-              </div>
-
-              <div class="mb-3">
-                <label for="foto" class="form-label" style="{{ label_style }}">Inserir a Foto do Colaborador</label>
-                <input type="file"
-                       class="form-control"
-                       id="foto" name="foto" accept="image/*"
-                       style="border-radius:12px; border:1px solid rgba(0,0,0,.18);">
-              </div>
-
-              <button type="submit"
-                      class="btn mt-2 w-100"
-                      style="
-                        font-weight:900;
-                        background:#78BE20;
-                        border:2px solid #2f5f0f;
-                        color:#ffffff;
-                        text-transform:uppercase;
-                        letter-spacing:.08em;
-                        border-radius:999px;
-                        padding:.6rem 1rem;
-                        box-shadow:0 10px 18px rgba(120,190,32,.25);
-                      ">
-                Enviar
-              </button>
-            </form>
-          </div>
-
-          <!-- Rodapé -->
-          <div style="
-                background:#f4f6f4;
-                color:#2f5f0f;
-                font-size:0.75rem;
-                text-align:center;
-                padding:8px 12px;
-                border-top:1px solid rgba(120,190,32,.55);
-          ">
-            SECURITY · CONTROLE DE ACESSOS · USO RESTRITO
-          </div>
+    <!-- PRÉ-VISUALIZAÇÃO -->
+    <div class="preview-card">
+      <div class="preview-card-header">
+        <div>
+          <div class="access-card-badge">Pré-visualização</div>
+          <h2 class="access-card-title" style="font-size:20px;">Conferência em tempo real</h2>
+          <p class="access-card-subtitle">
+            Verifique os dados antes de concluir o cadastro.
+          </p>
         </div>
+        <span class="preview-live">LIVE</span>
       </div>
 
-      <!-- COLUNA DIREITA – PRÉ-VISUALIZAÇÃO (mantida, estilo Leroy) -->
-      <div class="col-lg-4">
-        <div class="card shadow"
-             style="
-               background:#fff;
-               border-radius:16px;
-               border:2px solid rgba(120,190,32,.35);
-               box-shadow:0 18px 40px rgba(0,0,0,.10);
-               overflow:hidden;
-             ">
-          <div style="
-                background:#ffffff;
-                padding:10px 14px;
-                border-bottom:2px solid rgba(120,190,32,.55);
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-          ">
-            <h5 class="mb-0"
-                style="color:#2f5f0f; font-weight:900; font-size:0.95rem;">
-              Pré-visualização
-            </h5>
-            <span style="font-size:.75rem; color:#78BE20; font-weight:900;">LIVE</span>
-          </div>
-
-          <div class="p-3">
-            <!-- Foto -->
-            <div class="text-center mb-3">
-              <img id="fotoPreview" src="" alt="Prévia da foto"
-                   style="
-                     max-width:100%;
-                     max-height:220px;
-                     border-radius:12px;
-                     display:none;
-                     border:1px solid rgba(0,0,0,.12);
-                   ">
-            </div>
-
-            <!-- Infos -->
-            <ul class="list-unstyled m-0" style="font-size:0.92rem; color:#222;">
-              <li class="mb-1"><strong style="color:#2f5f0f;">Nome:</strong> <span id="pv_nome">—</span></li>
-              <li class="mb-1"><strong style="color:#2f5f0f;">Data do Registro:</strong> <span id="pv_data">—</span></li>
-              <li class="mb-1"><strong style="color:#2f5f0f;">Empresa:</strong> <span id="pv_empresa">—</span></li>
-              <li class="mb-1"><strong style="color:#2f5f0f;">CPF:</strong> <span id="pv_cpf">—</span></li>
-              <li class="mb-1"><strong style="color:#2f5f0f;">Responsável:</strong> <span id="pv_responsavel">—</span></li>
-              <li class="mb-1"><strong style="color:#2f5f0f;">Turno:</strong> <span id="pv_turno">—</span></li>
-            </ul>
-          </div>
+      <div class="preview-card-body">
+        <div class="preview-image-wrap">
+          <img id="fotoPreview" src="" alt="Prévia da foto" class="preview-image">
+          <div id="previewEmpty" class="preview-empty">Nenhuma imagem selecionada</div>
         </div>
+
+        <ul class="preview-list">
+          <li class="preview-item">
+            <strong>Nome</strong>
+            <span id="pv_nome">—</span>
+          </li>
+          <li class="preview-item">
+            <strong>Data do Registro</strong>
+            <span id="pv_data">—</span>
+          </li>
+          <li class="preview-item">
+            <strong>Empresa</strong>
+            <span id="pv_empresa">—</span>
+          </li>
+          <li class="preview-item">
+            <strong>CPF</strong>
+            <span id="pv_cpf">—</span>
+          </li>
+          <li class="preview-item">
+            <strong>Responsável</strong>
+            <span id="pv_responsavel">—</span>
+          </li>
+          <li class="preview-item">
+            <strong>Turno</strong>
+            <span id="pv_turno">—</span>
+          </li>
+        </ul>
       </div>
 
-    </div> <!-- /row -->
-  </div> <!-- /container -->
+      <div class="access-footer">
+        <small>DHL SECURITY · VALIDAÇÃO VISUAL</small>
+        <span class="access-footer-badge">Conferência corporativa</span>
+      </div>
+    </div>
 
-  <!-- JS para pré-visualização (mantido) -->
+  </div>
+
   <script>
     function val(id){ return document.getElementById(id)?.value || ''; }
+
     function txt(id, value){
       const el = document.getElementById(id);
       if (el) el.textContent = value || '—';
     }
 
+    function turnoTexto(){
+      const el = document.getElementById('turno');
+      if (!el) return '';
+      return el.options[el.selectedIndex]?.text || '';
+    }
+
+    function empresaTexto(){
+      const el = document.getElementById('empresa');
+      if (!el) return '';
+      return el.options[el.selectedIndex]?.text || '';
+    }
+
+    function responsavelTexto(){
+      const el = document.getElementById('responsavel');
+      if (!el) return '';
+      return el.options[el.selectedIndex]?.text || '';
+    }
+
     function updatePreview(){
       txt('pv_nome',        val('nome_solicitante'));
       txt('pv_data',        val('data_ocorrencia'));
-      txt('pv_empresa',     val('empresa'));
+      txt('pv_empresa',     empresaTexto());
       txt('pv_cpf',         val('envolvido_gc'));
-      txt('pv_responsavel', val('responsavel'));
-      txt('pv_turno',       val('turno'));
+      txt('pv_responsavel', responsavelTexto());
+      txt('pv_turno',       turnoTexto());
     }
 
     ['nome_solicitante','data_ocorrencia','empresa','envolvido_gc','responsavel','turno']
@@ -294,10 +682,12 @@
           el.addEventListener('change', updatePreview);
         }
       });
+
     updatePreview();
 
     const inputFoto = document.getElementById('foto');
-    const imgPrev   = document.getElementById('fotoPreview');
+    const imgPrev = document.getElementById('fotoPreview');
+    const previewEmpty = document.getElementById('previewEmpty');
 
     if (inputFoto && imgPrev) {
       inputFoto.addEventListener('change', function(){
@@ -305,12 +695,15 @@
         if (!file) {
           imgPrev.style.display = 'none';
           imgPrev.src = '';
+          if (previewEmpty) previewEmpty.style.display = 'block';
           return;
         }
+
         const reader = new FileReader();
         reader.onload = e => {
           imgPrev.src = e.target.result;
           imgPrev.style.display = 'block';
+          if (previewEmpty) previewEmpty.style.display = 'none';
         };
         reader.readAsDataURL(file);
       });

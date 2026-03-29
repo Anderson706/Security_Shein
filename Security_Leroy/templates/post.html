@@ -1,132 +1,481 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:90px;
-       padding-bottom:40px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- Logo fixo no rodapé direito -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:150px;
-         width:auto;
-         z-index:10;
-         opacity:.85;
-       ">
+  .posts-page{
+    width:min(1320px, calc(100vw - 24px));
+    margin:18px auto 28px;
+  }
 
-  <!-- Conteúdo central -->
-  <div class="container d-flex flex-column align-items-center position-relative"
-       style="max-width:1400px; z-index:5;">
+  .posts-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <!-- TÍTULO -->
-    <h1 style="
-          color:#1f1f1f;
-          margin-bottom:14px;
-          text-align:center;
-          font-weight:800;
-          letter-spacing:.03em;
-        ">
-      Conect Security
-    </h1>
+  .posts-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-    <div class="card shadow-sm"
-         style="
-            width:100%;
-            background:#ffffff;
-            border:2px solid #78BE20;
-            border-radius:12px;
-         ">
+  .posts-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-      <!-- Cabeçalho -->
-      <div style="
-            background:#78BE20;
-            border-radius:10px 10px 0 0;
-            padding:14px 20px;
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
-            border-bottom:2px solid #4e8f13;
-        ">
-        <span style="font-weight:700; color:#fff; font-size:1rem;">
-          Publicações
-        </span>
+  .posts-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-        {% if current_user.is_authenticated %}
-          <span style="font-size:.85rem; color:#fff; font-weight:600;">
-            {{ current_user.username }}
-          </span>
-        {% endif %}
+  .posts-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .posts-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .posts-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .posts-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .posts-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
+
+  .posts-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .posts-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .posts-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .posts-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .posts-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .posts-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .posts-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .posts-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .posts-card-user{
+    position:relative;
+    z-index:1;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .posts-card-body{
+    padding:22px;
+    max-height:calc(80vh - 70px);
+    overflow-y:auto;
+    background:linear-gradient(180deg,#fff,#fffef8);
+  }
+
+  .post-stack{
+    display:grid;
+    gap:14px;
+  }
+
+  .post-item{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+    overflow:hidden;
+  }
+
+  .post-item-inner{
+    padding:18px;
+    display:flex;
+    gap:16px;
+    align-items:flex-start;
+  }
+
+  .post-avatar{
+    width:60px;
+    height:60px;
+    border-radius:16px;
+    overflow:hidden;
+    background:#eef1f4;
+    border:1px solid #dfe3ea;
+    flex:0 0 60px;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .post-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .post-content{
+    flex:1 1 auto;
+    min-width:0;
+  }
+
+  .post-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+
+  .post-title{
+    margin:0 0 4px 0;
+    font-size:18px;
+    font-weight:900;
+    color:var(--dhl-black);
+    line-height:1.3;
+  }
+
+  .post-meta{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+    line-height:1.5;
+  }
+
+  .post-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .btn-post{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-height:36px;
+    padding:0 14px;
+    border:none;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-decoration:none;
+    transition:.2s ease;
+  }
+
+  .btn-post-edit{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+  }
+
+  .btn-post-edit:hover{
+    background:#ffeeb0;
+    color:#5f4500;
+  }
+
+  .btn-post-delete{
+    background:var(--dhl-red);
+    color:#fff;
+    box-shadow:0 6px 14px rgba(212,5,17,.18);
+  }
+
+  .btn-post-delete:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+  }
+
+  .post-body{
+    color:#374151;
+    font-size:14px;
+    line-height:1.7;
+    white-space:pre-line;
+  }
+
+  .empty-state{
+    border:1px dashed #d6dbe3;
+    border-radius:20px;
+    padding:28px 18px;
+    text-align:center;
+    background:#fff;
+    color:#6b7280;
+    font-weight:700;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .posts-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .posts-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .posts-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .posts-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .posts-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .posts-hero h1{
+      font-size:22px;
+    }
+
+    .posts-card-header,
+    .posts-card-body{
+      padding:16px;
+    }
+
+    .posts-logo-box img{
+      height:36px;
+    }
+
+    .post-item-inner{
+      flex-direction:column;
+    }
+
+    .post-avatar{
+      width:72px;
+      height:72px;
+      flex-basis:72px;
+    }
+  }
+</style>
+
+<div class="posts-page">
+
+  <div class="posts-hero">
+    <div class="posts-hero-content">
+      <div class="posts-brand">
+        <div class="posts-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="posts-badge">DHL Security Dashboard</div>
+          <h1>Connect Security</h1>
+          <p>
+            Acompanhe publicações internas, comunicados operacionais e atualizações da equipe
+            em um ambiente organizado, com identificação do autor e gestão dos conteúdos publicados.
+          </p>
+        </div>
       </div>
 
-      <!-- Corpo -->
-      <div class="p-3 p-md-4"
-           style="max-height: calc(80vh - 70px); overflow-y:auto;">
+      <div class="posts-chip-group">
+        <div class="posts-chip">Uso Restrito</div>
+        <div class="posts-chip">Ambiente Interno</div>
+      </div>
+    </div>
+  </div>
 
-        {% if posts and posts|length > 0 %}
+  <div class="posts-card">
+    <div class="posts-card-header">
+      <div>
+        <div class="posts-card-badge">Publicações</div>
+        <h2 class="posts-card-title">Mural interno</h2>
+        <p class="posts-card-subtitle">
+          Visualize as postagens recentes da equipe e gerencie os conteúdos publicados no sistema.
+        </p>
+      </div>
+
+      {% if current_user.is_authenticated %}
+        <span class="posts-card-user">{{ current_user.username }}</span>
+      {% endif %}
+    </div>
+
+    <div class="posts-card-body">
+      {% if posts and posts|length > 0 %}
+        <div class="post-stack">
           {% for post in posts %}
-            <article class="mb-3 p-3"
-                     style="
-                       background:#ffffff;
-                       border:1px solid #e5e5e5;
-                       border-left:5px solid #78BE20;
-                       border-radius:10px;
-                     ">
+            <article class="post-item">
+              <div class="post-item-inner">
 
-              <div class="d-flex gap-3 align-items-start flex-wrap">
-
-                <!-- Avatar -->
-                <div style="
-                      width:56px;
-                      height:56px;
-                      border-radius:10px;
-                      overflow:hidden;
-                      background:#e9ecef;
-                      flex:0 0 56px;
-                    ">
+                <div class="post-avatar">
                   {% if post.autor and post.autor.foto_perfil %}
                     <img src="{{ url_for('static', filename='foto_perfil/' ~ post.autor.foto_perfil) }}"
-                         style="width:100%; height:100%; object-fit:cover;">
+                         alt="Foto do autor">
                   {% else %}
                     <img src="{{ url_for('static', filename='foto_perfil/default.png') }}"
-                         style="width:100%; height:100%; object-fit:cover;">
+                         alt="Foto padrão">
                   {% endif %}
                 </div>
 
-                <!-- Conteúdo -->
-                <div class="flex-grow-1" style="min-width:240px;">
-                  <header class="d-flex justify-content-between align-items-start mb-1 flex-wrap gap-2">
+                <div class="post-content">
+                  <header class="post-header">
                     <div>
-                      <h5 class="mb-1" style="font-weight:700; color:#1f1f1f;">
-                        {{ post.titulo }}
-                      </h5>
-                      <small style="color:#6c757d;">
+                      <h5 class="post-title">{{ post.titulo }}</h5>
+                      <div class="post-meta">
                         por {{ post.autor.username if post.autor else 'Sistema' }}
                         · {{ post.data_criacao.strftime("%d/%m/%Y %H:%M") if post.data_criacao else "" }}
-                      </small>
+                      </div>
                     </div>
 
                     {% if current_user.is_authenticated and post.autor and post.autor.id == current_user.id %}
-                      <div class="d-flex gap-1">
+                      <div class="post-actions">
                         <a href="{{ url_for('editar_post', post_id=post.id) }}"
-                           class="btn btn-sm"
-                           style="background:#78BE20; color:#fff; font-weight:600;">
+                           class="btn-post btn-post-edit">
                           Editar
                         </a>
+
                         <form method="POST"
                               action="{{ url_for('excluir_post', post_id=post.id) }}"
                               onsubmit="return confirm('Tem certeza que deseja excluir este post?');">
                           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                          <button type="submit"
-                                  class="btn btn-sm"
-                                  style="background:#dc3545; color:#fff; font-weight:600;">
+                          <button type="submit" class="btn-post btn-post-delete">
                             Excluir
                           </button>
                         </form>
@@ -134,36 +483,27 @@
                     {% endif %}
                   </header>
 
-                  <p class="mb-0"
-                     style="color:#333; font-size:.9rem; line-height:1.5;">
+                  <div class="post-body">
                     {{ post.corpo }}
-                  </p>
+                  </div>
                 </div>
 
               </div>
             </article>
           {% endfor %}
-        {% else %}
-          <div class="text-center py-4 text-muted">
-            Nenhuma publicação encontrada.
-          </div>
-        {% endif %}
-      </div>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          Nenhuma publicação encontrada.
+        </div>
+      {% endif %}
+    </div>
 
-      <!-- Rodapé -->
-      <div style="
-            background:#f4f6f4;
-            color:#333;
-            font-size:.75rem;
-            text-align:center;
-            padding:8px 12px;
-            border-top:1px solid #78BE20;
-            border-radius:0 0 10px 10px;
-        ">
-        Sistema Interno · Padrão Leroy Merlin
-      </div>
-
+    <div class="posts-footer">
+      <small>DHL SECURITY · PUBLICAÇÕES INTERNAS</small>
+      <span class="posts-footer-badge">Comunicação corporativa</span>
     </div>
   </div>
+
 </div>
 {% endblock %}

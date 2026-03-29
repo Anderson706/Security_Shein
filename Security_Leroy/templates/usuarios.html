@@ -1,135 +1,192 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:100px;
-       padding-bottom:40px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+  }
 
-  {# Logo fixa #}
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+  .users-page{
+    width:min(1100px, calc(100vw - 24px));
+    margin:18px auto;
+  }
 
-  <div class="container position-relative" style="max-width:900px; z-index:5;">
+  /* HERO */
+  .users-hero{
+    background:linear-gradient(135deg,#d40511,#9e000c);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    margin-bottom:18px;
+    box-shadow:var(--shadow);
+  }
 
-    <!-- Título -->
-    <div class="text-center mb-4">
-      <h1 style="
-            color:#111;
-            font-weight:800;
-            margin-bottom:4px;
-          ">
-        Tela de Usuários
-      </h1>
-      <h2 style="
-            color:#78BE20;
-            font-size:1.2rem;
-            font-weight:700;
-          ">
-        Usuários cadastrados
-      </h2>
+  .users-hero h1{
+    font-weight:900;
+    margin:0;
+  }
+
+  .users-hero p{
+    margin-top:6px;
+    opacity:.9;
+  }
+
+  /* CARD */
+  .users-card{
+    background:#fff;
+    border-radius:22px;
+    border:1px solid var(--line);
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+
+  .users-header{
+    padding:18px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#fff,#fffef8);
+    position:relative;
+  }
+
+  .users-header::before{
+    content:"";
+    position:absolute;
+    top:0; left:0; right:0;
+    height:6px;
+    background:linear-gradient(90deg,#d40511,#ffcc00);
+  }
+
+  .users-title{
+    font-weight:900;
+    margin:0;
+  }
+
+  .users-body{
+    padding:20px;
+  }
+
+  /* USER ITEM */
+  .user-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:12px;
+    border-radius:16px;
+    border:1px solid var(--line);
+    margin-bottom:10px;
+    background:#fff;
+    box-shadow:0 6px 14px rgba(0,0,0,.04);
+  }
+
+  .user-photo{
+    width:64px;
+    height:64px;
+    border-radius:16px;
+    overflow:hidden;
+    border:1px solid #ddd;
+    background:#eef1f4;
+    flex:0 0 64px;
+  }
+
+  .user-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .user-info{
+    flex:1;
+  }
+
+  .user-name{
+    font-weight:900;
+    margin:0;
+    color:#111;
+  }
+
+  .user-email{
+    font-size:13px;
+    color:#6b7280;
+  }
+
+  .empty{
+    text-align:center;
+    padding:20px;
+    color:#777;
+  }
+
+  .users-footer{
+    padding:10px;
+    text-align:center;
+    font-size:12px;
+    background:#fffef8;
+    border-top:1px solid var(--line);
+  }
+
+  @media(max-width:768px){
+    .user-item{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+  }
+</style>
+
+<div class="users-page">
+
+  <!-- HERO -->
+  <div class="users-hero">
+    <h1>Gestão de Usuários</h1>
+    <p>Visualize e gerencie usuários cadastrados no sistema interno.</p>
+  </div>
+
+  <!-- CARD -->
+  <div class="users-card">
+
+    <div class="users-header">
+      <h3 class="users-title">Usuários cadastrados</h3>
     </div>
 
-    <!-- Card principal -->
-    <div class="card border-0 shadow-lg"
-         style="
-           background:#ffffff;
-           border-radius:14px;
-           border:2px solid #78BE20;
-           box-shadow:0 14px 30px rgba(0,0,0,0.12);
-         ">
+    <div class="users-body">
 
-      <!-- Cabeçalho -->
-      <div style="
-            background:#78BE20;
-            border-radius:12px 12px 0 0;
-            padding:12px 18px;
-            border-bottom:2px solid #4C8C1A;
-          ">
-        <span style="
-              font-weight:800;
-              color:#ffffff;
-              font-size:0.95rem;
-              letter-spacing:.05em;
-            ">
-          LISTA DE USUÁRIOS
-        </span>
-      </div>
+      {% if usuarios %}
+        {% for u in usuarios %}
+          <div class="user-item">
 
-      <!-- Corpo -->
-      <div class="p-3 p-md-4">
-        {% if usuarios %}
-          {% for u in usuarios %}
-            <div class="d-flex align-items-center gap-3 mb-3">
-
-              <!-- Foto -->
-              <div style="
-                    width:60px;
-                    height:60px;
-                    border-radius:10px;
-                    overflow:hidden;
-                    background:#e9ecef;
-                    border:1px solid #ddd;
-                  ">
-                {% if u.foto_perfil %}
-                  <img src="{{ url_for('static', filename='foto_perfil/' ~ u.foto_perfil) }}"
-                       alt="Foto de {{ u.username }}"
-                       style="width:100%; height:100%; object-fit:cover;">
-                {% else %}
-                  <img src="{{ url_for('static', filename='foto_perfil/default.png') }}"
-                       alt="Foto padrão"
-                       style="width:100%; height:100%; object-fit:cover;">
-                {% endif %}
-              </div>
-
-              <!-- Dados -->
-              <div>
-                <p style="margin:0; font-weight:700; color:#111;">
-                  {{ u.username }}
-                </p>
-                <p style="margin:0; color:#444; font-size:0.9rem;">
-                  {{ u.email }}
-                </p>
-              </div>
+            <div class="user-photo">
+              {% if u.foto_perfil %}
+                <img src="{{ url_for('static', filename='foto_perfil/' ~ u.foto_perfil) }}">
+              {% else %}
+                <img src="{{ url_for('static', filename='foto_perfil/default.png') }}">
+              {% endif %}
             </div>
 
-            {% if not loop.last %}
-              <hr style="border-color:#e5e5e5;">
-            {% endif %}
-          {% endfor %}
-        {% else %}
-          <div class="text-center py-4" style="color:#666;">
-            Nenhum usuário cadastrado.
-          </div>
-        {% endif %}
-      </div>
+            <div class="user-info">
+              <p class="user-name">{{ u.username }}</p>
+              <p class="user-email">{{ u.email }}</p>
+            </div>
 
-      <!-- Rodapé -->
-      <div style="
-            background:#f4f6f4;
-            color:#111;
-            font-size:0.75rem;
-            text-align:center;
-            padding:8px 12px;
-            border-radius:0 0 12px 12px;
-            border-top:1px solid #78BE20;
-          ">
-        SISTEMA INTERNO · GERENCIAMENTO DE USUÁRIOS
-      </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty">
+          Nenhum usuário cadastrado.
+        </div>
+      {% endif %}
 
     </div>
+
+    <div class="users-footer">
+      DHL SECURITY · GERENCIAMENTO DE USUÁRIOS
+    </div>
+
   </div>
+
 </div>
 {% endblock %}

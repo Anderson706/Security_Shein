@@ -1,169 +1,406 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-start"
-     style="
-       position:relative;
-       background:#ffffff;
-       padding-top:90px;
-       padding-bottom:40px;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  {# Logo fixa #}
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+  .keys-page{
+    width:min(980px, calc(100vw - 24px));
+    margin:18px auto 28px;
+  }
 
-  <div class="container py-4 position-relative" style="max-width:520px;">
+  .keys-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
 
-    <!-- TÍTULO -->
-    <h1 class="text-center mb-3"
-        style="
-          color:#78BE20;
-          font-weight:800;
-          letter-spacing:.02em;
-        ">
-      Retirada de Chave Reserva
-    </h1>
+  .keys-hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
+    pointer-events:none;
+  }
 
-    <!-- CARD -->
-    <div class="card border-0 shadow-lg"
-         style="
-           background:#ffffff;
-           border-radius:14px;
-           border:1px solid #e0e0e0;
-         ">
+  .keys-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-      <!-- CABEÇALHO -->
-      <div style="
-            background:#78BE20;
-            color:#fff;
-            border-radius:14px 14px 0 0;
-            padding:12px 16px;
-            font-weight:800;
-            letter-spacing:.04em;
-          ">
-        Formulário de Retirada de Chaves
+  .keys-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+
+  .keys-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .keys-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
+
+  .keys-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
+
+  .keys-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
+
+  .keys-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:700px;
+    line-height:1.5;
+  }
+
+  .keys-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .keys-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .keys-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    max-width:640px;
+    margin:0 auto;
+  }
+
+  .keys-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .keys-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .keys-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
+
+  .keys-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
+
+  .keys-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
+
+  .keys-card-body{
+    padding:22px;
+  }
+
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
+
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .form-text{
+    color:#7b8494 !important;
+    font-size:12px;
+  }
+
+  .keys-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .keys-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .keys-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .keys-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .keys-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  @media (max-width: 768px){
+    .keys-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .keys-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .keys-hero h1{
+      font-size:22px;
+    }
+
+    .keys-card-header,
+    .keys-card-body{
+      padding:16px;
+    }
+
+    .keys-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="keys-page">
+
+  <div class="keys-hero">
+    <div class="keys-hero-content">
+      <div class="keys-brand">
+        <div class="keys-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
+        </div>
+
+        <div>
+          <div class="keys-badge">DHL Security Dashboard</div>
+          <h1>Retirada de Chave Reserva</h1>
+          <p>
+            Registre a retirada de chaves reserva com preenchimento automatizado por CPF,
+            padronização dos dados e controle interno para rastreabilidade operacional.
+          </p>
+        </div>
       </div>
 
-      <!-- CORPO -->
-      <div class="card-body p-4">
-
-        <form method="POST"
-              action="{{ url_for('retirada_chave') }}"
-              autocomplete="off">
-
-          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-          <input type="hidden" name="tipo_formulario" value="retirada">
-
-          <!-- CPF -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">CPF</label>
-            <input type="text"
-                   class="form-control"
-                   id="ret_cpf"
-                   name="ret_cpf"
-                   placeholder="Digite apenas números">
-            <div class="form-text text-muted">
-              Sem pontos ou traços.
-            </div>
-          </div>
-
-          <!-- Nome -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">Nome</label>
-            <input type="text"
-                   class="form-control"
-                   id="ret_nome"
-                   name="ret_nome"
-                   placeholder="Nome completo">
-          </div>
-
-          <!-- Armário -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">Armário</label>
-            <input type="text"
-                   class="form-control"
-                   id="ret_armario"
-                   name="ret_armario"
-                   placeholder="Número do armário">
-          </div>
-
-          <!-- Chave -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">Chave</label>
-            <input type="text"
-                   class="form-control"
-                   id="ret_chave"
-                   name="ret_chave"
-                   placeholder="Número da chave">
-          </div>
-
-          <!-- Turno -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">Turno</label>
-            <select id="ret_turno"
-                    name="ret_turno"
-                    class="form-select">
-              <option selected>Selecione</option>
-              <option value="1">1° Turno</option>
-              <option value="2">2° Turno</option>
-              <option value="3">3° Turno</option>
-              <option value="4">4° Turno</option>
-            </select>
-          </div>
-
-          <!-- Coordenador -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold text-dark">Coordenador</label>
-            <input type="text"
-                   class="form-control"
-                   id="ret_coordenador"
-                   name="ret_coordenador"
-                   placeholder="Nome do coordenador">
-          </div>
-
-          <!-- BOTÃO -->
-          <button type="submit"
-                  class="btn w-100"
-                  style="
-                    background:#78BE20;
-                    color:#fff;
-                    font-weight:800;
-                    text-transform:uppercase;
-                    letter-spacing:.08em;
-                    border-radius:999px;
-                  ">
-            Confirmar Retirada
-          </button>
-        </form>
+      <div class="keys-chip-group">
+        <div class="keys-chip">Uso Restrito</div>
+        <div class="keys-chip">Ambiente Interno</div>
       </div>
+    </div>
+  </div>
 
-      <!-- RODAPÉ -->
-      <div style="
-            background:#f5f5f5;
-            color:#333;
-            font-size:0.75rem;
-            text-align:center;
-            padding:8px;
-            border-radius:0 0 14px 14px;
-            border-top:1px solid #e0e0e0;
-          ">
-        DHL SECURITY · CONTROLE DE CHAVES RESERVA
-      </div>
+  <div class="keys-card">
+    <div class="keys-card-header">
+      <div class="keys-card-badge">Controle de chaves</div>
+      <h2 class="keys-card-title">Formulário de retirada</h2>
+      <p class="keys-card-subtitle">
+        Informe os dados do colaborador e confirme a retirada da chave reserva no sistema.
+      </p>
+    </div>
+
+    <div class="keys-card-body">
+      <form method="POST"
+            action="{{ url_for('retirada_chave') }}"
+            autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="tipo_formulario" value="retirada">
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_cpf">CPF</label>
+          <input type="text"
+                 class="form-control"
+                 id="ret_cpf"
+                 name="ret_cpf"
+                 placeholder="Digite apenas números">
+          <div class="form-text">
+            Sem pontos ou traços.
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_nome">Nome</label>
+          <input type="text"
+                 class="form-control"
+                 id="ret_nome"
+                 name="ret_nome"
+                 placeholder="Nome completo">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_armario">Armário</label>
+          <input type="text"
+                 class="form-control"
+                 id="ret_armario"
+                 name="ret_armario"
+                 placeholder="Número do armário">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_chave">Chave</label>
+          <input type="text"
+                 class="form-control"
+                 id="ret_chave"
+                 name="ret_chave"
+                 placeholder="Número da chave">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_turno">Turno</label>
+          <select id="ret_turno" name="ret_turno" class="form-select">
+            <option selected>Selecione</option>
+            <option value="1">1° Turno</option>
+            <option value="2">2° Turno</option>
+            <option value="3">3° Turno</option>
+            <option value="4">4° Turno</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ret_coordenador">Coordenador</label>
+          <input type="text"
+                 class="form-control"
+                 id="ret_coordenador"
+                 name="ret_coordenador"
+                 placeholder="Nome do coordenador">
+        </div>
+
+        <button type="submit" class="btn keys-submit">
+          Confirmar Retirada
+        </button>
+      </form>
+    </div>
+
+    <div class="keys-footer">
+      <small>DHL SECURITY · CONTROLE DE CHAVES RESERVA</small>
+      <span class="keys-footer-badge">Registro corporativo</span>
     </div>
   </div>
 </div>
 
-<!-- SCRIPT ORIGINAL MANTIDO -->
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const cpfInput     = document.getElementById("ret_cpf");

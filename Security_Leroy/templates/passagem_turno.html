@@ -1,185 +1,517 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<div class="min-vh-100 d-flex align-items-center"
-     style="
-       position:relative;
-       background:#ffffff;
-     ">
+<style>
+  :root{
+    --dhl-yellow:#ffcc00;
+    --dhl-red:#d40511;
+    --dhl-red-dark:#b3030e;
+    --dhl-black:#1f1f1f;
+    --dhl-gray:#5f6368;
+    --bg:#f4f5f7;
+    --card:#ffffff;
+    --line:#e5e7eb;
+    --text:#1f2937;
+    --muted:#6b7280;
+    --shadow:0 10px 24px rgba(0,0,0,.08);
+    --radius:18px;
+  }
 
-  <!-- Overlay sutil verde Leroy -->
-  <div style="
+  .shift-page{
+    width:min(1180px, calc(100vw - 24px));
+    margin:18px auto 28px;
+  }
+
+  .shift-top-actions{
+    display:flex;
+    justify-content:flex-start;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+
+  .shift-link{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    text-decoration:none;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    box-shadow:0 4px 10px rgba(0,0,0,.06);
+  }
+
+  .shift-link:hover{
+    color:#5f4500;
+    background:#ffeeb0;
+  }
+
+  .shift-hero{
+    position:relative;
+    overflow:hidden;
+    background:
+      linear-gradient(135deg, rgba(212,5,17,.98), rgba(145,0,10,.96)),
+      linear-gradient(135deg,#d40511,#aa000d);
+    color:#fff;
+    border-radius:24px;
+    padding:24px;
+    box-shadow:var(--shadow);
+    margin-bottom:18px;
+    border:1px solid rgba(255,255,255,.14);
+  }
+
+  .shift-hero::before{
+    content:"";
     position:absolute;
     inset:0;
-    background: linear-gradient(
-      180deg,
-      rgba(255,255,255,1) 0%,
-      rgba(255,255,255,.96) 60%,
-      rgba(120,190,32,.15) 100%
-    );
+    background:
+      radial-gradient(circle at 85% 20%, rgba(255,204,0,.32), transparent 18%),
+      radial-gradient(circle at 70% 80%, rgba(255,255,255,.08), transparent 18%);
     pointer-events:none;
-  "></div>
+  }
 
-  <!-- Botão Post Passagem fixo -->
-  <a href="{{ url_for('post_passagem_turno') }}"
-     style="
-       position:fixed; top:150px; left:16px; z-index:10;
-       display:flex; align-items:center; gap:8px;
-       text-decoration:none;
-       padding:8px 12px;
-       border-radius:999px;
-       background:#78BE20;
-       border:1px solid #2f5f0f;
-       box-shadow:0 6px 14px rgba(0,0,0,.2);
-     ">
-    <span style="color:#fff; font-weight:700; font-size:.85rem;">
-      + Post Passagem
-    </span>
-  </a>
+  .shift-hero-content{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
-  <!-- Logo rodapé direito -->
-  <img src="{{ url_for('static', filename='leroy_secu.png') }}"
-       alt="Logo"
-       style="
-         position:fixed;
-         right:16px;
-         bottom:16px;
-         height:170px;
-         width:auto;
-         z-index:10;
-         opacity:.9;
-       ">
+  .shift-brand{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
 
+  .shift-logo-box{
+    background:#fff;
+    padding:8px 14px;
+    border-radius:14px;
+    box-shadow:0 6px 14px rgba(0,0,0,.15);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
 
-  <div class="container py-4 position-relative" style="z-index:5;">
-    <div class="row">
-      <h1 class="text-center mb-2"
-          style="color:#2f5f0f; font-weight:800;">
-        Passagem de Turno
-      </h1>
-      <hr class="border-2 opacity-100"
-          style="border-color:#78BE20; max-width:280px; margin:0.25rem auto 1.5rem auto;">
-    </div>
+  .shift-logo-box img{
+    height:42px;
+    width:auto;
+    display:block;
+  }
 
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
+  .shift-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.20);
+    color:#fff8d6;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.6px;
+    margin-bottom:10px;
+  }
 
-        <!-- CARD PRINCIPAL -->
-        <div class="card shadow-lg"
-             style="
-               background:#ffffff;
-               border:1px solid #ddd;
-               border-radius:14px;
-             ">
+  .shift-hero h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.15;
+    font-weight:900;
+    color:#fff;
+  }
 
-          <!-- Cabeçalho verde Leroy -->
-          <div style="
-                background:#78BE20;
-                border-radius:14px 14px 0 0;
-                padding:12px 18px;
-                display:flex;
-                align-items:center;
-                justify-content:space-between;
-                border-bottom:3px solid #2f5f0f;
-          ">
-            <span style="font-weight:800; color:#fff; font-size:.95rem;">
-              REGISTRO DE PASSAGEM DE TURNO
-            </span>
-          </div>
+  .shift-hero p{
+    margin:10px 0 0 0;
+    font-size:14px;
+    color:rgba(255,255,255,.92);
+    max-width:760px;
+    line-height:1.5;
+  }
 
-          <!-- Corpo do card -->
-          <div class="card-body" style="padding:22px; color:#000;">
-            <form method="POST" action="{{ url_for('passagem_turno') }}">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  .shift-chip-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
 
-              {% set label = "form-label fw-semibold" %}
-              {% set input = "form-control bg-white text-dark" %}
-              {% set select = "form-select form-select-lg bg-white text-dark" %}
+  .shift-chip{
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:999px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Nome</label>
-                <input type="text" class="{{ input }}" name="nome" placeholder="Inserir nome">
-              </div>
+  .shift-grid{
+    display:grid;
+    grid-template-columns:1.1fr .9fr;
+    gap:18px;
+    align-items:start;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Auditorias</label>
-                <input type="text" class="{{ input }}" name="auditorias">
-              </div>
+  .shift-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Data / Hora</label>
-                <input type="datetime-local" class="{{ input }}" name="data_hora" required>
-              </div>
+  .shift-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Lançamento de Recuperado</label>
-                <input type="text" class="{{ input }}" name="lancamento">
-              </div>
+  .shift-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Turno</label>
-                <select name="turno" class="{{ select }}">
-                  <option value="">Selecione o turno</option>
-                  <option>1° Turno</option>
-                  <option>2° Turno</option>
-                  <option>3° Turno</option>
-                  <option>4° Turno</option>
-                </select>
-              </div>
+  .shift-card-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:8px;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Operador</label>
-                <select name="operador" class="{{ select }}">
-                  <option value="">Nome do Operador</option>
-                  <option>Giovanna</option>
-                  <option>Juliana</option>
-                  <option>Vanessa</option>
-                  <option>Anderson</option>
-                </select>
-              </div>
+  .shift-card-title{
+    margin:0;
+    font-size:22px;
+    color:var(--dhl-black);
+    font-weight:900;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Monitoramento</label>
-                <input type="text" class="{{ input }}" name="monitoramento">
-              </div>
+  .shift-card-subtitle{
+    margin:6px 0 0 0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.5;
+  }
 
-              <div class="mb-3">
-                <label class="{{ label }}">Liberação</label>
-                <input type="text" class="{{ input }}" name="liberacao">
-              </div>
+  .shift-card-body{
+    padding:22px;
+  }
 
-              <button type="submit"
-                      class="btn w-100 mt-2"
-                      style="
-                        background:#78BE20;
-                        border:1px solid #2f5f0f;
-                        color:#fff;
-                        font-weight:800;
-                        padding:.55rem;
-                        border-radius:999px;
-                        letter-spacing:.08em;
-                      ">
-                ENVIAR
-              </button>
-            </form>
-          </div>
+  .form-label{
+    font-weight:800;
+    color:var(--dhl-black);
+    margin-bottom:8px;
+  }
 
-          <!-- Rodapé -->
-          <div style="
-                background:#f5f5f5;
-                color:#2f5f0f;
-                font-size:0.7rem;
-                text-align:center;
-                padding:8px;
-                border-radius:0 0 14px 14px;
-                border-top:1px solid #ddd;
-          ">
-            SISTEMA INTERNO · PASSAGEM DE TURNO · LEROY MERLIN
-          </div>
+  .form-control,
+  .form-select{
+    min-height:46px;
+    border-radius:12px;
+    border:1px solid #d6dbe3;
+    background:#fff;
+    color:#111;
+    box-shadow:none !important;
+  }
+
+  .form-control:focus,
+  .form-select:focus{
+    border-color:#e0b400;
+    box-shadow:0 0 0 .18rem rgba(255,204,0,.22) !important;
+  }
+
+  .shift-submit{
+    width:100%;
+    min-height:48px;
+    border:none;
+    border-radius:999px;
+    background:var(--dhl-red);
+    color:#fff;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    box-shadow:0 8px 18px rgba(212,5,17,.20);
+    transition:.2s ease;
+  }
+
+  .shift-submit:hover{
+    background:var(--dhl-red-dark);
+    color:#fff;
+    transform:translateY(-1px);
+  }
+
+  .shift-footer{
+    padding:12px 18px;
+    border-top:1px solid var(--line);
+    background:#fffef8;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .shift-footer small{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .shift-footer-badge{
+    background:#fff8db;
+    color:#7a5a00;
+    border:1px solid #f5d66f;
+    border-radius:999px;
+    padding:6px 10px;
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .help-card{
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border:1px solid var(--line);
+    border-radius:24px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    position:sticky;
+    top:16px;
+  }
+
+  .help-card-header{
+    padding:18px 20px;
+    background:linear-gradient(180deg,#fff,#fffef8);
+    border-bottom:1px solid var(--line);
+    position:relative;
+  }
+
+  .help-card-header::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    height:6px;
+    background:linear-gradient(90deg,var(--dhl-red),var(--dhl-yellow));
+  }
+
+  .help-card-body{
+    padding:20px;
+  }
+
+  .help-list{
+    margin:0;
+    padding-left:18px;
+    color:#475467;
+    font-size:14px;
+    line-height:1.7;
+  }
+
+  .help-list li{
+    margin-bottom:10px;
+  }
+
+  @media (max-width: 992px){
+    .shift-grid{
+      grid-template-columns:1fr;
+    }
+
+    .help-card{
+      position:relative;
+      top:auto;
+    }
+  }
+
+  @media (max-width: 768px){
+    .shift-page{
+      width:min(100%, calc(100vw - 16px));
+      margin:12px auto 22px;
+    }
+
+    .shift-hero{
+      padding:18px;
+      border-radius:20px;
+    }
+
+    .shift-hero h1{
+      font-size:22px;
+    }
+
+    .shift-card-header,
+    .shift-card-body,
+    .help-card-header,
+    .help-card-body{
+      padding:16px;
+    }
+
+    .shift-logo-box img{
+      height:36px;
+    }
+  }
+</style>
+
+<div class="shift-page">
+
+  <div class="shift-top-actions">
+    <a href="{{ url_for('post_passagem_turno') }}" class="shift-link">+ Post Passagem</a>
+  </div>
+
+  <div class="shift-hero">
+    <div class="shift-hero-content">
+      <div class="shift-brand">
+        <div class="shift-logo-box">
+          <img src="{{ url_for('static', filename='logotipo_dhl.png') }}" alt="DHL">
         </div>
 
+        <div>
+          <div class="shift-badge">DHL Security Dashboard</div>
+          <h1>Passagem de Turno</h1>
+          <p>
+            Registre informações operacionais entre turnos, centralize auditorias,
+            monitoramento, liberações e mantenha a continuidade das atividades com rastreabilidade.
+          </p>
+        </div>
+      </div>
+
+      <div class="shift-chip-group">
+        <div class="shift-chip">Uso Restrito</div>
+        <div class="shift-chip">Ambiente Interno</div>
       </div>
     </div>
+  </div>
+
+  <div class="shift-grid">
+
+    <!-- FORMULÁRIO -->
+    <div class="shift-card">
+      <div class="shift-card-header">
+        <div class="shift-card-badge">Registro de passagem</div>
+        <h2 class="shift-card-title">Dados da passagem de turno</h2>
+        <p class="shift-card-subtitle">
+          Preencha os dados abaixo para registrar as informações operacionais do turno com clareza e padronização.
+        </p>
+      </div>
+
+      <div class="shift-card-body">
+        <form method="POST" action="{{ url_for('passagem_turno') }}" autocomplete="off" novalidate>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Nome</label>
+              <input type="text" class="form-control" name="nome" placeholder="Inserir nome">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Auditorias</label>
+              <input type="text" class="form-control" name="auditorias" placeholder="Descreva auditorias realizadas">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Data / Hora</label>
+              <input type="datetime-local" class="form-control" name="data_hora" required>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Lançamento de Recuperado</label>
+              <input type="text" class="form-control" name="lancamento" placeholder="Informar lançamento">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Turno</label>
+              <select name="turno" class="form-select">
+                <option value="">Selecione o turno</option>
+                <option>1° Turno</option>
+                <option>2° Turno</option>
+                <option>3° Turno</option>
+                <option>4° Turno</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Operador</label>
+              <select name="operador" class="form-select">
+                <option value="">Nome do Operador</option>
+                <option>Giovanna</option>
+                <option>Juliana</option>
+                <option>Vanessa</option>
+                <option>Anderson</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Monitoramento</label>
+              <input type="text" class="form-control" name="monitoramento" placeholder="Informações de monitoramento">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Liberação</label>
+              <input type="text" class="form-control" name="liberacao" placeholder="Informações de liberação">
+            </div>
+          </div>
+
+          <button type="submit" class="btn shift-submit mt-3">
+            Enviar
+          </button>
+        </form>
+      </div>
+
+      <div class="shift-footer">
+        <small>DHL SECURITY · PASSAGEM DE TURNO</small>
+        <span class="shift-footer-badge">Registro corporativo</span>
+      </div>
+    </div>
+
+    <!-- INSTRUÇÕES -->
+    <div class="help-card">
+      <div class="help-card-header">
+        <div class="shift-card-badge">Orientações</div>
+        <h2 class="shift-card-title" style="font-size:20px;">Como preencher</h2>
+        <p class="shift-card-subtitle">
+          Use um padrão claro para facilitar a leitura entre equipes e manter histórico confiável.
+        </p>
+      </div>
+
+      <div class="help-card-body">
+        <ul class="help-list">
+          <li><strong>Nome:</strong> informe o responsável pela passagem.</li>
+          <li><strong>Auditorias:</strong> registre verificações ou pendências observadas.</li>
+          <li><strong>Data / Hora:</strong> utilize o horário real do registro.</li>
+          <li><strong>Lançamento:</strong> detalhe recuperados ou movimentações relevantes.</li>
+          <li><strong>Turno:</strong> selecione corretamente o período correspondente.</li>
+          <li><strong>Operador:</strong> indique quem está à frente da operação.</li>
+          <li><strong>Monitoramento / Liberação:</strong> descreva status operacional e liberações efetuadas.</li>
+        </ul>
+      </div>
+
+      <div class="shift-footer">
+        <small>DHL SECURITY · CONTINUIDADE OPERACIONAL</small>
+        <span class="shift-footer-badge">Uso interno</span>
+      </div>
+    </div>
+
   </div>
 </div>
 {% endblock %}
