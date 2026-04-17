@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
@@ -29,5 +30,4 @@ def inject_has_endpoint():
         return name in app.view_functions
     return dict(has_endpoint=has_endpoint)
 
-# ✅ IMPORTA ROTAS NO FINAL (evita circular import)
 from Security_Leroy import routers

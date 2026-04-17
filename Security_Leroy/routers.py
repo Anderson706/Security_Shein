@@ -61,6 +61,12 @@ os.makedirs(FOTOS_ATIVOS_DIR, exist_ok=True)
 
 csrf = CSRFProtect(app)
 
+from Security_Leroy import app
+
+@app.route("/health")
+def health():
+    return "OK", 200
+
 @app.context_processor
 def inject_csrf_token():
     # disponibiliza a função csrf_token() no Jinja
