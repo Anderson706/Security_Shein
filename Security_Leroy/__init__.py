@@ -5,14 +5,16 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 
-
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = '07abe10a5f998c5cd99bcc482244bf03'
-if os.getenv("DATABASE_URL"):
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+
+database_url = os.getenv("DATABASE_URL")
+if database_url:
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comunidade.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comunidade.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 database = SQLAlchemy(app)
