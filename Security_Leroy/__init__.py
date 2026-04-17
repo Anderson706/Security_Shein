@@ -10,6 +10,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = '07abe10a5f998c5cd99bcc482244bf03'
 
 database_url = os.getenv("DATABASE_URL")
+
 if database_url:
     app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 else:
