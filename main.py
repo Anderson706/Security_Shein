@@ -1,3 +1,5 @@
-from flask import Flask
+from Security_Leroy import app
+from Security_Leroy import routers
 
-app = Flask(__name__)
+if __name__ == '__main__':
+    app.run(debug=True)
