@@ -7,23 +7,22 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = '07abe10a5f998c5cd99bcc482244bf03'
+app.config["SECRET_KEY"] = "07abe10a5f998c5cd99bcc482244bf03"
 
 database_url = os.getenv("DATABASE_URL")
-
 if database_url:
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///comunidade.db'
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///comunidade.db"
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 database = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 
 login_manager = LoginManager(app)
-login_manager.login_view = 'login_conta'
-login_manager.login_message_category = 'alert-danger'
+login_manager.login_view = "login_conta"
+login_manager.login_message_category = "alert-danger"
 
 csrf = CSRFProtect(app)
 
